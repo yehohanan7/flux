@@ -32,3 +32,10 @@ func TestUnknownEvent(t *testing.T) {
 	assert.NotPanics(t, func() { entity.Update("unknown string event") })
 	assert.False(t, entity.handled)
 }
+
+func TestDefaultVersion(t *testing.T) {
+	entity := new(TestEntity)
+	entity.Aggregate = NewAggregate(entity)
+
+	assert.Equal(t, 0, entity.version)
+}
