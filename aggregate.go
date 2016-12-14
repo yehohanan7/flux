@@ -14,6 +14,7 @@ func (aggregate *Aggregate) Update(payload interface{}) {
 	if handler, ok := aggregate.handlers[reflect.TypeOf(payload)]; ok {
 		aggregate.events = append(aggregate.events, event)
 		handler(aggregate.entity, payload)
+		aggregate.version++
 	}
 }
 

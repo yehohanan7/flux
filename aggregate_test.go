@@ -39,3 +39,13 @@ func TestDefaultVersion(t *testing.T) {
 
 	assert.Equal(t, 0, entity.version)
 }
+
+func TestUpdateVersion(t *testing.T) {
+	entity := new(TestEntity)
+	entity.Aggregate = NewAggregate(entity)
+
+	entity.Update(TestEvent{})
+	entity.Update(TestEvent{})
+
+	assert.Equal(t, 2, entity.version)
+}
