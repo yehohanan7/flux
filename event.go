@@ -10,6 +10,7 @@ type Event struct {
 	Id               string
 	Type             string
 	Payload          interface{}
+	OccuredAt        string
 	AggregateVersion int
 	AggregateName    string
 }

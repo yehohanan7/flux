@@ -1,4 +1,4 @@
 package store
 
-type EventStore struct {
+type EventStore interface {
 }
