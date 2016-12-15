@@ -4,6 +4,8 @@ import "testing"
 
 import "github.com/stretchr/testify/assert"
 
+var repo = NewAggregateRepo()
+
 type TestEvent struct {
 }
 
@@ -12,13 +14,13 @@ type TestEntity struct {
 	handled bool
 }
 
-func (entity *TestEntity) Handle(event TestEvent) {
+func (entity *TestEntity) HandleEvent(event TestEvent) {
 	entity.handled = true
 }
 
 func TestEventHandling(t *testing.T) {
 	entity := new(TestEntity)
-	entity.Aggregate = NewAggregate("aggregate-id", entity)
+	entity.Aggregate = NewAggregate("aggregate-id", entity, repo)
 
 	entity.Update(TestEvent{})
 	entity.Update(TestEvent{})
@@ -31,7 +33,7 @@ func TestEventHandling(t *testing.T) {
 
 func TestUnknownEvent(t *testing.T) {
 	entity := new(TestEntity)
-	entity.Aggregate = NewAggregate("some-id", entity)
+	entity.Aggregate = NewAggregate("some-id", entity, repo)
 
 	assert.NotPanics(t, func() { entity.Update("unknown string event") })
 	assert.False(t, entity.handled)
@@ -39,7 +41,7 @@ func TestUnknownEvent(t *testing.T) {
 
 func TestDefaultVersion(t *testing.T) {
 	entity := new(TestEntity)
-	entity.Aggregate = NewAggregate("some-id", entity)
+	entity.Aggregate = NewAggregate("some-id", entity, repo)
 
 	assert.Equal(t, 0, entity.version)
 }

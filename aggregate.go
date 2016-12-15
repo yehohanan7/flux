@@ -8,6 +8,11 @@ type Aggregate struct {
 	events   []Event
 	entity   interface{}
 	handlers HandlerMap
+	repo     AggregateRepository
+}
+
+func (aggregate *Aggregate) Save() error {
+	return aggregate.repo.Save(*aggregate)
 }
 
 func (aggregate *Aggregate) Update(events ...interface{}) {
@@ -26,6 +31,13 @@ func (aggregate *Aggregate) Apply(events ...interface{}) {
 	}
 }
 
-func NewAggregate(id string, entity interface{}) Aggregate {
-	return Aggregate{id, 0, []Event{}, entity, buildHandlerMap(entity)}
+func NewAggregate(id string, entity interface{}, repo AggregateRepository) Aggregate {
+	return Aggregate{
+		Id:       id,
+		version:  0,
+		events:   []Event{},
+		entity:   entity,
+		handlers: buildHandlerMap(entity),
+		repo:     repo,
+	}
 }
