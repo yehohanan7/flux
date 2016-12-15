@@ -3,6 +3,7 @@ package cqrs
 import "reflect"
 
 type Aggregate struct {
+	Id       string
 	version  int
 	events   []Event
 	entity   interface{}
@@ -18,6 +19,6 @@ func (aggregate *Aggregate) Update(payload interface{}) {
 	}
 }
 
-func NewAggregate(entity interface{}) Aggregate {
-	return Aggregate{0, []Event{}, entity, buildHandlerMap(entity)}
+func NewAggregate(id string, entity interface{}) Aggregate {
+	return Aggregate{id, 0, []Event{}, entity, buildHandlerMap(entity)}
 }

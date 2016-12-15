@@ -18,7 +18,7 @@ func (entity *TestEntity) Handle(event TestEvent) {
 
 func TestEventHandling(t *testing.T) {
 	entity := new(TestEntity)
-	entity.Aggregate = NewAggregate(entity)
+	entity.Aggregate = NewAggregate("aggregate-id", entity)
 
 	entity.Update(TestEvent{})
 	entity.Update(TestEvent{})
@@ -31,7 +31,7 @@ func TestEventHandling(t *testing.T) {
 
 func TestUnknownEvent(t *testing.T) {
 	entity := new(TestEntity)
-	entity.Aggregate = NewAggregate(entity)
+	entity.Aggregate = NewAggregate("some-id", entity)
 
 	assert.NotPanics(t, func() { entity.Update("unknown string event") })
 	assert.False(t, entity.handled)
@@ -39,7 +39,7 @@ func TestUnknownEvent(t *testing.T) {
 
 func TestDefaultVersion(t *testing.T) {
 	entity := new(TestEntity)
-	entity.Aggregate = NewAggregate(entity)
+	entity.Aggregate = NewAggregate("some-id", entity)
 
 	assert.Equal(t, 0, entity.version)
 }
