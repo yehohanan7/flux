@@ -10,12 +10,19 @@ type Aggregate struct {
 	handlers HandlerMap
 }
 
-func (aggregate *Aggregate) Update(payload interface{}) {
-	event := NewEvent(payload, aggregate)
-	if handler, ok := aggregate.handlers[reflect.TypeOf(payload)]; ok {
-		aggregate.events = append(aggregate.events, event)
-		handler(aggregate.entity, payload)
-		aggregate.version++
+func (aggregate *Aggregate) Update(events ...interface{}) {
+	for _, e := range events {
+		aggregate.events = append(aggregate.events, NewEvent(e, aggregate))
+		aggregate.Apply(e)
+	}
+}
+
+func (aggregate *Aggregate) Apply(events ...interface{}) {
+	for _, e := range events {
+		if handler, ok := aggregate.handlers[reflect.TypeOf(e)]; ok {
+			handler(aggregate.entity, e)
+			aggregate.version++
+		}
 	}
 }
 
