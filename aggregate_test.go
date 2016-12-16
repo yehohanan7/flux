@@ -4,8 +4,6 @@ import "testing"
 
 import "github.com/stretchr/testify/assert"
 
-var repo = NewAggregateRepo()
-
 type TestEvent struct {
 }
 
@@ -20,7 +18,7 @@ func (entity *TestEntity) HandleEvent(event TestEvent) {
 
 func TestEventHandling(t *testing.T) {
 	entity := new(TestEntity)
-	entity.Aggregate = NewAggregate("aggregate-id", entity, repo)
+	entity.Aggregate = NewAggregate("aggregate-id", entity, NewInMemoryEventStore())
 
 	entity.Update(TestEvent{})
 	entity.Update(TestEvent{})
@@ -33,7 +31,7 @@ func TestEventHandling(t *testing.T) {
 
 func TestUnknownEvent(t *testing.T) {
 	entity := new(TestEntity)
-	entity.Aggregate = NewAggregate("some-id", entity, repo)
+	entity.Aggregate = NewAggregate("some-id", entity, NewInMemoryEventStore())
 
 	assert.NotPanics(t, func() { entity.Update("unknown string event") })
 	assert.False(t, entity.handled)
@@ -41,7 +39,19 @@ func TestUnknownEvent(t *testing.T) {
 
 func TestDefaultVersion(t *testing.T) {
 	entity := new(TestEntity)
-	entity.Aggregate = NewAggregate("some-id", entity, repo)
+	entity.Aggregate = NewAggregate("some-id", entity, NewInMemoryEventStore())
 
 	assert.Equal(t, 0, entity.version)
+}
+
+func TestAggregateSaveEvents(t *testing.T) {
+	store := NewInMemoryEventStore()
+	entity := new(TestEntity)
+	entity.Aggregate = NewAggregate("aggregate-id", entity, store)
+
+	entity.Update(TestEvent{})
+	entity.Update(TestEvent{})
+	entity.Save()
+
+	assert.Len(t, store.GetEvents("aggregate-id"), 2)
 }

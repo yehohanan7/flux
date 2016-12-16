@@ -37,11 +37,11 @@ func (acc *Account) Debit(amount int) {
 }
 
 func TestSaveAggregate(t *testing.T) {
-	repo := NewInMemoryRepository()
+	store := NewInMemoryEventStore()
 
 	accountId := "account-id"
 	account := new(Account)
-	account.Aggregate = NewAggregate(accountId, account, repo)
+	account.Aggregate = NewAggregate(accountId, account, store)
 
 	account.Credit(5)
 	account.Credit(10)

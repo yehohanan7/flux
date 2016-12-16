@@ -9,11 +9,11 @@ type Aggregate struct {
 	events   []Event
 	entity   interface{}
 	handlers HandlerMap
-	repo     AggregateRepository
+	store    EventStore
 }
 
 func (aggregate *Aggregate) Save() error {
-	return aggregate.repo.Save(*aggregate)
+	return aggregate.store.SaveEvents(aggregate.Id, aggregate.events)
 }
 
 func (aggregate *Aggregate) Update(events ...interface{}) {
@@ -32,14 +32,14 @@ func (aggregate *Aggregate) Apply(events ...interface{}) {
 	}
 }
 
-func NewAggregate(id string, entity interface{}, repo AggregateRepository) Aggregate {
+func NewAggregate(id string, entity interface{}, store EventStore) Aggregate {
 	return Aggregate{
 		Id:       id,
 		version:  0,
 		events:   []Event{},
 		entity:   entity,
 		handlers: buildHandlerMap(entity),
-		repo:     repo,
+		store:    store,
 		name:     reflect.TypeOf(entity).Name(),
 	}
 }

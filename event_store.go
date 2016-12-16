@@ -10,10 +10,14 @@ type InMemoryEventStore struct {
 }
 
 func (store *InMemoryEventStore) GetEvents(aggregateId string) []Event {
-	return nil
+	return store.events[aggregateId]
 }
 
 func (store *InMemoryEventStore) SaveEvents(aggregateId string, events []Event) error {
+	if _, ok := store.events[aggregateId]; !ok {
+		store.events[aggregateId] = make([]Event, 0)
+	}
+	store.events[aggregateId] = append(store.events[aggregateId], events...)
 	return nil
 }
 
