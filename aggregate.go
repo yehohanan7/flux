@@ -4,6 +4,7 @@ import "reflect"
 
 type Aggregate struct {
 	Id       string
+	name     string
 	version  int
 	events   []Event
 	entity   interface{}
@@ -16,9 +17,9 @@ func (aggregate *Aggregate) Save() error {
 }
 
 func (aggregate *Aggregate) Update(events ...interface{}) {
-	for _, e := range events {
-		aggregate.events = append(aggregate.events, NewEvent(e, aggregate))
-		aggregate.Apply(e)
+	for _, event := range events {
+		aggregate.events = append(aggregate.events, NewEvent(aggregate.name, aggregate.version, event))
+		aggregate.Apply(event)
 	}
 }
 
@@ -39,5 +40,6 @@ func NewAggregate(id string, entity interface{}, repo AggregateRepository) Aggre
 		entity:   entity,
 		handlers: buildHandlerMap(entity),
 		repo:     repo,
+		name:     reflect.TypeOf(entity).Name(),
 	}
 }

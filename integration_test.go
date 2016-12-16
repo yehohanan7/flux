@@ -1,7 +1,6 @@
 package cqrs
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -44,11 +43,10 @@ func TestSaveAggregate(t *testing.T) {
 	account := new(Account)
 	account.Aggregate = NewAggregate(accountId, account, repo)
 
-	fmt.Println(account.Aggregate.handlers)
-
 	account.Credit(5)
 	account.Credit(10)
 	account.Debit(1)
+	account.Save()
 
 	assert.Equal(t, 14, account.Balance)
 }
