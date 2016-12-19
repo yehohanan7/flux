@@ -36,30 +36,35 @@ func (acc *Account) Debit(amount int) {
 	acc.Update(AccountDebited{amount})
 }
 
-func TestSaveAggregate(t *testing.T) {
-	store := NewInMemoryEventStore()
-	accountId := "account-id"
-	account := new(Account)
-	account.Aggregate = NewAggregate(accountId, account, store)
-	account.Credit(5)
-	account.Credit(10)
-	account.Debit(1)
-
-	account.Save()
-
-	assert.Equal(t, 14, account.Balance)
+type TransactionCountProjection struct {
+	Projection
+	Count int
 }
 
-func TestUpdateExistingAggregate(t *testing.T) {
+func (projection *TransactionCountProjection) HandleCredit(event AccountCredited) {
+	projection.Count++
+}
+
+func (projection *TransactionCountProjection) HandleDebit(event AccountDebited) {
+	projection.Count++
+}
+
+func TestAggregate(t *testing.T) {
 	store := NewInMemoryEventStore()
 	accountId := "account-id"
 	existingAccount := new(Account)
 	existingAccount.Aggregate = NewAggregate(accountId, existingAccount, store)
-	existingAccount.Credit(5)
 
+	existingAccount.Credit(5)
+	existingAccount.Credit(10)
+	existingAccount.Debit(1)
 	existingAccount.Save()
 
 	account := new(Account)
 	account.Aggregate = NewAggregate(accountId, account, store)
-	assert.Equal(t, 5, account.Balance)
+	assert.Equal(t, 14, account.Balance)
+
+	transactions := new(TransactionCountProjection)
+	transactions.Projection = NewProjection(accountId, transactions, store)
+	assert.Equal(t, 3, transactions.Count)
 }
