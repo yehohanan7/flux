@@ -16,32 +16,51 @@ func (entity *TestEntity) HandleEvent(event TestEvent) {
 	entity.handled = true
 }
 
-func TestEventHandling(t *testing.T) {
+func newEntityWithAggregate() *TestEntity {
 	entity := new(TestEntity)
 	entity.Aggregate = NewAggregate("aggregate-id", entity, NewInMemoryEventStore())
+	return entity
+}
+
+func TestDefaultVersion(t *testing.T) {
+	entity := newEntityWithAggregate()
+
+	assert.Equal(t, 0, entity.version)
+}
+
+func TestEventHandling(t *testing.T) {
+	entity := newEntityWithAggregate()
 
 	entity.Update(TestEvent{})
 	entity.Update(TestEvent{})
 
 	assert.True(t, entity.handled)
-	assert.Equal(t, 0, entity.events[0].AggregateVersion)
-	assert.Equal(t, 1, entity.events[1].AggregateVersion)
+}
+
+func TestUpdateAggregateVersion(t *testing.T) {
+	entity := newEntityWithAggregate()
+
+	entity.Update(TestEvent{})
+	entity.Update(TestEvent{})
+
 	assert.Equal(t, 2, entity.version)
 }
 
+func TestEventAggregateVersion(t *testing.T) {
+	entity := newEntityWithAggregate()
+
+	entity.Update(TestEvent{})
+	entity.Update(TestEvent{})
+
+	assert.Equal(t, 0, entity.events[0].AggregateVersion)
+	assert.Equal(t, 1, entity.events[1].AggregateVersion)
+}
+
 func TestUnknownEvent(t *testing.T) {
-	entity := new(TestEntity)
-	entity.Aggregate = NewAggregate("some-id", entity, NewInMemoryEventStore())
+	entity := newEntityWithAggregate()
 
 	assert.NotPanics(t, func() { entity.Update("unknown string event") })
 	assert.False(t, entity.handled)
-}
-
-func TestDefaultVersion(t *testing.T) {
-	entity := new(TestEntity)
-	entity.Aggregate = NewAggregate("some-id", entity, NewInMemoryEventStore())
-
-	assert.Equal(t, 0, entity.version)
 }
 
 func TestAggregateSaveEvents(t *testing.T) {
