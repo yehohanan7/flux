@@ -16,24 +16,26 @@ func (aggregate *Aggregate) Save() error {
 	return aggregate.store.SaveEvents(aggregate.Id, aggregate.events)
 }
 
-func (aggregate *Aggregate) Update(events ...interface{}) {
-	for _, event := range events {
-		aggregate.events = append(aggregate.events, NewEvent(aggregate.name, aggregate.version, event))
+func (aggregate *Aggregate) Update(payloads ...interface{}) {
+	for _, payload := range payloads {
+		event := NewEvent(aggregate.name, aggregate.version, payload)
+		aggregate.events = append(aggregate.events, event)
 		aggregate.Apply(event)
 	}
 }
 
-func (aggregate *Aggregate) Apply(events ...interface{}) {
+func (aggregate *Aggregate) Apply(events ...Event) {
 	for _, e := range events {
-		if handler, ok := aggregate.handlers[reflect.TypeOf(e)]; ok {
-			handler(aggregate.entity, e)
+		payload := e.Payload
+		if handler, ok := aggregate.handlers[reflect.TypeOf(payload)]; ok {
+			handler(aggregate.entity, payload)
 			aggregate.version++
 		}
 	}
 }
 
 func NewAggregate(id string, entity interface{}, store EventStore) Aggregate {
-	return Aggregate{
+	aggregate := Aggregate{
 		Id:       id,
 		version:  0,
 		events:   []Event{},
@@ -42,4 +44,6 @@ func NewAggregate(id string, entity interface{}, store EventStore) Aggregate {
 		store:    store,
 		name:     reflect.TypeOf(entity).Name(),
 	}
+	aggregate.Apply(store.GetEvents(id)...)
+	return aggregate
 }
