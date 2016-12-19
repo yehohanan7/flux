@@ -67,10 +67,11 @@ func TestAggregateSaveEvents(t *testing.T) {
 	store := NewInMemoryEventStore()
 	entity := new(TestEntity)
 	entity.Aggregate = NewAggregate("aggregate-id", entity, store)
+	entity.Update(TestEvent{})
+	entity.Update(TestEvent{})
 
-	entity.Update(TestEvent{})
-	entity.Update(TestEvent{})
 	entity.Save()
 
 	assert.Len(t, store.GetEvents("aggregate-id"), 2)
+	assert.Empty(t, entity.events)
 }

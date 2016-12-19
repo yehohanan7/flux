@@ -13,7 +13,11 @@ type Aggregate struct {
 }
 
 func (aggregate *Aggregate) Save() error {
-	return aggregate.store.SaveEvents(aggregate.Id, aggregate.events)
+	err := aggregate.store.SaveEvents(aggregate.Id, aggregate.events)
+	if err == nil {
+		aggregate.events = []Event{}
+	}
+	return err
 }
 
 func (aggregate *Aggregate) Update(payloads ...interface{}) {
