@@ -1,6 +1,10 @@
 package cqrs
 
-import "reflect"
+import (
+	"reflect"
+
+	. "github.com/yehohanan7/cqrs/event"
+)
 
 type Projection struct {
 	entity   interface{}

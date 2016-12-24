@@ -50,6 +50,7 @@ func (projection *TransactionCountProjection) HandleDebit(event AccountDebited) 
 }
 
 func TestAggregate(t *testing.T) {
+	//store := NewBoltEventStore("/tmp/cqrs.db")
 	store := NewInMemoryEventStore()
 	accountId := "account-id"
 	existingAccount := new(Account)

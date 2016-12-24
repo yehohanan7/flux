@@ -1,6 +1,10 @@
 package cqrs
 
-import "reflect"
+import (
+	"reflect"
+
+	. "github.com/yehohanan7/cqrs/event"
+)
 
 type Aggregate struct {
 	Id       string
@@ -46,7 +50,7 @@ func NewAggregate(id string, entity interface{}, store EventStore) Aggregate {
 		entity:   entity,
 		handlers: buildHandlerMap(entity),
 		store:    store,
-		name:     reflect.TypeOf(entity).Name(),
+		name:     reflect.TypeOf(entity).String(),
 	}
 	aggregate.Apply(store.GetEvents(id)...)
 	return aggregate

@@ -9,6 +9,8 @@ import (
 	"strconv"
 
 	"github.com/boltdb/bolt"
+
+	. "github.com/yehohanan7/cqrs/event"
 )
 
 var BUCKET_NAME = []byte("Events")
@@ -18,20 +20,18 @@ type BoltEventStore struct {
 }
 
 func (store *BoltEventStore) GetEvents(aggregateId string) []Event {
-	var (
-		events []Event = make([]Event, 0)
-		event  Event
-	)
+	events, event := make([]Event, 0), new(Event)
 
 	store.db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket(BUCKET_NAME).Bucket([]byte(aggregateId))
-		b.ForEach(func(k, v []byte) error {
-			if err := json.Unmarshal(v, &event); err != nil {
-				return fmt.Errorf("error while unmarshalling %s", err)
-			}
-			events = append(events, event)
-			return nil
-		})
+		if b := tx.Bucket(BUCKET_NAME).Bucket([]byte(aggregateId)); b != nil {
+			b.ForEach(func(k, v []byte) error {
+				if err := json.Unmarshal(v, event); err != nil {
+					return fmt.Errorf("error while unmarshalling %s", err)
+				}
+				events = append(events, *event)
+				return nil
+			})
+		}
 		return nil
 	})
 

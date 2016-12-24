@@ -4,13 +4,18 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	. "github.com/yehohanan7/cqrs/event"
 )
 
 var stores = []EventStore{NewInMemoryEventStore(), NewBoltEventStore("/tmp/temp.db")}
 
+type EventPayload struct {
+	Data string
+}
+
 func events() []Event {
-	e1 := NewEvent("sample_aggregate", 1, "payload")
-	e2 := NewEvent("sample_aggregate", 2, "payload")
+	e1 := NewEvent("sample_aggregate", 1, EventPayload{"payload"})
+	e2 := NewEvent("sample_aggregate", 2, EventPayload{"payload"})
 	return []Event{e1, e2}
 }
 
