@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"log"
 
-	"encoding/json"
-
 	"strconv"
 
 	"github.com/boltdb/bolt"
@@ -20,14 +18,13 @@ type BoltEventStore struct {
 }
 
 func (store *BoltEventStore) GetEvents(aggregateId string) []Event {
-	events, event := make([]Event, 0), new(Event)
+	events := make([]Event, 0)
 
 	store.db.View(func(tx *bolt.Tx) error {
 		if b := tx.Bucket(BUCKET_NAME).Bucket([]byte(aggregateId)); b != nil {
 			b.ForEach(func(k, v []byte) error {
-				if err := json.Unmarshal(v, event); err != nil {
-					return fmt.Errorf("error while unmarshalling %s", err)
-				}
+				event := new(Event)
+				event.Deserialize(v)
 				events = append(events, *event)
 				return nil
 			})
@@ -49,11 +46,7 @@ func (store *BoltEventStore) SaveEvents(aggregateId string, events []Event) erro
 
 		for _, event := range events {
 			key := []byte(strconv.Itoa(event.AggregateVersion))
-			value, err := json.Marshal(event)
-			if err != nil {
-				return fmt.Errorf("error marshaling event %s", err)
-			}
-			b.Put(key, value)
+			b.Put(key, event.Serialize())
 		}
 		return nil
 	})
