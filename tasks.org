@@ -1,5 +1,6 @@
 * tasks [0%]
 ** TODO Add logging & log levels
+** TODO Arrange packages
 ** TODO Revisit bolt implementation & and handle errors
 ** TODO Publish feed for aggreates
 ** TODO Write feed consumer
