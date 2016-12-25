@@ -7,8 +7,6 @@ import (
 	"strconv"
 
 	"github.com/boltdb/bolt"
-
-	. "github.com/yehohanan7/cqrs/event"
 )
 
 var BUCKET_NAME = []byte("Events")

@@ -2,8 +2,6 @@ package cqrs
 
 import (
 	"reflect"
-
-	. "github.com/yehohanan7/cqrs/event"
 )
 
 type Aggregate struct {

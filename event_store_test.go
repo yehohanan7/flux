@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	. "github.com/yehohanan7/cqrs/event"
 )
 
 var stores = []EventStore{NewInMemoryEventStore(), NewBoltEventStore("/tmp/temp.db")}

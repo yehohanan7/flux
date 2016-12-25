@@ -1,7 +1,5 @@
 package cqrs
 
-import . "github.com/yehohanan7/cqrs/event"
-
 type InMemoryEventStore struct {
 	events map[string][]Event
 }
