@@ -1,6 +1,7 @@
 package cqrs
 
 import (
+	"encoding/gob"
 	"reflect"
 )
 
@@ -41,12 +42,17 @@ func (aggregate *Aggregate) Apply(events ...Event) {
 }
 
 func NewAggregate(id string, entity interface{}, store EventStore) Aggregate {
+	hm := buildHandlerMap(entity)
+	for e, _ := range hm {
+		gob.Register(reflect.New(e))
+	}
+
 	aggregate := Aggregate{
 		Id:       id,
 		version:  0,
 		events:   []Event{},
 		entity:   entity,
-		handlers: buildHandlerMap(entity),
+		handlers: hm,
 		store:    store,
 		name:     reflect.TypeOf(entity).String(),
 	}
