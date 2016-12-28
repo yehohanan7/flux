@@ -27,5 +27,6 @@ func TestSaveEvents(t *testing.T) {
 			assert.Len(t, store.GetEvents(aggregateId), 2)
 			assert.Equal(t, "payload", store.GetEvents(aggregateId)[0].Payload.(EventPayload).Data)
 		}
+		assert.Len(t, store.GetAllEvents(), 4)
 	}
 }

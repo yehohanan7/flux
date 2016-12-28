@@ -1,6 +1,7 @@
-* tasks [40%]
+* tasks [33%]
 ** DONE Add logging & log levels
 ** TODO Arrange packages
 ** DONE Revisit bolt implementation & and handle errors
 ** TODO Publish feed for aggreates
 ** TODO Write feed consumer
+** TODO Design a logo

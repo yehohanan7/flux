@@ -36,6 +36,7 @@ func (store *BoltEventStore) GetEvents(aggregateId string) []Event {
 			events = append(events, *event)
 		}
 		return nil
+
 	})
 
 	return events
@@ -53,6 +54,24 @@ func (store *BoltEventStore) SaveEvents(aggregateId string, events []Event) erro
 	})
 
 	return nil
+}
+
+func (store *BoltEventStore) GetAllEvents() []Event {
+	events := make([]Event, 0)
+
+	store.db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(BUCKET_NAME))
+
+		b.ForEach(func(k, v []byte) error {
+			event := new(Event)
+			event.Deserialize(v)
+			events = append(events, *event)
+			return nil
+		})
+		return nil
+	})
+
+	return events
 }
 
 func NewBoltEventStore(path string) EventStore {
