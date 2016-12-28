@@ -3,6 +3,8 @@ package cqrs
 import (
 	"encoding/gob"
 	"reflect"
+
+	"github.com/golang/glog"
 )
 
 type Aggregate struct {
@@ -18,6 +20,7 @@ type Aggregate struct {
 func (aggregate *Aggregate) Save() error {
 	err := aggregate.store.SaveEvents(aggregate.Id, aggregate.events)
 	if err == nil {
+		glog.Warningf("error while saving events for aggregate %v", aggregate)
 		aggregate.events = []Event{}
 	}
 	return err
@@ -44,6 +47,7 @@ func (aggregate *Aggregate) Apply(events ...Event) {
 func NewAggregate(id string, entity interface{}, store EventStore) Aggregate {
 	hm := buildHandlerMap(entity)
 	for eventType, _ := range hm {
+		glog.Infof("Registering event type %v with gob", eventType)
 		gob.Register(reflect.New(eventType))
 	}
 

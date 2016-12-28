@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/boltdb/bolt"
+	"github.com/golang/glog"
 )
 
 var BUCKET_NAME = []byte("Events")
@@ -39,6 +40,7 @@ func (store *BoltEventStore) SaveEvents(aggregateId string, events []Event) erro
 		b, err := tx.Bucket(BUCKET_NAME).CreateBucketIfNotExists([]byte(aggregateId))
 
 		if err != nil {
+			glog.Errorf("error while creating bucket %s", aggregateId)
 			return fmt.Errorf("create bucket: %s", err)
 		}
 
@@ -56,12 +58,13 @@ func NewBoltEventStore(path string) EventStore {
 
 	db, err := bolt.Open(path, 0600, nil)
 	if err != nil {
+		glog.Errorf("error opening bolt store %v", path)
 		log.Fatal(err)
 	}
 
 	db.Update(func(tx *bolt.Tx) error {
 		_, err := tx.CreateBucketIfNotExists(BUCKET_NAME)
-		//TODO: add warnings
+		glog.Errorf("error while creating bucket %s", BUCKET_NAME)
 		return err
 	})
 

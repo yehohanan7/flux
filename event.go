@@ -2,10 +2,10 @@ package cqrs
 
 import (
 	"bytes"
-	"log"
 
 	"encoding/gob"
 
+	"github.com/golang/glog"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -23,8 +23,7 @@ func (e *Event) Deserialize(data []byte) {
 	d := gob.NewDecoder(&b)
 	err := d.Decode(e)
 	if err != nil {
-		//todo: warning log
-		log.Println("error while deserializing")
+		glog.Errorf("could not deserialize event %v", e)
 	}
 }
 
@@ -33,8 +32,7 @@ func (e *Event) Serialize() []byte {
 	encoder := gob.NewEncoder(&buffer)
 	err := encoder.Encode(e)
 	if err != nil {
-		//todo: warning log
-		log.Println("error while serializing event")
+		glog.Errorf("could not serialize event %v", e)
 	}
 	return buffer.Bytes()
 }
