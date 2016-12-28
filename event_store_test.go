@@ -20,14 +20,12 @@ func events() []Event {
 
 func TestSaveEvents(t *testing.T) {
 	for _, store := range stores {
+		for _, aggregateId := range []string{"a-id", "b-id"} {
+			err := store.SaveEvents(aggregateId, events())
 
-		err1 := store.SaveEvents("a-id", events())
-		err2 := store.SaveEvents("b-id", events())
-
-		assert.Nil(t, err1)
-		assert.Nil(t, err2)
-		assert.Len(t, store.GetEvents("a-id"), 2)
-		assert.Len(t, store.GetEvents("b-id"), 2)
+			assert.Nil(t, err)
+			assert.Len(t, store.GetEvents(aggregateId), 2)
+			assert.Equal(t, "payload", store.GetEvents(aggregateId)[0].Payload.(EventPayload).Data)
+		}
 	}
-
 }

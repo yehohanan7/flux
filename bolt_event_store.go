@@ -53,22 +53,16 @@ func (store *BoltEventStore) SaveEvents(aggregateId string, events []Event) erro
 }
 
 func NewBoltEventStore(path string) EventStore {
-	var (
-		db  *bolt.DB
-		err error
-	)
 
-	db, err = bolt.Open(path, 0600, nil)
+	db, err := bolt.Open(path, 0600, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	db.Update(func(tx *bolt.Tx) error {
-		_, err = tx.CreateBucketIfNotExists(BUCKET_NAME)
-		if err != nil {
-			return fmt.Errorf("create bucket: %s", err)
-		}
-		return nil
+		_, err := tx.CreateBucketIfNotExists(BUCKET_NAME)
+		//TODO: add warnings
+		return err
 	})
 
 	return &BoltEventStore{db}

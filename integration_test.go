@@ -3,6 +3,8 @@ package cqrs
 import (
 	"testing"
 
+	"os"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -50,22 +52,24 @@ func (projection *TransactionCountProjection) HandleDebit(event AccountDebited) 
 }
 
 func TestAggregate(t *testing.T) {
-	//store := NewBoltEventStore("/tmp/cqrs.db")
-	store := NewInMemoryEventStore()
-	accountId := "account-id"
-	existingAccount := new(Account)
-	existingAccount.Aggregate = NewAggregate(accountId, existingAccount, store)
+	os.Remove("/tmp/cqrs.db")
+	for _, store := range []EventStore{NewInMemoryEventStore(), NewBoltEventStore("/tmp/cqrs.db")} {
+		accountId := "account-id"
+		existingAccount := new(Account)
+		existingAccount.Aggregate = NewAggregate(accountId, existingAccount, store)
 
-	existingAccount.Credit(5)
-	existingAccount.Credit(10)
-	existingAccount.Debit(1)
-	existingAccount.Save()
+		existingAccount.Credit(5)
+		existingAccount.Credit(10)
+		existingAccount.Debit(1)
+		existingAccount.Save()
 
-	account := new(Account)
-	account.Aggregate = NewAggregate(accountId, account, store)
-	assert.Equal(t, 14, account.Balance)
+		account := new(Account)
+		account.Aggregate = NewAggregate(accountId, account, store)
+		assert.Equal(t, 14, account.Balance)
 
-	transactions := new(TransactionCountProjection)
-	transactions.Projection = NewProjection(accountId, transactions, store)
-	assert.Equal(t, 3, transactions.Count)
+		transactions := new(TransactionCountProjection)
+		transactions.Projection = NewProjection(accountId, transactions, store)
+		assert.Equal(t, 3, transactions.Count)
+	}
+
 }

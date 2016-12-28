@@ -43,8 +43,8 @@ func (aggregate *Aggregate) Apply(events ...Event) {
 
 func NewAggregate(id string, entity interface{}, store EventStore) Aggregate {
 	hm := buildHandlerMap(entity)
-	for e, _ := range hm {
-		gob.Register(reflect.New(e))
+	for eventType, _ := range hm {
+		gob.Register(reflect.New(eventType))
 	}
 
 	aggregate := Aggregate{
@@ -56,6 +56,7 @@ func NewAggregate(id string, entity interface{}, store EventStore) Aggregate {
 		store:    store,
 		name:     reflect.TypeOf(entity).String(),
 	}
+
 	aggregate.Apply(store.GetEvents(id)...)
 	return aggregate
 }

@@ -32,7 +32,6 @@ func TestEventHandling(t *testing.T) {
 	entity := newEntityWithAggregate()
 
 	entity.Update(TestEvent{})
-	entity.Update(TestEvent{})
 
 	assert.True(t, entity.handled)
 }
@@ -40,8 +39,7 @@ func TestEventHandling(t *testing.T) {
 func TestUpdateAggregateVersion(t *testing.T) {
 	entity := newEntityWithAggregate()
 
-	entity.Update(TestEvent{})
-	entity.Update(TestEvent{})
+	entity.Update(TestEvent{}, TestEvent{})
 
 	assert.Equal(t, 2, entity.version)
 }
@@ -49,8 +47,7 @@ func TestUpdateAggregateVersion(t *testing.T) {
 func TestEventAggregateVersion(t *testing.T) {
 	entity := newEntityWithAggregate()
 
-	entity.Update(TestEvent{})
-	entity.Update(TestEvent{})
+	entity.Update(TestEvent{}, TestEvent{})
 
 	assert.Equal(t, 0, entity.events[0].AggregateVersion)
 	assert.Equal(t, 1, entity.events[1].AggregateVersion)
@@ -60,6 +57,7 @@ func TestUnknownEvent(t *testing.T) {
 	entity := newEntityWithAggregate()
 
 	assert.NotPanics(t, func() { entity.Update("unknown string event") })
+
 	assert.False(t, entity.handled)
 }
 
@@ -67,8 +65,7 @@ func TestAggregateSaveEvents(t *testing.T) {
 	store := NewInMemoryEventStore()
 	entity := new(TestEntity)
 	entity.Aggregate = NewAggregate("aggregate-id", entity, store)
-	entity.Update(TestEvent{})
-	entity.Update(TestEvent{})
+	entity.Update(TestEvent{}, TestEvent{})
 
 	entity.Save()
 
