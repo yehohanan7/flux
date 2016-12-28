@@ -1,10 +1,12 @@
 package cqrs
 
 import (
-	"fmt"
+	"bytes"
 	"log"
 
 	"strconv"
+
+	"strings"
 
 	"github.com/boltdb/bolt"
 	"github.com/golang/glog"
@@ -16,17 +18,22 @@ type BoltEventStore struct {
 	db *bolt.DB
 }
 
+func buildKey(aggregateId string, event Event) string {
+	return strings.Join([]string{aggregateId, strconv.Itoa(event.AggregateVersion)}, "_")
+}
+
 func (store *BoltEventStore) GetEvents(aggregateId string) []Event {
 	events := make([]Event, 0)
 
 	store.db.View(func(tx *bolt.Tx) error {
-		if b := tx.Bucket(BUCKET_NAME).Bucket([]byte(aggregateId)); b != nil {
-			b.ForEach(func(k, v []byte) error {
-				event := new(Event)
-				event.Deserialize(v)
-				events = append(events, *event)
-				return nil
-			})
+
+		c := tx.Bucket([]byte(BUCKET_NAME)).Cursor()
+		prefix := []byte(aggregateId + "_")
+
+		for k, v := c.Seek(prefix); k != nil && bytes.HasPrefix(k, prefix); k, v = c.Next() {
+			event := new(Event)
+			event.Deserialize(v)
+			events = append(events, *event)
 		}
 		return nil
 	})
@@ -37,16 +44,10 @@ func (store *BoltEventStore) GetEvents(aggregateId string) []Event {
 func (store *BoltEventStore) SaveEvents(aggregateId string, events []Event) error {
 
 	store.db.Update(func(tx *bolt.Tx) error {
-		b, err := tx.Bucket(BUCKET_NAME).CreateBucketIfNotExists([]byte(aggregateId))
-
-		if err != nil {
-			glog.Errorf("error while creating bucket %s", aggregateId)
-			return fmt.Errorf("create bucket: %s", err)
-		}
+		b := tx.Bucket(BUCKET_NAME)
 
 		for _, event := range events {
-			key := []byte(strconv.Itoa(event.AggregateVersion))
-			b.Put(key, event.Serialize())
+			b.Put([]byte(buildKey(aggregateId, event)), event.Serialize())
 		}
 		return nil
 	})
