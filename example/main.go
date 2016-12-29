@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 
+	"flag"
+
 	"github.com/gorilla/mux"
 	"github.com/yehohanan7/cqrs"
 	. "github.com/yehohanan7/cqrs/example/account"
@@ -47,6 +49,7 @@ func DebitAccount(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	flag.Parse()
 	router := mux.NewRouter()
 	router.HandleFunc("/accounts", CreateAccount).Methods("POST")
 	router.HandleFunc("/accounts/{id}/summary", GetSummary).Methods("GET")
