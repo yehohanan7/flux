@@ -1,4 +1,9 @@
-package example
+package account
+
+type AccountCreated struct {
+	AccountId string
+	Balance   int
+}
 
 type AccountCredited struct {
 	AccountId string

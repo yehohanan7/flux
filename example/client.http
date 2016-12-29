@@ -1,0 +1,12 @@
+# -*- restclient -*-
+
+
+#Add new kural
+POST http://localhost:3000/accounts
+Content-type: application/json
+{"opening_balance": 100}
+
+
+#Local
+GET http://localhost:3000/accounts/00e8a62d-eacc-41c8-b7ac-af655aef5bdf/summary
+
