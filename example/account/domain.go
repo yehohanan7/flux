@@ -1,8 +1,6 @@
 package account
 
 import (
-	"fmt"
-
 	"github.com/golang/glog"
 	"github.com/pborman/uuid"
 	"github.com/yehohanan7/cqrs"
@@ -15,13 +13,38 @@ type Account struct {
 }
 
 func (account *Account) HandleNewAccount(event AccountCreated) {
-	fmt.Println("handling account created...")
 	if account.Id != "" {
 		glog.Error("attempt to create duplicate account")
 		return
 	}
 	account.Id = event.AccountId
 	account.Balance = event.Balance
+}
+
+func (account *Account) HandleCredit(event AccountCredited) {
+	account.Balance = account.Balance + event.Amount
+}
+
+func (account *Account) HandleDebit(event AccountDebited) {
+	account.Balance = account.Balance - event.Amount
+}
+
+func (account *Account) Credit(amount int) string {
+	tId := uuid.New()
+	account.Update(AccountCredited{tId, amount})
+	return tId
+}
+
+func (account *Account) Debit(amount int) string {
+	tId := uuid.New()
+	account.Update(AccountDebited{tId, amount})
+	return tId
+}
+
+func GetAccount(id string, store cqrs.EventStore) Account {
+	account := new(Account)
+	account.Aggregate = cqrs.NewAggregate(id, account, store)
+	return *account
 }
 
 func MakeAccount(balance int, store cqrs.EventStore) Account {

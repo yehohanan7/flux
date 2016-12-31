@@ -1,12 +1,22 @@
 # -*- restclient -*-
 
+:account_id = c994f7b4-124c-4ff5-a49b-397564cca58a
 
-#Add new kural
+#Add new account
 POST http://localhost:3000/accounts
 Content-type: application/json
 {"opening_balance": 100}
 
+#Credit account
+POST http://localhost:3000/accounts/:account_id/credit
+Content-type: application/json
+{"amount": 10}
+
+#Debit account
+POST http://localhost:3000/accounts/:account_id/debit
+Content-type: application/json
+{"amount": 5}
 
 #Local
-GET http://localhost:3000/accounts/00e8a62d-eacc-41c8-b7ac-af655aef5bdf/summary
+GET http://localhost:3000/accounts/:account_id/summary
 

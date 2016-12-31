@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -17,35 +16,37 @@ func init() {
 	InitAccounts(cqrs.NewInMemoryEventStore())
 }
 
-func ExecuteCommand(w http.ResponseWriter, r *http.Request, command Command) {
-	defer r.Body.Close()
-	err := json.NewDecoder(r.Body).Decode(command)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	response, _ := command.Execute()
-	json.NewEncoder(w).Encode(response)
-}
-
 func GetSummary(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	vars := mux.Vars(r)
 	id := vars["id"]
-
 	json.NewEncoder(w).Encode(ProjectAccountSummary(id))
 }
 
 func CreateAccount(w http.ResponseWriter, r *http.Request) {
-	ExecuteCommand(w, r, new(CreateAccountCommand))
+	defer r.Body.Close()
+	command := new(CreateAccountCommand)
+	json.NewDecoder(r.Body).Decode(command)
+	response, _ := command.Execute()
+	json.NewEncoder(w).Encode(response)
 }
 
 func CreditAccount(w http.ResponseWriter, r *http.Request) {
-	ExecuteCommand(w, r, new(CreditAccountCommand))
+	defer r.Body.Close()
+	command := new(CreditAccountCommand)
+	json.NewDecoder(r.Body).Decode(command)
+	command.AccountId = mux.Vars(r)["id"]
+	response, _ := command.Execute()
+	json.NewEncoder(w).Encode(response)
 }
 
 func DebitAccount(w http.ResponseWriter, r *http.Request) {
-	ExecuteCommand(w, r, new(DebitAccountCommand))
+	defer r.Body.Close()
+	command := new(DebitAccountCommand)
+	json.NewDecoder(r.Body).Decode(command)
+	command.AccountId = mux.Vars(r)["id"]
+	response, _ := command.Execute()
+	json.NewEncoder(w).Encode(response)
 }
 
 func main() {

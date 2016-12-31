@@ -6,11 +6,11 @@ type AccountCreated struct {
 }
 
 type AccountCredited struct {
-	AccountId string
-	Amount    int
+	TransactionId string
+	Amount        int
 }
 
 type AccountDebited struct {
-	AccountId string
-	Amount    int
+	TransactionId string
+	Amount        int
 }
