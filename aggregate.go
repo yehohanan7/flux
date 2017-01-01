@@ -20,7 +20,7 @@ type Aggregate struct {
 func (aggregate *Aggregate) Save() error {
 	err := aggregate.store.SaveEvents(aggregate.Id, aggregate.events)
 	if err != nil {
-		glog.Warningf("error while saving events for aggregate %v", aggregate)
+		glog.Warning("error while saving events for aggregate ", aggregate, err)
 	}
 	aggregate.events = []Event{}
 	return err
