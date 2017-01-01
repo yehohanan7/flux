@@ -3,10 +3,18 @@ package cqrs
 import (
 	"testing"
 
+	"os"
+
 	"github.com/stretchr/testify/assert"
 )
 
-var stores = []EventStore{NewInMemoryEventStore(), NewBoltEventStore("/tmp/temp.db")}
+const DB_PATH string = "/tmp/temp.db"
+
+func init() {
+	os.Remove(DB_PATH)
+}
+
+var stores = []EventStore{NewInMemoryEventStore(), NewBoltEventStore(DB_PATH)}
 
 type EventPayload struct {
 	Data string
@@ -33,7 +41,7 @@ func TestSaveEvents(t *testing.T) {
 
 func TestGetEvent(t *testing.T) {
 	for _, store := range stores {
-		expected := NewEvent("aid", 0, "payload")
+		expected := NewEvent("aid", 0, EventPayload{"payload"})
 		err := store.SaveEvents("a-id", []Event{expected})
 
 		actual := store.GetEvent(expected.Id)

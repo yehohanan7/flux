@@ -105,7 +105,9 @@ func NewBoltEventStore(path string) EventStore {
 
 	db.Update(func(tx *bolt.Tx) error {
 		_, err := tx.CreateBucketIfNotExists(BUCKET_NAME)
-		glog.Errorf("error while creating bucket %s", BUCKET_NAME)
+		if err != nil {
+			glog.Error("error while creating bucket", BUCKET_NAME)
+		}
 		return err
 	})
 

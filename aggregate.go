@@ -21,8 +21,8 @@ func (aggregate *Aggregate) Save() error {
 	err := aggregate.store.SaveEvents(aggregate.Id, aggregate.events)
 	if err != nil {
 		glog.Warningf("error while saving events for aggregate %v", aggregate)
-		aggregate.events = []Event{}
 	}
+	aggregate.events = []Event{}
 	return err
 }
 
