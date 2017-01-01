@@ -1,12 +1,12 @@
 * tasks [36%]
-** DONE Add logging & log levels
 ** TODO Arrange packages
-** DONE Revisit bolt implementation & and handle errors
 ** TODO Publish feed for aggreates
 ** TODO Write feed consumer
 ** TODO Design a logo
 ** TODO Implement sample application
-** DONE Integrate Travis
-** DONE Integrate coveralls
 ** TODO Support Postgres
 ** TODO Support mongodb
+** DONE Add logging & log levels
+** DONE Revisit bolt implementation & and handle errors
+** DONE Integrate coveralls
+** DONE Integrate Travis
