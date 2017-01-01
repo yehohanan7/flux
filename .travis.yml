@@ -12,7 +12,8 @@ go:
   - master
 
 install:
-  - go get github.com/golang/glog github.com/stretchr/testify/assert github.com/boltdb/bolt github.com/gorilla/feeds github.com/gorilla/mux
+  - go get github.com/mattn/goveralls golang.org/x/tools/cmd/cover github.com/pierrre/gotestcover github.com/Masterminds/glide
+  - glide install
 
 script:
   - go vet -x .

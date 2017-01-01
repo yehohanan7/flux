@@ -1,0 +1,12 @@
+package: github.com/yehohanan7/cqrs
+import:
+- package: github.com/boltdb/bolt
+- package: github.com/golang/glog
+- package: github.com/gorilla/feeds
+- package: github.com/gorilla/mux
+- package: github.com/pborman/uuid
+- package: github.com/satori/go.uuid
+testImport:
+- package: github.com/stretchr/testify
+  subpackages:
+  - assert
