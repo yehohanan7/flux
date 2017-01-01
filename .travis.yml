@@ -1,0 +1,20 @@
+sudo: required
+
+language: go
+
+services:
+  - docker
+
+env:
+  - DOCKER_BIND_LOCALHOST=true GO15VENDOREXPERIMENT=1
+
+go:
+  - 1.6
+
+install:
+  - go get github.com/golang/glog github.com/stretchr/testify/assert github.com/boltdb/bolt github.com/gorilla/feeds github.com/gorilla/mux
+
+script:
+  - go vet -x .
+  - gotestcover -coverprofile="cover.out" -race -covermode="count" .
+- goveralls -coverprofile="cover.out"
