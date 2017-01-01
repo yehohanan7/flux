@@ -24,6 +24,19 @@ func (store *InMemoryEventStore) GetAllEvents() []Event {
 	return all
 }
 
+func (store *InMemoryEventStore) GetEvent(id string) Event {
+	var result Event
+	for _, events := range store.events {
+		for _, event := range events {
+			if event.Id == id {
+				result = event
+				break
+			}
+		}
+	}
+	return result
+}
+
 func NewInMemoryEventStore() EventStore {
 	return &InMemoryEventStore{make(map[string][]Event)}
 }

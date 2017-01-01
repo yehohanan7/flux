@@ -1,6 +1,6 @@
 # -*- restclient -*-
 
-:account_id = c994f7b4-124c-4ff5-a49b-397564cca58a
+:account_id = f17f871a-ea64-45cb-ba8d-07b6b69d97c2
 
 #Add new account
 POST http://localhost:3000/accounts
@@ -17,6 +17,12 @@ POST http://localhost:3000/accounts/:account_id/debit
 Content-type: application/json
 {"amount": 5}
 
-#Local
+#Summary
 GET http://localhost:3000/accounts/:account_id/summary
+
+#Event feed
+GET http://localhost:3000/events
+
+#Event
+GET http://localhost:3000/events/609ea3ce-c8be-4401-868f-814571eb7325
 

@@ -74,6 +74,27 @@ func (store *BoltEventStore) GetAllEvents() []Event {
 	return events
 }
 
+func (store *BoltEventStore) GetEvent(id string) Event {
+	var result Event
+
+	store.db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(BUCKET_NAME))
+
+		b.ForEach(func(k, v []byte) error {
+			event := new(Event)
+			event.Deserialize(v)
+			if event.Id == id {
+				result = *event
+				return nil
+			}
+			return nil
+		})
+		return nil
+	})
+
+	return result
+}
+
 func NewBoltEventStore(path string) EventStore {
 
 	db, err := bolt.Open(path, 0600, nil)

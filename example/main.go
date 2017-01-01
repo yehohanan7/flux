@@ -12,8 +12,11 @@ import (
 	. "github.com/yehohanan7/cqrs/example/account"
 )
 
+var store cqrs.EventStore
+
 func init() {
-	InitAccounts(cqrs.NewInMemoryEventStore())
+	store = cqrs.NewInMemoryEventStore()
+	InitAccounts(store)
 }
 
 func GetSummary(w http.ResponseWriter, r *http.Request) {
@@ -56,6 +59,7 @@ func main() {
 	router.HandleFunc("/accounts/{id}/summary", GetSummary).Methods("GET")
 	router.HandleFunc("/accounts/{id}/credit", CreditAccount).Methods("POST")
 	router.HandleFunc("/accounts/{id}/debit", DebitAccount).Methods("POST")
+	cqrs.EventFeed(router, store)
 	http.Handle("/", router)
 	log.Fatal(http.ListenAndServe(":3000", router))
 }

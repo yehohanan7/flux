@@ -30,3 +30,16 @@ func TestSaveEvents(t *testing.T) {
 		assert.Len(t, store.GetAllEvents(), 4)
 	}
 }
+
+func TestGetEvent(t *testing.T) {
+	for _, store := range stores {
+		expected := NewEvent("aid", 0, "payload")
+		err := store.SaveEvents("a-id", []Event{expected})
+
+		actual := store.GetEvent(expected.Id)
+
+		assert.Nil(t, err)
+		assert.Equal(t, expected.Id, actual.Id)
+	}
+
+}
