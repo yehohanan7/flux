@@ -37,6 +37,6 @@ func (store *InMemoryEventStore) GetEvent(id string) Event {
 	return result
 }
 
-func NewInMemoryEventStore() EventStore {
+func NewEventStore() EventStore {
 	return &InMemoryEventStore{make(map[string][]Event)}
 }

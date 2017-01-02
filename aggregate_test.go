@@ -1,8 +1,10 @@
 package cqrs
 
-import "testing"
+import (
+	"testing"
 
-import "github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/assert"
+)
 
 type TestEvent struct {
 }
@@ -18,7 +20,7 @@ func (entity *TestEntity) HandleEvent(event TestEvent) {
 
 func newEntityWithAggregate() *TestEntity {
 	entity := new(TestEntity)
-	entity.Aggregate = NewAggregate("aggregate-id", entity, NewInMemoryEventStore())
+	entity.Aggregate = NewAggregate("aggregate-id", entity, NewEventStore())
 	return entity
 }
 
@@ -62,7 +64,7 @@ func TestUnknownEvent(t *testing.T) {
 }
 
 func TestAggregateSaveEvents(t *testing.T) {
-	store := NewInMemoryEventStore()
+	store := NewEventStore()
 	entity := new(TestEntity)
 	entity.Aggregate = NewAggregate("aggregate-id", entity, store)
 	entity.Update(TestEvent{}, TestEvent{})

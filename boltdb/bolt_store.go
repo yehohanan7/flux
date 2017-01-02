@@ -1,4 +1,4 @@
-package cqrs
+package boltdb
 
 import (
 	"bytes"
@@ -10,6 +10,7 @@ import (
 
 	"github.com/boltdb/bolt"
 	"github.com/golang/glog"
+	"github.com/yehohanan7/cqrs"
 )
 
 var BUCKET_NAME = []byte("Events")
@@ -18,12 +19,12 @@ type BoltEventStore struct {
 	db *bolt.DB
 }
 
-func buildKey(aggregateId string, event Event) string {
+func buildKey(aggregateId string, event cqrs.Event) string {
 	return strings.Join([]string{aggregateId, strconv.Itoa(event.AggregateVersion)}, "_")
 }
 
-func (store *BoltEventStore) GetEvents(aggregateId string) []Event {
-	events := make([]Event, 0)
+func (store *BoltEventStore) GetEvents(aggregateId string) []cqrs.Event {
+	events := make([]cqrs.Event, 0)
 
 	store.db.View(func(tx *bolt.Tx) error {
 
@@ -31,7 +32,7 @@ func (store *BoltEventStore) GetEvents(aggregateId string) []Event {
 		prefix := []byte(aggregateId + "_")
 
 		for k, v := c.Seek(prefix); k != nil && bytes.HasPrefix(k, prefix); k, v = c.Next() {
-			event := new(Event)
+			event := new(cqrs.Event)
 			event.Deserialize(v)
 			events = append(events, *event)
 		}
@@ -42,7 +43,7 @@ func (store *BoltEventStore) GetEvents(aggregateId string) []Event {
 	return events
 }
 
-func (store *BoltEventStore) SaveEvents(aggregateId string, events []Event) error {
+func (store *BoltEventStore) SaveEvents(aggregateId string, events []cqrs.Event) error {
 
 	store.db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket(BUCKET_NAME)
@@ -56,14 +57,14 @@ func (store *BoltEventStore) SaveEvents(aggregateId string, events []Event) erro
 	return nil
 }
 
-func (store *BoltEventStore) GetAllEvents() []Event {
-	events := make([]Event, 0)
+func (store *BoltEventStore) GetAllEvents() []cqrs.Event {
+	events := make([]cqrs.Event, 0)
 
 	store.db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(BUCKET_NAME))
 
 		b.ForEach(func(k, v []byte) error {
-			event := new(Event)
+			event := new(cqrs.Event)
 			event.Deserialize(v)
 			events = append(events, *event)
 			return nil
@@ -74,14 +75,14 @@ func (store *BoltEventStore) GetAllEvents() []Event {
 	return events
 }
 
-func (store *BoltEventStore) GetEvent(id string) Event {
-	var result Event
+func (store *BoltEventStore) GetEvent(id string) cqrs.Event {
+	var result cqrs.Event
 
 	store.db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(BUCKET_NAME))
 
 		b.ForEach(func(k, v []byte) error {
-			event := new(Event)
+			event := new(cqrs.Event)
 			event.Deserialize(v)
 			if event.Id == id {
 				result = *event
@@ -95,7 +96,7 @@ func (store *BoltEventStore) GetEvent(id string) Event {
 	return result
 }
 
-func NewBoltEventStore(path string) EventStore {
+func NewEventStore(path string) cqrs.EventStore {
 
 	db, err := bolt.Open(path, 0600, nil)
 	if err != nil {

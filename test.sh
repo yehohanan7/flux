@@ -1,2 +1,2 @@
 #!/bin/bash
-go test ../... -v -logtostderr=true
+go test $(glide novendor) -logtostderr=true
