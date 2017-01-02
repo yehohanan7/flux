@@ -12,10 +12,9 @@ go:
   - master
 
 install:
-  - go get github.com/mattn/goveralls golang.org/x/tools/cmd/cover github.com/pierrre/gotestcover github.com/FiloSottile/gvt
+  - go get github.com/FiloSottile/gvt
   - gvt restore
 
 script:
   - go vet -x .
-  - gotestcover -coverprofile="cover.out" -race -covermode="count" github.com/yehohanan7/cqrs github.com/yehohanan7/cqrs/boltdb github.com/yehohanan7/it
-  - goveralls -coverprofile="cover.out"
+  - go test $(go list ./... | grep -v /vendor/)

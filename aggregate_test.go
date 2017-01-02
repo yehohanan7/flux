@@ -1,9 +1,8 @@
 package cqrs
 
 import (
-	"testing"
-
-	"github.com/stretchr/testify/assert"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 type TestEvent struct {
@@ -24,53 +23,61 @@ func newEntityWithAggregate() *TestEntity {
 	return entity
 }
 
-func TestDefaultVersion(t *testing.T) {
-	entity := newEntityWithAggregate()
+var _ = Describe("Aggregare", func() {
 
-	assert.Equal(t, 0, entity.version)
-}
+	var (
+		aggregateId string     = "aggregate-id"
+		store       EventStore = NewEventStore()
+		entity      *TestEntity
+	)
 
-func TestEventHandling(t *testing.T) {
-	entity := newEntityWithAggregate()
+	BeforeEach(func() {
+		entity = new(TestEntity)
+		entity.Aggregate = NewAggregate(aggregateId, entity, store)
+	})
 
-	entity.Update(TestEvent{})
+	_ = Describe("Creating New Aggregate", func() {
+		It("should set version to 0", func() {
+			Expect(entity.version).To(Equal(0))
+		})
+	})
 
-	assert.True(t, entity.handled)
-}
+	_ = Describe("Executing update on aggregate", func() {
+		It("should handle the event", func() {
+			entity.Update(TestEvent{})
 
-func TestUpdateAggregateVersion(t *testing.T) {
-	entity := newEntityWithAggregate()
+			Expect(entity.handled).To(BeTrue())
+		})
 
-	entity.Update(TestEvent{}, TestEvent{})
+		It("should update aggregate version", func() {
+			entity.Update(TestEvent{}, TestEvent{})
 
-	assert.Equal(t, 2, entity.version)
-}
+			Expect(entity.version).To(Equal(2))
+		})
 
-func TestEventAggregateVersion(t *testing.T) {
-	entity := newEntityWithAggregate()
+		It("should update event's aggregate version", func() {
+			entity.Update(TestEvent{}, TestEvent{})
 
-	entity.Update(TestEvent{}, TestEvent{})
+			Expect(entity.events[0].AggregateVersion).To(Equal(0))
+			Expect(entity.events[1].AggregateVersion).To(Equal(1))
+		})
 
-	assert.Equal(t, 0, entity.events[0].AggregateVersion)
-	assert.Equal(t, 1, entity.events[1].AggregateVersion)
-}
+		It("should not panic for unknown events", func() {
+			Expect(func() { entity.Update("unknown string event") }).ShouldNot(Panic())
 
-func TestUnknownEvent(t *testing.T) {
-	entity := newEntityWithAggregate()
+			Expect(entity.handled).To(BeFalse())
+		})
+	})
 
-	assert.NotPanics(t, func() { entity.Update("unknown string event") })
+	_ = Describe("Saving an aggregate", func() {
+		It("Should store the events and clear state", func() {
+			entity.Update(TestEvent{}, TestEvent{})
 
-	assert.False(t, entity.handled)
-}
+			entity.Save()
 
-func TestAggregateSaveEvents(t *testing.T) {
-	store := NewEventStore()
-	entity := new(TestEntity)
-	entity.Aggregate = NewAggregate("aggregate-id", entity, store)
-	entity.Update(TestEvent{}, TestEvent{})
+			Expect(len(entity.events)).To(Equal(0))
+			Expect(len(store.GetEvents(aggregateId))).To(Equal(2))
+		})
+	})
 
-	entity.Save()
-
-	assert.Len(t, store.GetEvents("aggregate-id"), 2)
-	assert.Empty(t, entity.events)
-}
+})
