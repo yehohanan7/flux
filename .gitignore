@@ -1,2 +1,3 @@
 .cover/
-vendor/
+vendor/**
+!vendor/manifest
