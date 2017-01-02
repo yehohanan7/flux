@@ -10,6 +10,14 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/golang/glog",
+			"repository": "https://github.com/golang/glog",
+			"vcs": "git",
+			"revision": "23def4e6c14b4da8ac2ed8007337bc5eb5007998",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/golang/protobuf/proto",
 			"repository": "https://github.com/golang/protobuf",
 			"vcs": "git",
@@ -27,6 +35,30 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/gorilla/context",
+			"repository": "https://github.com/gorilla/context",
+			"vcs": "git",
+			"revision": "08b5f424b9271eedf6f9f0ce86cb9396ed337a42",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/gorilla/feeds",
+			"repository": "https://github.com/gorilla/feeds",
+			"vcs": "git",
+			"revision": "441264de03a8117ed530ae8e049d8f601a33a099",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/gorilla/mux",
+			"repository": "https://github.com/gorilla/mux",
+			"vcs": "git",
+			"revision": "757bef944d0f21880861c2dd9c871ca543023cba",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/onsi/ginkgo",
 			"repository": "https://github.com/onsi/ginkgo",
 			"vcs": "git",
@@ -39,6 +71,14 @@
 			"repository": "https://github.com/onsi/gomega",
 			"vcs": "git",
 			"revision": "f1f0f388b31eca4e2cbe7a6dd8a3a1dfddda5b1c",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/satori/go.uuid",
+			"repository": "https://github.com/satori/go.uuid",
+			"vcs": "git",
+			"revision": "b061729afc07e77a8aa4fad0a2fd840958f1942a",
 			"branch": "master",
 			"notests": true
 		},
