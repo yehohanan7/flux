@@ -1,9 +1,8 @@
 package cqrs
 
 import (
-	"testing"
-
-	"github.com/stretchr/testify/assert"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 type SomeData struct {
@@ -14,21 +13,41 @@ type SomePayLoad struct {
 	SomeData SomeData
 }
 
-func TestNewEvent(t *testing.T) {
-	event := NewEvent("SomeAggregate", 1, SomePayLoad{SomeData{"some data"}})
+var _ = Describe("Event", func() {
 
-	assert.True(t, len(event.Id) > 25)
-	assert.Equal(t, "SomeAggregate", event.AggregateName)
-	assert.Equal(t, 1, event.AggregateVersion)
-}
+	var (
+		aggregateName    = "SomeAggregate"
+		aggregateVersion = 1
+		event            Event
+	)
 
-func TestSerialize(t *testing.T) {
-	e := NewEvent("SomeAggregate", 1, SomePayLoad{SomeData{"some data"}})
+	BeforeEach(func() {
+		event = NewEvent(aggregateName, aggregateVersion, SomePayLoad{SomeData{"some data"}})
+	})
 
-	bytes := e.Serialize()
+	_ = Describe("Creating New Event", func() {
+		It("Should generate valid event id", func() {
+			Expect(event.Id).Should(HaveLen(36))
+		})
 
-	event := new(Event)
-	event.Deserialize(bytes)
-	assert.Equal(t, "SomeAggregate", event.AggregateName)
-	assert.Equal(t, "some data", event.Payload.(SomePayLoad).SomeData.Data)
-}
+		It("Should have aggregate name", func() {
+			Expect(event.AggregateName).To(Equal(aggregateName))
+		})
+
+		It("Should have aggregate version", func() {
+			Expect(event.AggregateVersion).To(Equal(aggregateVersion))
+		})
+	})
+
+	It("Should serialize/deserialize", func() {
+		bytes := event.Serialize()
+
+		e := new(Event)
+		e.Deserialize(bytes)
+
+		Expect(e.AggregateName).To(Equal(aggregateName))
+		Expect(e.AggregateVersion).To(Equal(aggregateVersion))
+		Expect(e.Payload.(SomePayLoad).SomeData.Data).To(Equal("some data"))
+	})
+
+})
