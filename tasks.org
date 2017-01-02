@@ -1,11 +1,12 @@
-* tasks [36%]
-** TODO Arrange packages
+* tasks [50%]
 ** TODO Publish feed for aggreates
 ** TODO Write feed consumer
 ** TODO Design a logo
 ** TODO Implement sample application
 ** TODO Support Postgres
 ** TODO Support mongodb
+** DONE Use Ginkgo
+** DONE Arrange packages
 ** DONE Add logging & log levels
 ** DONE Revisit bolt implementation & and handle errors
 ** DONE Integrate coveralls
