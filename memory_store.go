@@ -1,5 +1,6 @@
 package cqrs
 
+//InMemory implementation of the event store
 type InMemoryEventStore struct {
 	events map[string][]Event
 }

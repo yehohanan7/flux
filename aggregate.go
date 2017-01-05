@@ -7,6 +7,7 @@ import (
 	"github.com/golang/glog"
 )
 
+//Represents your entity in DDD context
 type Aggregate struct {
 	Id       string
 	name     string
@@ -17,6 +18,7 @@ type Aggregate struct {
 	store    EventStore
 }
 
+//Save the events acculated so far
 func (aggregate *Aggregate) Save() error {
 	err := aggregate.store.SaveEvents(aggregate.Id, aggregate.events)
 	if err != nil {
@@ -26,6 +28,7 @@ func (aggregate *Aggregate) Save() error {
 	return err
 }
 
+//Update the event
 func (aggregate *Aggregate) Update(payloads ...interface{}) {
 	for _, payload := range payloads {
 		event := NewEvent(aggregate.name, aggregate.version, payload)
@@ -34,6 +37,7 @@ func (aggregate *Aggregate) Update(payloads ...interface{}) {
 	}
 }
 
+//Apply events
 func (aggregate *Aggregate) Apply(events ...Event) {
 	for _, e := range events {
 		payload := e.Payload
@@ -44,6 +48,7 @@ func (aggregate *Aggregate) Apply(events ...Event) {
 	}
 }
 
+//Create new aggregate with a backing event store
 func NewAggregate(id string, entity interface{}, store EventStore) Aggregate {
 	hm := buildHandlerMap(entity)
 	for eventType, _ := range hm {

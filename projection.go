@@ -4,6 +4,7 @@ import (
 	"reflect"
 )
 
+//Represents the read model in CQRS context
 type Projection struct {
 	entity   interface{}
 	handlers handlermap

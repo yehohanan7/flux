@@ -9,6 +9,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
+//Every action on an aggregate emits an, which is wrapped and saved
 type Event struct {
 	Id               string
 	Payload          interface{}
@@ -17,6 +18,7 @@ type Event struct {
 	AggregateName    string
 }
 
+//Deserialize the event
 func (e *Event) Deserialize(data []byte) {
 	b := bytes.Buffer{}
 	b.Write(data)
@@ -27,6 +29,7 @@ func (e *Event) Deserialize(data []byte) {
 	}
 }
 
+//Serialize the event
 func (e *Event) Serialize() []byte {
 	buffer := bytes.Buffer{}
 	encoder := gob.NewEncoder(&buffer)
@@ -37,6 +40,7 @@ func (e *Event) Serialize() []byte {
 	return buffer.Bytes()
 }
 
+//Create new event
 func NewEvent(aggregateName string, aggregateVersion int, payload interface{}) Event {
 	gob.Register(payload)
 	return Event{
