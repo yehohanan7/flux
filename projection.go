@@ -6,7 +6,7 @@ import (
 
 type Projection struct {
 	entity   interface{}
-	handlers HandlerMap
+	handlers handlermap
 }
 
 func (projection *Projection) Apply(events []Event) {

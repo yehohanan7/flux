@@ -4,7 +4,7 @@ import "reflect"
 
 import "strings"
 
-type HandlerMap map[reflect.Type]func(interface{}, interface{})
+type handlermap map[reflect.Type]func(interface{}, interface{})
 
 func isHandlerMethod(method reflect.Method) bool {
 	return method.Type.NumIn() == 2 && strings.HasPrefix(method.Name, "Handle")
@@ -29,8 +29,8 @@ func createHandler(method reflect.Method) func(interface{}, interface{}) {
 	}
 }
 
-func buildHandlerMap(entity interface{}) HandlerMap {
-	handlers := make(HandlerMap)
+func buildHandlerMap(entity interface{}) handlermap {
+	handlers := make(handlermap)
 	for _, method := range handlerMethods(entity) {
 		eventType := method.Type.In(1)
 		handlers[eventType] = createHandler(method)

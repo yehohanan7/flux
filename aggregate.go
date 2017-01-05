@@ -13,7 +13,7 @@ type Aggregate struct {
 	version  int
 	events   []Event
 	entity   interface{}
-	handlers HandlerMap
+	handlers handlermap
 	store    EventStore
 }
 
