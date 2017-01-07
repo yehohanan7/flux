@@ -18,7 +18,7 @@ func generateFeed(url string, store EventStore) string {
 
 	feed := &feeds.Feed{
 		Title:       "event feeds",
-		Link:        &feeds.Link{Href: url + "/events"},
+		Link:        &feeds.Link{Href: url},
 		Description: "All events on this service",
 	}
 
@@ -28,7 +28,7 @@ func generateFeed(url string, store EventStore) string {
 		feed.Items = append(feed.Items, &feeds.Item{
 			Id:          event.Id,
 			Title:       event.AggregateName,
-			Link:        &feeds.Link{Href: fmt.Sprintf("%s/events/%s", url, event.Id)},
+			Link:        &feeds.Link{Href: fmt.Sprintf("%s/%s", url, event.Id)},
 			Author:      &feeds.Author{Name: "cqrs", Email: "cqrs@localhost.com"},
 			Description: reflect.TypeOf(event.Payload).String(),
 			Created:     time.Now(),
@@ -46,7 +46,7 @@ func getFeed(store EventStore) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 		w.Header().Set("Content-Type", "text/xml")
-		w.Write([]byte(generateFeed(fmt.Sprintf("%s://%s", r.URL.Scheme, r.URL.Host), store)))
+		w.Write([]byte(generateFeed(r.URL.RequestURI(), store)))
 	}
 }
 
