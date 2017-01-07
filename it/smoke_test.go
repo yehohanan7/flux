@@ -7,7 +7,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/yehohanan7/cqrs"
-	"github.com/yehohanan7/cqrs/boltdb"
 )
 
 type Account struct {
@@ -55,23 +54,23 @@ func (projection *TransactionCountProjection) HandleDebit(event AccountDebited) 
 
 func TestAggregate(t *testing.T) {
 	os.Remove("/tmp/cqrs.db")
-	for _, store := range []cqrs.EventStore{cqrs.NewEventStore(), boltdb.NewEventStore("/tmp/cqrs.db")} {
-		accountId := "account-id"
-		existingAccount := new(Account)
-		existingAccount.Aggregate = cqrs.NewAggregate(accountId, existingAccount, store)
+	store := cqrs.NewEventStore()
 
-		existingAccount.Credit(5)
-		existingAccount.Credit(10)
-		existingAccount.Debit(1)
-		existingAccount.Save()
+	accountId := "account-id"
+	existingAccount := new(Account)
+	existingAccount.Aggregate = cqrs.NewAggregate(accountId, existingAccount, store)
 
-		account := new(Account)
-		account.Aggregate = cqrs.NewAggregate(accountId, account, store)
-		assert.Equal(t, 14, account.Balance)
+	existingAccount.Credit(5)
+	existingAccount.Credit(10)
+	existingAccount.Debit(1)
+	existingAccount.Save()
 
-		transactions := new(TransactionCountProjection)
-		transactions.Projection = cqrs.NewProjection(accountId, transactions, store)
-		assert.Equal(t, 3, transactions.Count)
-	}
+	account := new(Account)
+	account.Aggregate = cqrs.NewAggregate(accountId, account, store)
+	assert.Equal(t, 14, account.Balance)
+
+	transactions := new(TransactionCountProjection)
+	transactions.Projection = cqrs.NewProjection(accountId, transactions, store)
+	assert.Equal(t, 3, transactions.Count)
 
 }
