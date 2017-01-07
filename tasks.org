@@ -1,13 +1,15 @@
-* tasks [50%]
+* tasks [42%]
 ** TODO Publish feed for aggreates
 ** TODO Write feed consumer
 ** TODO Design a logo
 ** TODO Implement sample application
 ** TODO Support Postgres
 ** TODO Support mongodb
+** TODO Support projection snapshots
+** TODO Support remote projections through atom feeds
 ** DONE Use Ginkgo
 ** DONE Arrange packages
 ** DONE Add logging & log levels
-** DONE Revisit bolt implementation & and handle errors
+** DONE Revisit bolt implementation & handle errors
 ** DONE Integrate coveralls
 ** DONE Integrate Travis
