@@ -1,6 +1,8 @@
 package cqrs
 
 import (
+	"time"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -36,6 +38,10 @@ var _ = Describe("Event", func() {
 
 		It("Should have aggregate version", func() {
 			Expect(event.AggregateVersion).To(Equal(aggregateVersion))
+		})
+
+		It("Should update occurred at", func() {
+			Expect(event.OccuredAt).To(Equal(time.Now().Format(time.ANSIC)))
 		})
 	})
 

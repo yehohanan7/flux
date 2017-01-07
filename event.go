@@ -5,6 +5,8 @@ import (
 
 	"encoding/gob"
 
+	"time"
+
 	"github.com/golang/glog"
 	uuid "github.com/satori/go.uuid"
 )
@@ -48,5 +50,6 @@ func NewEvent(aggregateName string, aggregateVersion int, payload interface{}) E
 		Payload:          payload,
 		AggregateVersion: aggregateVersion,
 		AggregateName:    aggregateName,
+		OccuredAt:        time.Now().Format(time.ANSIC),
 	}
 }
