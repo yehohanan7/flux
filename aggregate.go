@@ -7,7 +7,7 @@ import (
 	"github.com/golang/glog"
 )
 
-//Represents your entity in DDD context
+//Aggregate as in the DDD world
 type Aggregate struct {
 	Id       string
 	name     string
