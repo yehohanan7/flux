@@ -15,6 +15,7 @@ import (
 )
 
 func generateFeed(store EventStore) string {
+
 	feed := &feeds.Feed{
 		Title:       "event feeds",
 		Link:        &feeds.Link{Href: "http://localhost:8000/events"},
@@ -41,7 +42,7 @@ func generateFeed(store EventStore) string {
 	return atom
 }
 
-func eventsHandler(store EventStore) func(http.ResponseWriter, *http.Request) {
+func getFeed(store EventStore) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 		w.Header().Set("Content-Type", "text/xml")
@@ -49,7 +50,7 @@ func eventsHandler(store EventStore) func(http.ResponseWriter, *http.Request) {
 	}
 }
 
-func eventHandler(store EventStore) func(http.ResponseWriter, *http.Request) {
+func getEventById(store EventStore) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 		vars := mux.Vars(r)
@@ -59,6 +60,6 @@ func eventHandler(store EventStore) func(http.ResponseWriter, *http.Request) {
 }
 
 func EventFeed(router *mux.Router, store EventStore) {
-	router.HandleFunc("/events", eventsHandler(store)).Methods("GET")
-	router.HandleFunc("/events/{id}", eventHandler(store)).Methods("GET")
+	router.HandleFunc("/events", getFeed(store)).Methods("GET")
+	router.HandleFunc("/events/{id}", getEventById(store)).Methods("GET")
 }
