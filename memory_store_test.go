@@ -1,9 +1,8 @@
 package cqrs
 
 import (
-	"testing"
-
-	"github.com/stretchr/testify/assert"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var stores = []EventStore{NewEventStore()}
@@ -18,28 +17,38 @@ func events() []Event {
 	return []Event{e1, e2}
 }
 
-func TestSaveEvents(t *testing.T) {
-	for _, store := range stores {
-		for _, aggregateId := range []string{"a-id", "b-id"} {
-			err := store.SaveEvents(aggregateId, events())
+var _ = Describe("InMemoryStore", func() {
+	var store EventStore
 
-			assert.Nil(t, err)
-			assert.Len(t, store.GetEvents(aggregateId), 2)
-			assert.Equal(t, "payload", store.GetEvents(aggregateId)[0].Payload.(EventPayload).Data)
-		}
-		assert.Len(t, store.GetAllEvents(), 4)
-	}
-}
+	BeforeEach(func() {
+		store = NewEventStore()
+	})
 
-func TestGetEvent(t *testing.T) {
-	for _, store := range stores {
+	It("Should store events", func() {
+		err1 := store.SaveEvents("aggregate-1", events())
+		err2 := store.SaveEvents("aggregate-2", events())
+
+		Expect(err1, err2).To(BeNil())
+		Expect(store.GetEvents("aggregate-1")).To(HaveLen(2))
+		Expect(store.GetEvents("aggregate-2")).To(HaveLen(2))
+		Expect(store.GetAllEvents()).To(HaveLen(4))
+	})
+
+	It("Should deserialize payload", func() {
+		err := store.SaveEvents("aggregate-1", events())
+
+		Expect(err).To(BeNil())
+		Expect(store.GetEvents("aggregate-1")[0].Payload.(EventPayload).Data).To(Equal("payload"))
+	})
+
+	It("Should get specific event", func() {
 		expected := NewEvent("aid", 0, EventPayload{"payload"})
 		err := store.SaveEvents("a-id", []Event{expected})
 
 		actual := store.GetEvent(expected.Id)
 
-		assert.Nil(t, err)
-		assert.Equal(t, expected.Id, actual.Id)
-	}
+		Expect(err).To(BeNil())
+		Expect(expected).To(Equal(actual))
+	})
 
-}
+})

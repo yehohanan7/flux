@@ -2,42 +2,39 @@ package cqrs
 
 //InMemory implementation of the event store
 type InMemoryEventStore struct {
-	events map[string][]Event
+	events     []Event
+	aggregates map[string][]Event
 }
 
 func (store *InMemoryEventStore) GetEvents(aggregateId string) []Event {
-	return store.events[aggregateId]
+	return store.aggregates[aggregateId]
 }
 
 func (store *InMemoryEventStore) SaveEvents(aggregateId string, events []Event) error {
-	if _, ok := store.events[aggregateId]; !ok {
-		store.events[aggregateId] = make([]Event, 0)
+	if _, ok := store.aggregates[aggregateId]; !ok {
+		store.aggregates[aggregateId] = make([]Event, 0)
 	}
-	store.events[aggregateId] = append(store.events[aggregateId], events...)
+	store.aggregates[aggregateId] = append(store.aggregates[aggregateId], events...)
+	store.events = append(store.events, events...)
 	return nil
 }
 
 func (store *InMemoryEventStore) GetAllEvents() []Event {
-	all := make([]Event, 0)
-	for _, events := range store.events {
-		all = append(all, events...)
-	}
-	return all
+	events := make([]Event, len(store.events))
+	copy(events, store.events)
+	return events
 }
 
 func (store *InMemoryEventStore) GetEvent(id string) Event {
-	var result Event
-	for _, events := range store.events {
-		for _, event := range events {
-			if event.Id == id {
-				result = event
-				break
-			}
+	var event Event
+	for _, e := range store.events {
+		if e.Id == id {
+			return e
 		}
 	}
-	return result
+	return event
 }
 
 func NewEventStore() EventStore {
-	return &InMemoryEventStore{make(map[string][]Event)}
+	return &InMemoryEventStore{make([]Event, 0), make(map[string][]Event)}
 }
