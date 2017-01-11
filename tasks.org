@@ -1,12 +1,15 @@
-* tasks [42%]
+* tasks [50%]
+** TODO Allow feed generator to support pages
 ** TODO Publish feed for aggreates
 ** TODO Write feed consumer
-** TODO Design a logo
-** TODO Implement sample application
-** TODO Support Postgres
-** TODO Support mongodb
 ** TODO Support projection snapshots
 ** TODO Support remote projections through atom feeds
+** TODO Support Postgres
+** TODO Support mongodb
+
+** TODO Design a logo
+** DONE Implement sample application
+** DONE Implement pagination in event store
 ** DONE Use Ginkgo
 ** DONE Arrange packages
 ** DONE Add logging & log levels
