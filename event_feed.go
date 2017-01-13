@@ -14,6 +14,10 @@ import (
 	"github.com/gorilla/mux"
 )
 
+const DEFAULT_PAGE_SIZE = 20
+
+var pageSize = DEFAULT_PAGE_SIZE
+
 func generateFeed(url string, store EventStore) string {
 
 	feed := &feeds.Feed{
@@ -29,7 +33,7 @@ func generateFeed(url string, store EventStore) string {
 			Id:          event.Id,
 			Title:       event.AggregateName,
 			Link:        &feeds.Link{Href: fmt.Sprintf("%s/%s", url, event.Id)},
-			Author:      &feeds.Author{Name: "cqrs", Email: "cqrs@localhost.com"},
+			Author:      &feeds.Author{Name: "cqrs", Email: "cqrs@cqrs.com"},
 			Description: reflect.TypeOf(event.Payload).String(),
 			Created:     time.Now(),
 		})
@@ -59,7 +63,19 @@ func getEventById(store EventStore) func(http.ResponseWriter, *http.Request) {
 	}
 }
 
-func EventFeed(router *mux.Router, store EventStore) {
+func EventFeed(router *mux.Router, store EventStore, eventsPerPage ...int) {
+	if len(eventsPerPage) > 1 {
+		panic("invalid number of arguments")
+	}
+
+	if len(eventsPerPage) == 1 && eventsPerPage[0] <= 0 {
+		panic("invalid events per page")
+	}
+
+	if len(eventsPerPage) == 1 {
+		pageSize = eventsPerPage[0]
+	}
+
 	router.HandleFunc("/events", getFeed(store)).Methods("GET")
 	router.HandleFunc("/events/{id}", getEventById(store)).Methods("GET")
 }
