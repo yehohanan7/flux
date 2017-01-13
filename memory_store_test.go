@@ -34,7 +34,7 @@ var _ = Describe("InMemoryStore", func() {
 		Expect(store.GetAllEvents()).To(HaveLen(4))
 	})
 
-	var _ = Describe("Fetching all events from a secific event", func() {
+	var _ = Describe("Fetching all events from a secific offset", func() {
 		It("Should get the events", func() {
 			e1 := NewEvent("sample_aggregate", 1, EventPayload{"payload"})
 			e2 := NewEvent("sample_aggregate", 2, EventPayload{"payload"})
@@ -43,7 +43,7 @@ var _ = Describe("InMemoryStore", func() {
 
 			store.SaveEvents("aggregate1", []Event{e1, e2, e3, e4})
 
-			events := store.GetAllEventsFrom(e2.Id, 2)
+			events := store.GetAllEventsFrom(1, 2)
 			Expect(events).To(HaveLen(2))
 			Expect(events[0].Id).To(Equal(e2.Id))
 			Expect(events[1].Id).To(Equal(e3.Id))
@@ -55,24 +55,24 @@ var _ = Describe("InMemoryStore", func() {
 
 			store.SaveEvents("aggregate1", []Event{e1, e2})
 
-			events := store.GetAllEventsFrom(e2.Id, 5)
+			events := store.GetAllEventsFrom(1, 5)
 
 			Expect(events).To(HaveLen(1))
 			Expect(events[0].Id).To(Equal(e2.Id))
 		})
 	})
 
-	var _ = Describe("Fetching events of an aggregate", func() {
+	var _ = Describe("Fetching events of an aggregate type", func() {
 		It("Should get all events of an aggregate from a specific event", func() {
-			e1 := NewEvent("sample_aggregate", 1, EventPayload{"payload"})
-			e2 := NewEvent("sample_aggregate", 2, EventPayload{"payload"})
-			e3 := NewEvent("sample_aggregate", 3, EventPayload{"payload"})
-			e4 := NewEvent("sample_aggregate", 4, EventPayload{"payload"})
+			e1 := NewEvent("some_aggregate", 1, EventPayload{"payload"})
+			e2 := NewEvent("some_aggregate", 2, EventPayload{"payload"})
+			e3 := NewEvent("some_aggregate", 3, EventPayload{"payload"})
+			e4 := NewEvent("other_aggregate", 4, EventPayload{"payload"})
 
 			store.SaveEvents("aggregate1", []Event{e1, e2, e3})
 			store.SaveEvents("aggregate2", []Event{e4})
 
-			events := store.GetEventsFrom("aggregate1", e2.Id, 2)
+			events := store.GetEventsFrom("some_aggregate", 1, 2)
 
 			Expect(events).To(HaveLen(2))
 			Expect(events[0].Id).To(Equal(e2.Id))
@@ -85,7 +85,7 @@ var _ = Describe("InMemoryStore", func() {
 
 			store.SaveEvents("aggregate1", []Event{e1, e2})
 
-			events := store.GetEventsFrom("aggregate1", e1.Id, 5)
+			events := store.GetEventsFrom("sample_aggregate", 0, 5)
 
 			Expect(events).To(HaveLen(2))
 			Expect(events[0].Id).To(Equal(e1.Id))

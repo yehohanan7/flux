@@ -10,24 +10,19 @@ func (store *InMemoryEventStore) GetEvents(aggregateId string) []Event {
 	return store.aggregates[aggregateId]
 }
 
-func (store *InMemoryEventStore) GetEventsFrom(aggregateId, eventId string, count int) []Event {
-	if events, ok := store.aggregates[aggregateId]; ok {
-		for i, e := range events {
-			if e.Id == eventId {
-				if i+count > len(events) {
-					return events[i:]
-				} else {
-					return events[i : i+count]
-				}
-			}
+func (store *InMemoryEventStore) GetEventsFrom(aggregateName string, offset, count int) []Event {
+	result := make([]Event, 0)
+	for index, e := range store.events {
+		if e.AggregateName == aggregateName && index >= offset {
+			result = append(result, e)
 		}
 	}
-	return []Event{}
+	return result
 }
 
-func (store *InMemoryEventStore) GetAllEventsFrom(eventId string, count int) []Event {
-	for i, e := range store.events {
-		if e.Id == eventId {
+func (store *InMemoryEventStore) GetAllEventsFrom(offset, count int) []Event {
+	for i, _ := range store.events {
+		if i == offset {
 			if i+count > len(store.events) {
 				return store.events[i:]
 			} else {
