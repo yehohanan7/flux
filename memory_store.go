@@ -2,8 +2,8 @@ package cqrs
 
 //InMemory implementation of the event store
 type InMemoryEventStore struct {
-	events     []Event
-	aggregates map[string][]Event
+	events     []Event //collection of events
+	aggregates map[string][]Event //collection of aggregates
 }
 
 func (store *InMemoryEventStore) GetEvents(aggregateId string) []Event {
