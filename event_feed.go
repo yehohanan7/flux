@@ -9,6 +9,8 @@ import (
 
 	"fmt"
 
+	"strconv"
+
 	"github.com/golang/glog"
 	"github.com/gorilla/feeds"
 	"github.com/gorilla/mux"
@@ -18,7 +20,7 @@ const DEFAULT_PAGE_SIZE = 20
 
 var pageSize = DEFAULT_PAGE_SIZE
 
-func generateFeed(url string, store EventStore) string {
+func generateFeed(url string, store EventStore, offset int) string {
 
 	feed := &feeds.Feed{
 		Title:       "event feeds",
@@ -28,7 +30,7 @@ func generateFeed(url string, store EventStore) string {
 
 	feed.Items = make([]*feeds.Item, 0)
 
-	for _, event := range store.GetAllEvents() {
+	for _, event := range store.GetAllEventsFrom(offset, pageSize) {
 		feed.Items = append(feed.Items, &feeds.Item{
 			Id:          event.Id,
 			Title:       event.AggregateName,
@@ -49,8 +51,11 @@ func generateFeed(url string, store EventStore) string {
 func getFeed(store EventStore) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
+		vars := mux.Vars(r)
+		offset, _ := strconv.Atoi(vars["offset"])
+
 		w.Header().Set("Content-Type", "text/xml")
-		w.Write([]byte(generateFeed(r.URL.RequestURI(), store)))
+		w.Write([]byte(generateFeed(r.URL.RequestURI(), store, offset)))
 	}
 }
 
