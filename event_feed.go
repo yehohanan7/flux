@@ -35,7 +35,7 @@ func generateFeed(url string, store EventStore, offset int) string {
 			Id:          event.Id,
 			Title:       event.AggregateName,
 			Link:        &feeds.Link{Href: fmt.Sprintf("%s/%s", url, event.Id)},
-			Author:      &feeds.Author{Name: "cqrs", Email: "cqrs@cqrs.com"},
+			Author:      &feeds.Author{Name: "cqrs", Email: "cqrs@cqrs.org"},
 			Description: reflect.TypeOf(event.Payload).String(),
 			Created:     time.Now(),
 		})
