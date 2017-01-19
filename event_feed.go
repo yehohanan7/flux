@@ -51,9 +51,7 @@ func generateFeed(url string, store EventStore, offset int) string {
 func getFeed(store EventStore) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
-		vars := mux.Vars(r)
-		offset, _ := strconv.Atoi(vars["offset"])
-
+		offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
 		w.Header().Set("Content-Type", "text/xml")
 		w.Write([]byte(generateFeed(r.URL.RequestURI(), store, offset)))
 	}
