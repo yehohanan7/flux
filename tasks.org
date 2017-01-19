@@ -1,4 +1,6 @@
-* tasks [50%]
+* tasks [44%]
+** TODO Write test for atom feed
+** TODO Generate Aggregate using cli
 ** TODO Allow feed generator to support pages
 ** TODO Publish feed for aggreates
 ** TODO Write feed consumer
