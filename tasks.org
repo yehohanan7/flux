@@ -1,4 +1,4 @@
-* tasks [44%]
+* tasks [42%]
 ** TODO Write test for atom feed
 ** TODO Generate Aggregate using cli
 ** TODO Allow feed generator to support pages
@@ -8,7 +8,7 @@
 ** TODO Support remote projections through atom feeds
 ** TODO Support Postgres
 ** TODO Support mongodb
-
+** TODO Add monitoring support by exposing event stats
 ** TODO Design a logo
 ** DONE Implement sample application
 ** DONE Implement pagination in event store
