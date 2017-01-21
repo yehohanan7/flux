@@ -3,5 +3,9 @@ package cqrs
 import "net/http"
 
 func absoluteUrl(r *http.Request) string {
-	return r.URL.Scheme + "://" + r.Host + r.URL.Path
+	scheme := "http"
+	if r.TLS != nil {
+		scheme = "https"
+	}
+	return scheme + "://" + r.Host + r.URL.Path
 }
