@@ -33,6 +33,7 @@ func getEventById(store EventStore) func(http.ResponseWriter, *http.Request) {
 	}
 }
 
+//Exposes events as atom feed
 func EventFeed(router *mux.Router, store EventStore, eventsPerPage ...int) {
 	if len(eventsPerPage) > 1 {
 		panic("invalid number of arguments")
