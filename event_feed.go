@@ -18,7 +18,7 @@ func getFeed(store EventStore) func(http.ResponseWriter, *http.Request) {
 		defer r.Body.Close()
 		offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
 		events := store.GetAllEventsFrom(offset, pageSize)
-		feed := toAtomFeed(r.URL.RequestURI(), "event feeds", "events of this service", events)
+		feed := toAtomFeed(absoluteUrl(r), "event feeds", "events of this service", events)
 		w.Header().Set("Content-Type", "text/xml")
 		w.Write([]byte(feed))
 	}
