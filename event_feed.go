@@ -13,12 +13,16 @@ const DEFAULT_PAGE_SIZE = 20
 
 var pageSize = DEFAULT_PAGE_SIZE
 
-func getFeed(store EventStore) func(http.ResponseWriter, *http.Request) {
+type FeedGenerator interface {
+	Generate(string, string, []Event) string
+}
+
+func getFeed(generator FeedGenerator, store EventStore) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 		offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
 		events := store.GetAllEventsFrom(offset, pageSize)
-		feed := toAtomFeed(absoluteUrl(r), "event feeds", "events of this service", events)
+		feed := generator.Generate(absoluteUrl(r), "event feed", events)
 		w.Header().Set("Content-Type", "text/xml")
 		w.Write([]byte(feed))
 	}
@@ -34,7 +38,7 @@ func getEventById(store EventStore) func(http.ResponseWriter, *http.Request) {
 }
 
 //Exposes events as atom feed
-func EventFeed(router *mux.Router, store EventStore, eventsPerPage ...int) {
+func EventFeed(router *mux.Router, store EventStore, generator FeedGenerator, eventsPerPage ...int) {
 	if len(eventsPerPage) > 1 {
 		panic("invalid number of arguments")
 	}
@@ -47,6 +51,6 @@ func EventFeed(router *mux.Router, store EventStore, eventsPerPage ...int) {
 		pageSize = eventsPerPage[0]
 	}
 
-	router.HandleFunc("/events", getFeed(store)).Methods("GET")
+	router.HandleFunc("/events", getFeed(generator, store)).Methods("GET")
 	router.HandleFunc("/events/{id}", getEventById(store)).Methods("GET")
 }

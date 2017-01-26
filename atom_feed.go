@@ -9,9 +9,12 @@ import (
 	"github.com/gorilla/feeds"
 )
 
-func toAtomFeed(url, title, description string, events []Event) string {
+type AtomFeedGenerator struct {
+}
+
+func (_ AtomFeedGenerator) Generate(url, description string, events []Event) string {
 	feed := &feeds.Feed{
-		Title:       title,
+		Title:       description,
 		Link:        &feeds.Link{Href: url},
 		Description: description,
 	}
