@@ -1,4 +1,4 @@
-* tasks [42%]
+* tasks [45%]
 ** TODO Write test for atom feed
 ** TODO Generate Aggregate using cli
 ** TODO Allow feed generator to support pages
@@ -10,6 +10,7 @@
 ** TODO Support mongodb
 ** TODO Add monitoring support by exposing event stats
 ** TODO Design a logo
+** DONE Expose json feed
 ** DONE Implement sample application
 ** DONE Implement pagination in event store
 ** DONE Use Ginkgo
