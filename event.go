@@ -13,11 +13,11 @@ import (
 
 //Every action on an aggregate emits an, which is wrapped and saved
 type Event struct {
-	Id               string
-	Payload          interface{}
-	OccuredAt        string
-	AggregateVersion int
-	AggregateName    string
+	Id               string      // Event Id
+	Payload          interface{} // Event payload
+	OccuredAt        string      // Event occured at
+	AggregateVersion int         // Event aggregate version
+	AggregateName    string      // Event aggregate name
 }
 
 //Deserialize the event
