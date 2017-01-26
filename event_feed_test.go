@@ -91,11 +91,11 @@ var _ = Describe("Json Feed", func() {
 		store.SaveEvents("some_aggregate", []Event{NewEvent("AggregateName", 0, "event payload")})
 		request, _ := http.NewRequest("GET", eventsUrl, nil)
 		response, err := http.DefaultClient.Do(request)
-		defer response.Body.Close()
 
 		Expect(err).Should(BeNil())
 		Expect(response).ShouldNot(BeNil())
 		Expect(response.StatusCode).To(Equal(http.StatusOK))
+		defer response.Body.Close()
 		body, _ := ioutil.ReadAll(response.Body)
 		json.Unmarshal(body, &events)
 		Expect(events.Description).To(Equal("event feed"))
