@@ -11,12 +11,12 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-//Every action on an aggregate emits an, which is wrapped and saved
+//Every action on an aggregate emits an event, which is wrapped and saved
 type Event struct {
 	Id               string      // Event Id
 	Payload          interface{} // Event payload
-	OccuredAt        string      // Event occured at
-	AggregateVersion int         // Event aggregate version
+	OccuredAt        string      // The time the event occured
+	AggregateVersion int         // The aggregate version on which this event occurred
 	AggregateName    string      // Event aggregate name
 }
 

@@ -6,9 +6,10 @@ import (
 
 //Represents the read model in CQRS context
 type Projection struct {
-	entity   interface{} // entity interface
-	handlers handlermap  // handlers map 
+	entity   interface{}
+	handlers handlermap
 }
+
 //Apply all events
 func (projection *Projection) Apply(events []Event) {
 	for _, e := range events {
@@ -18,6 +19,7 @@ func (projection *Projection) Apply(events []Event) {
 		}
 	}
 }
+
 //Create projection after applying events from store
 func NewProjection(aggregateId string, model interface{}, store EventStore) Projection {
 	projection := Projection{model, buildHandlerMap(model)}
