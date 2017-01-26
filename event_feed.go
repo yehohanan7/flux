@@ -15,6 +15,7 @@ var pageSize = DEFAULT_PAGE_SIZE
 
 type FeedGenerator interface {
 	Generate(string, string, []Event) string
+	ContentType() string
 }
 
 func getFeed(generator FeedGenerator, store EventStore) func(http.ResponseWriter, *http.Request) {
@@ -23,7 +24,7 @@ func getFeed(generator FeedGenerator, store EventStore) func(http.ResponseWriter
 		offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
 		events := store.GetAllEventsFrom(offset, pageSize)
 		feed := generator.Generate(absoluteUrl(r), "event feed", events)
-		w.Header().Set("Content-Type", "text/xml")
+		w.Header().Set("Content-Type", generator.ContentType())
 		w.Write([]byte(feed))
 	}
 }

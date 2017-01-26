@@ -27,6 +27,10 @@ type EventEntry struct {
 type JsonFeedGenerator struct {
 }
 
+func (_ JsonFeedGenerator) ContentType() string {
+	return "application/json"
+}
+
 func (_ JsonFeedGenerator) Generate(url, description string, events []Event) string {
 
 	entries := make([]EventEntry, 0)

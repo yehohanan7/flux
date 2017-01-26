@@ -12,6 +12,10 @@ import (
 type AtomFeedGenerator struct {
 }
 
+func (_ AtomFeedGenerator) ContentType() string {
+	return "text/xml"
+}
+
 func (_ AtomFeedGenerator) Generate(url, description string, events []Event) string {
 	feed := &feeds.Feed{
 		Title:       description,
