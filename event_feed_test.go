@@ -14,7 +14,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Event Feed validations", func() {
+var _ = Describe("Event Feed", func() {
 	var (
 		router *mux.Router
 		store  EventStore
@@ -26,16 +26,16 @@ var _ = Describe("Event Feed validations", func() {
 	})
 
 	It("Should not accept invalid page size", func() {
-		Expect(func() { EventFeed(router, store, JsonFeedGenerator{}, -1) }).Should(Panic())
+		Expect(func() { EventFeed(router, store, -1) }).Should(Panic())
 	})
 
 	It("Should use default page size", func() {
-		EventFeed(router, store, JsonFeedGenerator{})
+		EventFeed(router, store)
 		Expect(pageSize).To(Equal(DEFAULT_PAGE_SIZE))
 	})
 
 	It("Should configure page size", func() {
-		EventFeed(router, store, JsonFeedGenerator{}, 5)
+		EventFeed(router, store, 5)
 		Expect(pageSize).To(Equal(5))
 	})
 
@@ -53,9 +53,9 @@ var _ = Describe("Atom Feed", func() {
 	BeforeEach(func() {
 		router = mux.NewRouter()
 		store = NewEventStore()
-		EventFeed(router, store, AtomFeedGenerator{})
+		EventFeed(router, store)
 		server = httptest.NewServer(router)
-		eventsUrl = fmt.Sprintf("%s/events", server.URL)
+		eventsUrl = fmt.Sprintf("%s/events?format=atom", server.URL)
 	})
 
 	It("Publish events as atom feed", func() {
@@ -66,6 +66,7 @@ var _ = Describe("Atom Feed", func() {
 		Expect(err).Should(BeNil())
 		Expect(response).ShouldNot(BeNil())
 		Expect(response.StatusCode).To(Equal(http.StatusOK))
+		Expect(response.Header.Get("Content-Type")).To(Equal("text/xml"))
 	})
 
 })
@@ -81,14 +82,15 @@ var _ = Describe("Json Feed", func() {
 	BeforeEach(func() {
 		router = mux.NewRouter()
 		store = NewEventStore()
-		EventFeed(router, store, JsonFeedGenerator{})
+		EventFeed(router, store)
 		server = httptest.NewServer(router)
-		eventsUrl = fmt.Sprintf("%s/events", server.URL)
+		eventsUrl = fmt.Sprintf("%s/events?format=json", server.URL)
 	})
 
 	It("Should publish events as feeds", func() {
-		var events JsonEventFeed
-		store.SaveEvents("some_aggregate", []Event{NewEvent("AggregateName", 0, "event payload")})
+		var feed JsonEventFeed
+		event := NewEvent("AggregateName", 0, "event payload")
+		store.SaveEvents("some_aggregate", []Event{event})
 		request, _ := http.NewRequest("GET", eventsUrl, nil)
 		response, err := http.DefaultClient.Do(request)
 
@@ -97,7 +99,13 @@ var _ = Describe("Json Feed", func() {
 		Expect(response.StatusCode).To(Equal(http.StatusOK))
 		defer response.Body.Close()
 		body, _ := ioutil.ReadAll(response.Body)
-		json.Unmarshal(body, &events)
-		Expect(events.Description).To(Equal("event feed"))
+		json.Unmarshal(body, &feed)
+		Expect(feed.Description).To(Equal("event feed"))
+		Expect(feed.Events).Should(HaveLen(1))
+		Expect(feed.Events[0].EventId).To(Equal(event.Id))
+		Expect(feed.Events[0].AggregateName).To(Equal("AggregateName"))
+		Expect(feed.Events[0].AggregateVersion).To(Equal(0))
+		Expect(feed.Events[0].EventType).To(Equal("string"))
+		Expect(feed.Events[0].Url).To(Equal(fmt.Sprintf("%s/events/%s", server.URL, event.Id)))
 	})
 })

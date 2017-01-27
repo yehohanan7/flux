@@ -5,21 +5,19 @@ import (
 	"fmt"
 	"reflect"
 
-	"strconv"
-
 	"github.com/golang/glog"
 )
 
 type JsonEventFeed struct {
 	Description string       `json:"description"`
-	Event       []EventEntry `json:"events"`
+	Events      []EventEntry `json:"events"`
 }
 
 type EventEntry struct {
 	EventId          string `json:"event_id"`
 	Url              string `json:"url"`
 	AggregateName    string `json:"aggregate_name"`
-	AggregateVersion string `json:"aggregate_version"`
+	AggregateVersion int    `json:"aggregate_version"`
 	EventType        string `json:"event_type"`
 	Created          string `json:"created"`
 }
@@ -40,7 +38,7 @@ func (_ JsonFeedGenerator) Generate(url, description string, events []Event) str
 			event.Id,
 			fmt.Sprintf("%s/%s", url, event.Id),
 			event.AggregateName,
-			strconv.Itoa(event.AggregateVersion),
+			event.AggregateVersion,
 			reflect.TypeOf(event.Payload).String(),
 			event.OccuredAt,
 		})
