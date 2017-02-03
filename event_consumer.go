@@ -1,0 +1,34 @@
+package cqrs
+
+import "reflect"
+
+const defaultOffset = 0
+
+//Consumes events from the command component
+type EventConsumer struct {
+	handlerClass interface{}
+	handlers     handlermap
+}
+
+//Send event to the consumer
+func (consumer *EventConsumer) send(event Event) {
+	payload := event.Payload
+	if handler, ok := consumer.handlers[reflect.TypeOf(payload)]; ok {
+		handler(consumer.handlerClass, payload)
+	}
+}
+
+func (consumer *EventConsumer) Start() error {
+	//goroutine consumer event and send it to the handler
+	return nil
+}
+
+func (consumer *EventConsumer) Stop() error {
+	//stop the goroutine
+	return nil
+}
+
+//Create new consumer
+func NewConsumer(url string, handlerClass interface{}, store OffsetStore) *EventConsumer {
+	return &EventConsumer{handlerClass, buildHandlerMap(handlerClass)}
+}
