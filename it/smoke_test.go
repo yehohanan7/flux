@@ -3,8 +3,6 @@ package it
 import (
 	"testing"
 
-	"os"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/yehohanan7/cqrs"
 )
@@ -53,7 +51,6 @@ func (projection *TransactionCountProjection) HandleDebit(event AccountDebited) 
 }
 
 func TestAggregate(t *testing.T) {
-	os.Remove("/tmp/cqrs.db")
 	store := cqrs.NewEventStore()
 
 	accountId := "account-id"
