@@ -19,12 +19,10 @@ func (consumer *EventConsumer) send(event Event) {
 }
 
 func (consumer *EventConsumer) Start() error {
-	//goroutine consumer event and send it to the handler
 	return nil
 }
 
 func (consumer *EventConsumer) Stop() error {
-	//stop the goroutine
 	return nil
 }
 
