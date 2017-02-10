@@ -27,6 +27,6 @@ func (consumer *EventConsumer) Stop() error {
 }
 
 //Create new consumer
-func NewConsumer(url string, handlerClass interface{}, store OffsetStore) *EventConsumer {
-	return &EventConsumer{handlerClass, buildHandlerMap(handlerClass)}
+func NewConsumer(url string, handlerClass interface{}, store OffsetStore) EventConsumer {
+	return EventConsumer{handlerClass, buildHandlerMap(handlerClass)}
 }
