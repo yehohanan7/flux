@@ -1,8 +1,9 @@
 package cqrs
 
-import "reflect"
-
-import "strings"
+import (
+	"reflect"
+	"strings"
+)
 
 type handlermap map[reflect.Type]func(interface{}, interface{})
 

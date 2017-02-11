@@ -9,9 +9,11 @@ import (
 )
 
 type NewStarBorn struct {
+	Description string `json:"description"`
 }
 
 type NewGalaxyFormed struct {
+	Description string `json:"description"`
 }
 
 type UniverseEventConsumer struct {
@@ -45,15 +47,31 @@ var _ = Describe("Event Consumer", func() {
 	})
 
 	It("Should consume events from another service", func() {
-		json, _ := ioutil.ReadFile("testdata/universe_events.json")
+		feed, _ := ioutil.ReadFile("testdata/universe_events.json")
+		event, _ := ioutil.ReadFile("testdata/star_born.json")
 		gock.New("http://localhost:1212").
 			Get("/events").
 			Reply(200).
-			JSON(string(json))
+			JSON(string(feed))
+
+		gock.New("http://localhost:1212").
+			Get("/events/1").
+			Reply(200).
+			JSON(string(event))
+
+		gock.New("http://localhost:1212").
+			Get("/events/2").
+			Reply(200).
+			JSON(string(event))
+
+		gock.New("http://localhost:1212").
+			Get("/events/3").
+			Reply(200).
+			JSON(string(event))
 
 		consumer.Start()
 
-		Expect("").To(Equal(""))
+		Expect(consumer.Stars).To(Equal(2))
 	})
 
 })
