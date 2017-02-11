@@ -119,6 +119,14 @@
 			"notests": true
 		},
 		{
+			"importpath": "gopkg.in/h2non/gock.v1",
+			"repository": "https://gopkg.in/h2non/gock.v1",
+			"vcs": "git",
+			"revision": "0ad9c55bec42c49b394bca98d4bcff7f4a82843c",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "gopkg.in/yaml.v2",
 			"repository": "https://gopkg.in/yaml.v2",
 			"vcs": "git",
