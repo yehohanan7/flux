@@ -1,5 +1,6 @@
-* tasks [40%]
+* tasks [39%]
 ** TODO Cleanup consumer test with better mock server
+** TODO Arrage code into packages
 ** TODO Write test for atom feed
 ** TODO Generate Aggregate using cli
 ** TODO Allow feed generator to support pages
