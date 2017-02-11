@@ -2,6 +2,7 @@ package cqrs
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"reflect"
@@ -26,7 +27,17 @@ func (consumer *EventConsumer) send(event Event) {
 	}
 }
 
+func (consumer *EventConsumer) getEventType(name string) reflect.Type {
+	for eventType, _ := range consumer.handlers {
+		if eventType.String() == name {
+			return eventType
+		}
+	}
+	return nil
+}
+
 func fetchJson(url string, data interface{}) error {
+	var body []byte
 	res, err := http.Get(url)
 	if err != nil {
 		glog.Error("Error while getting ", url, err)
@@ -49,35 +60,36 @@ func fetchJson(url string, data interface{}) error {
 	return nil
 }
 
-func getFeed(url string) (JsonEventFeed, error) {
+func getEventFeed(url string) (JsonEventFeed, error) {
 	var feed = new(JsonEventFeed)
 	err := fetchJson(url, feed)
 	if err != nil {
-		return nil, err
+		return *feed, err
 	}
 	return *feed, nil
 }
 
-func getEvent(url string) (EventEntry, error) {
-	var event *EventEntry
+func getEvent(url string, eventType reflect.Type) (interface{}, error) {
+	event := reflect.New(eventType).Interface()
 	err := fetchJson(url, event)
 	if err != nil {
-		return nil, err
+		return event, err
 	}
-	return *event, nil
+	return event, nil
 }
 
 func (consumer *EventConsumer) Start() error {
-	feed, err := getFeed(consumer.url)
+	feed, err := getEventFeed(consumer.url)
 	if err != nil {
 		return err
 	}
 
 	for _, entry := range feed.Events {
-		event := getEvent(entry.Url)
-		if handler, ok := consumer.handlers[reflect.TypeOf(payload)]; ok {
-
+		event, err := getEvent(entry.Url, consumer.getEventType(entry.EventType))
+		if err != nil {
+			glog.Error("Error while fetching event ", event)
 		}
+		fmt.Println(event)
 	}
 	return nil
 }

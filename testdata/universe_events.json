@@ -3,34 +3,34 @@
   "events": [
     {
       "event_id": "580355a7-6c7b-4aed-bad0-34ddb8192113",
-      "url": "http://localhost:3000/events/580355a7-6c7b-4aed-bad0-34ddb8192113",
-      "aggregate_name": "*account.Account",
+      "url": "http://localhost:1212/events/580355a7-6c7b-4aed-bad0-34ddb8192113",
+      "aggregate_name": "Universe",
       "aggregate_version": 1,
-      "event_type": "account.AccountCredited",
+      "event_type": "cqrs.NewStarBorn",
       "created": "Fri Feb 10 16:14:20 2017"
     },
     {
       "event_id": "c3ce50c1-ad82-4b17-b0d3-5f791eb4036f",
-      "url": "http://localhost:3000/events/c3ce50c1-ad82-4b17-b0d3-5f791eb4036f",
-      "aggregate_name": "*account.Account",
+      "url": "http://localhost:1212/events/c3ce50c1-ad82-4b17-b0d3-5f791eb4036f",
+      "aggregate_name": "Universe",
       "aggregate_version": 2,
-      "event_type": "account.AccountCredited",
+      "event_type": "cqrs.NewGalaxyFormed",
       "created": "Fri Feb 10 16:14:24 2017"
     },
     {
       "event_id": "d60ac797-acb5-4b97-9a51-2810ba2702a1",
-      "url": "http://localhost:3000/events/d60ac797-acb5-4b97-9a51-2810ba2702a1",
-      "aggregate_name": "*account.Account",
+      "url": "http://localhost:1212/events/d60ac797-acb5-4b97-9a51-2810ba2702a1",
+      "aggregate_name": "Universe",
       "aggregate_version": 3,
-      "event_type": "account.AccountDebited",
+      "event_type": "cqrs.NewStarBorn",
       "created": "Fri Feb 10 16:14:26 2017"
     },
     {
       "event_id": "9862f6e3-359f-405e-8e2c-5f42a722acac",
-      "url": "http://localhost:3000/events/9862f6e3-359f-405e-8e2c-5f42a722acac",
-      "aggregate_name": "*account.Account",
+      "url": "http://localhost:1212/events/9862f6e3-359f-405e-8e2c-5f42a722acac",
+      "aggregate_name": "Universe",
       "aggregate_version": 4,
-      "event_type": "account.AccountCredited",
+      "event_type": "cqrs.NewGalaxyFormed",
       "created": "Fri Feb 10 16:14:28 2017"
     }
   ]
