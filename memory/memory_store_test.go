@@ -1,8 +1,9 @@
-package cqrs
+package memory
 
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	. "github.com/yehohanan7/cqrs/cqrs"
 )
 
 var stores = []EventStore{NewEventStore()}

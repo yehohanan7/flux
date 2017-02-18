@@ -1,4 +1,8 @@
-package cqrs
+package memory
+
+import (
+	. "github.com/yehohanan7/cqrs/cqrs"
+)
 
 //InMemory implementation of the event store
 type InMemoryEventStore struct {

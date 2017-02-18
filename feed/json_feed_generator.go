@@ -1,4 +1,4 @@
-package cqrs
+package feed
 
 import (
 	"encoding/json"
@@ -6,6 +6,7 @@ import (
 	"reflect"
 
 	"github.com/golang/glog"
+	. "github.com/yehohanan7/cqrs/cqrs"
 )
 
 type JsonEventFeed struct {

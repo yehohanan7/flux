@@ -1,22 +1,19 @@
-package cqrs
+package mux
 
 import (
 	"encoding/json"
 	"net/http"
-
 	"strconv"
 
 	"github.com/gorilla/mux"
+	. "github.com/yehohanan7/cqrs/cqrs"
+	. "github.com/yehohanan7/cqrs/feed"
+	. "github.com/yehohanan7/cqrs/utils"
 )
 
 const DEFAULT_PAGE_SIZE = 20
 
 var pageSize = DEFAULT_PAGE_SIZE
-
-type FeedGenerator interface {
-	Generate(string, string, []Event) string
-	ContentType() string
-}
 
 var generators = map[string]FeedGenerator{
 	"json": JsonFeedGenerator{},
@@ -36,7 +33,7 @@ func getFeed(store EventStore) func(http.ResponseWriter, *http.Request) {
 		}
 
 		w.Header().Set("Content-Type", generator.ContentType())
-		w.Write([]byte(generator.Generate(absoluteUrl(r), "event feed", events)))
+		w.Write([]byte(generator.Generate(GetAbsoluteUrl(r), "event feed", events)))
 	}
 }
 

@@ -1,9 +1,4 @@
-package cqrs
-
-type OffsetStore interface {
-	SaveOffset(int) error
-	GetLastOffset() (int, error)
-}
+package memory
 
 type InMemoryOffsetStore struct {
 	offset int
@@ -18,6 +13,6 @@ func (store *InMemoryOffsetStore) GetLastOffset() (int, error) {
 	return store.offset, nil
 }
 
-func NewInMemoryOffsetStore() *InMemoryOffsetStore {
+func NewOffsetStore() *InMemoryOffsetStore {
 	return &InMemoryOffsetStore{offset: -1}
 }

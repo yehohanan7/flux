@@ -1,4 +1,4 @@
-package cqrs
+package mux
 
 import (
 	"encoding/json"
@@ -12,6 +12,9 @@ import (
 	"github.com/gorilla/mux"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	. "github.com/yehohanan7/cqrs/cqrs"
+	"github.com/yehohanan7/cqrs/feed"
+	"github.com/yehohanan7/cqrs/memory"
 )
 
 var _ = Describe("Event Feed", func() {
@@ -22,7 +25,7 @@ var _ = Describe("Event Feed", func() {
 
 	BeforeEach(func() {
 		router = mux.NewRouter()
-		store = NewEventStore()
+		store = memory.NewEventStore()
 	})
 
 	It("Should not accept invalid page size", func() {
@@ -52,7 +55,7 @@ var _ = Describe("Atom Feed", func() {
 
 	BeforeEach(func() {
 		router = mux.NewRouter()
-		store = NewEventStore()
+		store = memory.NewEventStore()
 		EventFeed(router, store)
 		server = httptest.NewServer(router)
 		eventsUrl = fmt.Sprintf("%s/events?format=atom", server.URL)
@@ -81,14 +84,14 @@ var _ = Describe("Json Feed", func() {
 
 	BeforeEach(func() {
 		router = mux.NewRouter()
-		store = NewEventStore()
+		store = memory.NewEventStore()
 		EventFeed(router, store)
 		server = httptest.NewServer(router)
 		eventsUrl = fmt.Sprintf("%s/events?format=json", server.URL)
 	})
 
 	It("Should publish events as feeds", func() {
-		var feed JsonEventFeed
+		var feed feed.JsonEventFeed
 		event := NewEvent("AggregateName", 0, "event payload")
 		store.SaveEvents("some_aggregate", []Event{event})
 		request, _ := http.NewRequest("GET", eventsUrl, nil)

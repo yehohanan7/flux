@@ -1,10 +1,11 @@
-package it
+package test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/yehohanan7/cqrs"
+	"github.com/yehohanan7/cqrs/cqrs"
+	"github.com/yehohanan7/cqrs/memory"
 )
 
 type Account struct {
@@ -37,21 +38,8 @@ func (acc *Account) Debit(amount int) {
 	acc.Update(AccountDebited{amount})
 }
 
-type TransactionCountProjection struct {
-	cqrs.Projection
-	Count int
-}
-
-func (projection *TransactionCountProjection) HandleCredit(event AccountCredited) {
-	projection.Count++
-}
-
-func (projection *TransactionCountProjection) HandleDebit(event AccountDebited) {
-	projection.Count++
-}
-
 func TestAggregate(t *testing.T) {
-	store := cqrs.NewEventStore()
+	store := memory.NewEventStore()
 
 	accountId := "account-id"
 	existingAccount := new(Account)
@@ -65,9 +53,4 @@ func TestAggregate(t *testing.T) {
 	account := new(Account)
 	account.Aggregate = cqrs.NewAggregate(accountId, account, store)
 	assert.Equal(t, 14, account.Balance)
-
-	transactions := new(TransactionCountProjection)
-	transactions.Projection = cqrs.NewProjection(accountId, transactions, store)
-	assert.Equal(t, 3, transactions.Count)
-
 }

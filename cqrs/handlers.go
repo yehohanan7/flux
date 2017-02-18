@@ -7,7 +7,7 @@ import (
 	"github.com/yehohanan7/cqrs/utils"
 )
 
-type handlermap map[reflect.Type]func(interface{}, interface{})
+type Handlers map[reflect.Type]func(interface{}, interface{})
 
 func isHandlerMethod(method reflect.Method) bool {
 	return method.Type.NumIn() == 2 && strings.HasPrefix(method.Name, "Handle")
@@ -19,8 +19,8 @@ func createHandler(method reflect.Method) func(interface{}, interface{}) {
 	}
 }
 
-func buildHandlerMap(entity interface{}) handlermap {
-	handlers := make(handlermap)
+func NewHandlers(entity interface{}) Handlers {
+	handlers := make(Handlers)
 	for _, method := range utils.FindMethods(entity, isHandlerMethod) {
 		eventType := method.Type.In(1)
 		handlers[eventType] = createHandler(method)

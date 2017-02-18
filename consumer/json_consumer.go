@@ -1,4 +1,4 @@
-package cqrs
+package consumer
 
 import (
 	"encoding/json"
@@ -7,17 +7,19 @@ import (
 	"reflect"
 
 	"github.com/golang/glog"
+	. "github.com/yehohanan7/cqrs/cqrs"
+	. "github.com/yehohanan7/cqrs/feed"
 )
 
 //Consumes events from the command component
-type EventConsumer struct {
+type JsonEventConsumer struct {
 	url          string
 	handlerClass interface{}
-	handlers     handlermap
+	handlers     Handlers
 }
 
 //Send event to the consumer
-func (consumer *EventConsumer) send(event Event) {
+func (consumer *JsonEventConsumer) send(event Event) {
 	payload := event.Payload
 	if handler, ok := consumer.handlers[reflect.TypeOf(payload)]; ok {
 		handler(consumer.handlerClass, payload)
@@ -48,7 +50,7 @@ func fetchJsonInto(url string, data interface{}) error {
 	return nil
 }
 
-func (consumer *EventConsumer) getEventFeed() (JsonEventFeed, error) {
+func (consumer *JsonEventConsumer) getEventFeed() (JsonEventFeed, error) {
 	var feed = new(JsonEventFeed)
 	err := fetchJsonInto(consumer.url, feed)
 	if err != nil {
@@ -57,7 +59,7 @@ func (consumer *EventConsumer) getEventFeed() (JsonEventFeed, error) {
 	return *feed, nil
 }
 
-func (consumer *EventConsumer) getEvent(entry EventEntry) (interface{}, error) {
+func (consumer *JsonEventConsumer) getEvent(entry EventEntry) (interface{}, error) {
 
 	for eventType, _ := range consumer.handlers {
 		if eventType.String() == entry.EventType {
@@ -72,7 +74,7 @@ func (consumer *EventConsumer) getEvent(entry EventEntry) (interface{}, error) {
 	return nil, nil
 }
 
-func (consumer *EventConsumer) Start() error {
+func (consumer *JsonEventConsumer) Start() error {
 	feed, err := consumer.getEventFeed()
 	if err != nil {
 		return err
@@ -91,11 +93,11 @@ func (consumer *EventConsumer) Start() error {
 	return nil
 }
 
-func (consumer *EventConsumer) Stop() error {
+func (consumer *JsonEventConsumer) Stop() error {
 	return nil
 }
 
 //Create new consumer
-func NewEventConsumer(url string, handlerClass interface{}, store OffsetStore) EventConsumer {
-	return EventConsumer{url, handlerClass, buildHandlerMap(handlerClass)}
+func NewEventConsumer(url string, handlerClass interface{}, store OffsetStore) *JsonEventConsumer {
+	return &JsonEventConsumer{url, handlerClass, NewHandlers(handlerClass)}
 }

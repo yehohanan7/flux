@@ -1,8 +1,8 @@
-package cqrs
+package utils
 
 import "net/http"
 
-func absoluteUrl(r *http.Request) string {
+func GetAbsoluteUrl(r *http.Request) string {
 	scheme := "http"
 	if r.TLS != nil {
 		scheme = "https"

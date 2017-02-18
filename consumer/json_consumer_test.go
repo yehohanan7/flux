@@ -1,10 +1,12 @@
-package cqrs
+package consumer
 
 import (
 	"io/ioutil"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	. "github.com/yehohanan7/cqrs/cqrs"
+	"github.com/yehohanan7/cqrs/memory"
 	"gopkg.in/h2non/gock.v1"
 )
 
@@ -37,7 +39,7 @@ var _ = Describe("Event Consumer", func() {
 	)
 
 	BeforeEach(func() {
-		offsetStore = NewInMemoryOffsetStore()
+		offsetStore = memory.NewOffsetStore()
 		consumer = new(UniverseEventConsumer)
 		consumer.EventConsumer = NewEventConsumer("http://localhost:1212/events", consumer, offsetStore)
 	})

@@ -1,15 +1,16 @@
-package cqrs
+package memory
 
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	. "github.com/yehohanan7/cqrs/cqrs"
 )
 
 var _ = Describe("Offset Store", func() {
 	var store OffsetStore
 
 	BeforeEach(func() {
-		store = NewInMemoryOffsetStore()
+		store = NewOffsetStore()
 	})
 
 	It("Should have -1 as default offset", func() {

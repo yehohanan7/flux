@@ -1,4 +1,4 @@
-package cqrs
+package feed
 
 import (
 	"fmt"
@@ -7,6 +7,7 @@ import (
 
 	"github.com/golang/glog"
 	"github.com/gorilla/feeds"
+	. "github.com/yehohanan7/cqrs/cqrs"
 )
 
 type AtomFeedGenerator struct {

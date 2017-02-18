@@ -11,28 +11,28 @@ import (
 type Aggregate struct {
 	Id       string
 	name     string
-	version  int
-	events   []Event
+	Version  int
+	Events   []Event
 	entity   interface{}
-	handlers handlermap
+	handlers Handlers
 	store    EventStore
 }
 
 //Save the events acculated so far
 func (aggregate *Aggregate) Save() error {
-	err := aggregate.store.SaveEvents(aggregate.Id, aggregate.events)
+	err := aggregate.store.SaveEvents(aggregate.Id, aggregate.Events)
 	if err != nil {
 		glog.Warning("error while saving events for aggregate ", aggregate, err)
 	}
-	aggregate.events = []Event{}
+	aggregate.Events = []Event{}
 	return err
 }
 
 //Update the event
 func (aggregate *Aggregate) Update(payloads ...interface{}) {
 	for _, payload := range payloads {
-		event := NewEvent(aggregate.name, aggregate.version, payload)
-		aggregate.events = append(aggregate.events, event)
+		event := NewEvent(aggregate.name, aggregate.Version, payload)
+		aggregate.Events = append(aggregate.Events, event)
 		aggregate.Apply(event)
 	}
 }
@@ -43,22 +43,22 @@ func (aggregate *Aggregate) Apply(events ...Event) {
 		payload := e.Payload
 		if handler, ok := aggregate.handlers[reflect.TypeOf(payload)]; ok {
 			handler(aggregate.entity, payload)
-			aggregate.version++
+			aggregate.Version++
 		}
 	}
 }
 
 //Create new aggregate with a backing event store
 func NewAggregate(id string, entity interface{}, store EventStore) Aggregate {
-	hm := buildHandlerMap(entity)
+	hm := NewHandlers(entity)
 	for eventType := range hm {
 		gob.Register(reflect.New(eventType))
 	}
 
 	aggregate := Aggregate{
 		Id:       id,
-		version:  0,
-		events:   []Event{},
+		Version:  0,
+		Events:   []Event{},
 		entity:   entity,
 		handlers: hm,
 		store:    store,
