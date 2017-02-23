@@ -16,5 +16,4 @@ install:
   - gvt restore
 
 script:
-  - go vet -x ./...
   - go test $(go list ./... | grep -v /vendor/)
