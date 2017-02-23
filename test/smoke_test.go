@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/yehohanan7/cqrs/cqrs"
-	"github.com/yehohanan7/cqrs/memory"
+	"github.com/yehohanan7/flux/cqrs"
+	"github.com/yehohanan7/flux/memory"
 )
 
 type Account struct {

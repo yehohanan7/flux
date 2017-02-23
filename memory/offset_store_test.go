@@ -3,7 +3,7 @@ package memory
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	. "github.com/yehohanan7/cqrs/cqrs"
+	. "github.com/yehohanan7/flux/cqrs"
 )
 
 var _ = Describe("Offset Store", func() {

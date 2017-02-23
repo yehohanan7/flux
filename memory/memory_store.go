@@ -1,7 +1,7 @@
 package memory
 
 import (
-	. "github.com/yehohanan7/cqrs/cqrs"
+	. "github.com/yehohanan7/flux/cqrs"
 )
 
 //InMemory implementation of the event store

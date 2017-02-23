@@ -6,7 +6,7 @@ import (
 	"reflect"
 
 	"github.com/golang/glog"
-	. "github.com/yehohanan7/cqrs/cqrs"
+	. "github.com/yehohanan7/flux/cqrs"
 )
 
 type JsonEventFeed struct {

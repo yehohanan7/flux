@@ -3,8 +3,8 @@ package test
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	. "github.com/yehohanan7/cqrs/cqrs"
-	"github.com/yehohanan7/cqrs/memory"
+	. "github.com/yehohanan7/flux/cqrs"
+	"github.com/yehohanan7/flux/memory"
 )
 
 type TestEvent struct {

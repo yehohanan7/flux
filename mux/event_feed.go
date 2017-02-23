@@ -6,9 +6,9 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	. "github.com/yehohanan7/cqrs/cqrs"
-	. "github.com/yehohanan7/cqrs/feed"
-	. "github.com/yehohanan7/cqrs/utils"
+	. "github.com/yehohanan7/flux/cqrs"
+	. "github.com/yehohanan7/flux/feed"
+	. "github.com/yehohanan7/flux/utils"
 )
 
 const DEFAULT_PAGE_SIZE = 20

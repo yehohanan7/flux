@@ -7,8 +7,8 @@ import (
 	"reflect"
 
 	"github.com/golang/glog"
-	. "github.com/yehohanan7/cqrs/cqrs"
-	. "github.com/yehohanan7/cqrs/feed"
+	. "github.com/yehohanan7/flux/cqrs"
+	. "github.com/yehohanan7/flux/feed"
 )
 
 //Consumes events from the command component

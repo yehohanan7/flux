@@ -7,7 +7,7 @@ import (
 
 	"github.com/golang/glog"
 	"github.com/gorilla/feeds"
-	. "github.com/yehohanan7/cqrs/cqrs"
+	. "github.com/yehohanan7/flux/cqrs"
 )
 
 type AtomFeedGenerator struct {
