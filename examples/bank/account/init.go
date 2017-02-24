@@ -1,6 +1,6 @@
 package account
 
-import "github.com/yehohanan7/cqrs"
+import "github.com/yehohanan7/flux/cqrs"
 
 var store cqrs.EventStore
 

@@ -8,22 +8,21 @@ import (
 	"flag"
 
 	"github.com/gorilla/mux"
-	. "github.com/yehohanan7/bank/account"
-	"github.com/yehohanan7/cqrs"
+	"github.com/yehohanan7/flux"
+	. "github.com/yehohanan7/flux/examples/bank/account"
 )
 
-var store cqrs.EventStore
+var store = flux.NewEventStore()
 
 func init() {
-	store = cqrs.NewEventStore()
 	InitAccounts(store)
 }
 
 func GetSummary(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	vars := mux.Vars(r)
-	id := vars["id"]
-	json.NewEncoder(w).Encode(ProjectAccountSummary(id))
+	//vars := mux.Vars(r)
+	//id := vars["id"]
+	json.NewEncoder(w).Encode(AccountSummary{})
 }
 
 func CreateAccount(w http.ResponseWriter, r *http.Request) {
@@ -59,7 +58,7 @@ func main() {
 	router.HandleFunc("/accounts/{id}/summary", GetSummary).Methods("GET")
 	router.HandleFunc("/accounts/{id}/credit", CreditAccount).Methods("POST")
 	router.HandleFunc("/accounts/{id}/debit", DebitAccount).Methods("POST")
-	cqrs.EventFeed(router, store)
+	flux.StartMuxEventFeed(router, store)
 	http.Handle("/", router)
 	log.Fatal(http.ListenAndServe(":3000", router))
 }

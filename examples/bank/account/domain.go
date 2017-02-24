@@ -3,7 +3,7 @@ package account
 import (
 	"github.com/golang/glog"
 	"github.com/pborman/uuid"
-	"github.com/yehohanan7/cqrs"
+	"github.com/yehohanan7/flux/cqrs"
 )
 
 type Account struct {
