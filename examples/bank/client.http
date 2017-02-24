@@ -1,0 +1,28 @@
+# -*- restclient -*-
+
+:account_id = 8aed6101-f146-43e2-85b8-5d4c74868932
+
+#Add new account
+POST http://localhost:3000/accounts
+Content-type: application/json
+{"opening_balance": 100}
+
+#Credit account
+POST http://localhost:3000/accounts/:account_id/credit
+Content-type: application/json
+{"amount": 10}
+
+#Debit account
+POST http://localhost:3000/accounts/:account_id/debit
+Content-type: application/json
+{"amount": 5}
+
+#Summary
+GET http://localhost:3000/accounts/:account_id/summary
+
+#Event feed
+GET http://localhost:3000/events?offset=1
+
+#Event
+GET http://localhost:3000/events/609ea3ce-c8be-4401-868f-814571eb7325
+

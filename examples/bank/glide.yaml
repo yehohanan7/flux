@@ -1,0 +1,6 @@
+package: github.com/yehohanan7/bank
+import:
+- package: github.com/golang/glog
+- package: github.com/gorilla/mux
+- package: github.com/pborman/uuid
+- package: github.com/yehohanan7/cqrs
