@@ -1,5 +1,7 @@
 package memory
 
+import "github.com/yehohanan7/flux/cqrs"
+
 type InMemoryOffsetStore struct {
 	offset int
 }
@@ -13,6 +15,7 @@ func (store *InMemoryOffsetStore) GetLastOffset() (int, error) {
 	return store.offset, nil
 }
 
-func NewOffsetStore() *InMemoryOffsetStore {
+//New in memory offset store
+func NewOffsetStore() cqrs.OffsetStore {
 	return &InMemoryOffsetStore{offset: -1}
 }

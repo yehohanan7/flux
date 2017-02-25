@@ -3,6 +3,8 @@ package consumer
 import (
 	"io/ioutil"
 
+	"strconv"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/yehohanan7/flux/cqrs"
@@ -18,30 +20,30 @@ type NewGalaxyFormed struct {
 	Description string `json:"description"`
 }
 
-type UniverseEventConsumer struct {
+type UniverseEventHandler struct {
 	EventConsumer
 	Stars    int
 	Galaxies int
 }
 
-func (c *UniverseEventConsumer) HandleNewStars(event NewStarBorn) {
+func (c *UniverseEventHandler) HandleNewStars(event NewStarBorn) {
 	c.Stars++
 }
 
-func (c *UniverseEventConsumer) HandleGalaxies(event NewGalaxyFormed) {
+func (c *UniverseEventHandler) HandleGalaxies(event NewGalaxyFormed) {
 	c.Galaxies++
 }
 
 var _ = Describe("Event Consumer", func() {
 	var (
-		consumer    *UniverseEventConsumer
+		handler     *UniverseEventHandler
 		offsetStore OffsetStore
 	)
 
 	BeforeEach(func() {
 		offsetStore = memory.NewOffsetStore()
-		consumer = new(UniverseEventConsumer)
-		consumer.EventConsumer = NewEventConsumer("http://localhost:1212/events", consumer, offsetStore)
+		handler = new(UniverseEventHandler)
+		handler.EventConsumer = NewEventConsumer("http://localhost:1212/events", handler, offsetStore)
 	})
 
 	AfterEach(func() {
@@ -56,24 +58,16 @@ var _ = Describe("Event Consumer", func() {
 			Reply(200).
 			JSON(string(feed))
 
-		gock.New("http://localhost:1212").
-			Get("/events/1").
-			Reply(200).
-			JSON(string(event))
+		for _, x := range []int{1, 2, 3} {
+			gock.New("http://localhost:1212").
+				Get("/events/" + strconv.Itoa(x)).
+				Reply(200).
+				JSON(string(event))
+		}
 
-		gock.New("http://localhost:1212").
-			Get("/events/2").
-			Reply(200).
-			JSON(string(event))
+		handler.Start()
 
-		gock.New("http://localhost:1212").
-			Get("/events/3").
-			Reply(200).
-			JSON(string(event))
-
-		consumer.Start()
-
-		Expect(consumer.Stars).To(Equal(2))
+		Expect(handler.Stars).To(Equal(2))
 	})
 
 })

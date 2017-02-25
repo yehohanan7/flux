@@ -1,6 +1,4 @@
-* tasks [40%]
-** TODO Rename propect repository
-** TODO Add working bank app as examples inside the project
+* tasks [48%]
 ** TODO Cleanup consumer test with better mock server
 ** TODO Write test for atom feed
 ** TODO Generate Aggregate using cli
@@ -14,6 +12,8 @@
 ** TODO Add monitoring support by exposing event stats
 ** TODO Design a logo
 ** TODO Add aggregate Id to the main event feed entry
+** DONE Add working bank app as examples inside the project
+** DONE Rename project repository
 ** DONE Arrage code into packages
 ** DONE Expose json feed
 ** DONE Implement sample application

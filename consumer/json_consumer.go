@@ -30,7 +30,7 @@ func fetchJsonInto(url string, data interface{}) error {
 	var body []byte
 	res, err := http.Get(url)
 	if err != nil {
-		glog.Error("Error while getting ", url, err)
+		glog.Error("Error while getting ", err)
 		return err
 	}
 
@@ -97,7 +97,7 @@ func (consumer *JsonEventConsumer) Stop() error {
 	return nil
 }
 
-//Create new consumer
-func NewEventConsumer(url string, handlerClass interface{}, store OffsetStore) *JsonEventConsumer {
+//New json event consumer
+func NewEventConsumer(url string, handlerClass interface{}, store OffsetStore) EventConsumer {
 	return &JsonEventConsumer{url, handlerClass, NewHandlers(handlerClass)}
 }
