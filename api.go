@@ -19,8 +19,11 @@ func StartMuxEventFeed(router *gorillaMux.Router, store EventStore, eventsPerPag
 }
 
 //Create new consumer
-func NewEventConsumer(url string, handlerClass interface{}, store OffsetStore) EventConsumer {
-	return consumer.NewEventConsumer(url, handlerClass, store)
+func NewEventConsumer(url string, handlerClass interface{}, store ...OffsetStore) EventConsumer {
+	if len(store) == 0 {
+		return consumer.NewEventConsumer(url, handlerClass, memory.NewOffsetStore())
+	}
+	return consumer.NewEventConsumer(url, handlerClass, store[0])
 }
 
 //Create new in memory offset store

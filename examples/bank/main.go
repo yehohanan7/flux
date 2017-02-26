@@ -12,17 +12,24 @@ import (
 	. "github.com/yehohanan7/flux/examples/bank/account"
 )
 
-var store = flux.NewEventStore()
+var (
+	store    = flux.NewEventStore()
+	consumer = NewAccontSummaryConsumer("http://localhost:3000/events")
+)
 
 func init() {
 	InitAccounts(store)
+	err := consumer.Start()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func GetSummary(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	//vars := mux.Vars(r)
-	//id := vars["id"]
-	json.NewEncoder(w).Encode(AccountSummary{})
+	vars := mux.Vars(r)
+	id := vars["id"]
+	json.NewEncoder(w).Encode(consumer.GetSummary(id))
 }
 
 func CreateAccount(w http.ResponseWriter, r *http.Request) {
@@ -53,6 +60,7 @@ func DebitAccount(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	flag.Parse()
+
 	router := mux.NewRouter()
 	router.HandleFunc("/accounts", CreateAccount).Methods("POST")
 	router.HandleFunc("/accounts/{id}/summary", GetSummary).Methods("GET")

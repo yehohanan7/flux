@@ -31,13 +31,13 @@ func (account *Account) HandleDebit(event AccountDebited) {
 
 func (account *Account) Credit(amount int) string {
 	tId := uuid.New()
-	account.Update(AccountCredited{tId, amount})
+	account.Update(AccountCredited{account.Id, tId, amount})
 	return tId
 }
 
 func (account *Account) Debit(amount int) string {
 	tId := uuid.New()
-	account.Update(AccountDebited{tId, amount})
+	account.Update(AccountDebited{account.Id, tId, amount})
 	return tId
 }
 

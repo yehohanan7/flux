@@ -1,10 +1,14 @@
 package consumer
 
 import (
+	"encoding/gob"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"reflect"
+
+	"time"
 
 	"github.com/golang/glog"
 	. "github.com/yehohanan7/flux/cqrs"
@@ -42,6 +46,8 @@ func fetchJsonInto(url string, data interface{}) error {
 
 	err = json.Unmarshal(body, data)
 
+	fmt.Println("body: ", string(body))
+
 	if err != nil {
 		glog.Error("Error while decoding data ", err)
 		return err
@@ -60,7 +66,6 @@ func (consumer *JsonEventConsumer) getEventFeed() (JsonEventFeed, error) {
 }
 
 func (consumer *JsonEventConsumer) getEvent(entry EventEntry) (interface{}, error) {
-
 	for eventType, _ := range consumer.handlers {
 		if eventType.String() == entry.EventType {
 			event := reflect.New(eventType)
@@ -70,25 +75,35 @@ func (consumer *JsonEventConsumer) getEvent(entry EventEntry) (interface{}, erro
 			}
 		}
 	}
-
 	return nil, nil
 }
 
 func (consumer *JsonEventConsumer) Start() error {
-	feed, err := consumer.getEventFeed()
-	if err != nil {
-		return err
-	}
+	tick := time.Tick(3 * time.Second)
 
-	for _, entry := range feed.Events {
-		event, err := consumer.getEvent(entry)
-		if err != nil {
-			panic(err)
+	go func() {
+		for {
+			select {
+			case <-tick:
+				glog.Info("Fetching events...")
+				feed, err := consumer.getEventFeed()
+				if err != nil {
+					return
+				}
+
+				for _, entry := range feed.Events {
+					event, err := consumer.getEvent(entry)
+					glog.Info("event fetched", event)
+					if err != nil {
+						glog.Error(err)
+					}
+					if handler, ok := consumer.handlers[reflect.TypeOf(event)]; ok {
+						handler(consumer.handlerClass, event)
+					}
+				}
+			}
 		}
-		if handler, ok := consumer.handlers[reflect.TypeOf(event)]; ok {
-			handler(consumer.handlerClass, event)
-		}
-	}
+	}()
 
 	return nil
 }
@@ -99,5 +114,9 @@ func (consumer *JsonEventConsumer) Stop() error {
 
 //New json event consumer
 func NewEventConsumer(url string, handlerClass interface{}, store OffsetStore) EventConsumer {
-	return &JsonEventConsumer{url, handlerClass, NewHandlers(handlerClass)}
+	handlers := NewHandlers(handlerClass)
+	for eventType := range handlers {
+		gob.Register(reflect.New(eventType))
+	}
+	return &JsonEventConsumer{url, handlerClass, handlers}
 }
