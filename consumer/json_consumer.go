@@ -1,7 +1,6 @@
 package consumer
 
 import (
-	"encoding/gob"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -13,6 +12,7 @@ import (
 	"github.com/golang/glog"
 	. "github.com/yehohanan7/flux/cqrs"
 	. "github.com/yehohanan7/flux/feed"
+	"github.com/yehohanan7/flux/utils"
 )
 
 //Consumes events from the command component
@@ -79,31 +79,26 @@ func (consumer *JsonEventConsumer) getEvent(entry EventEntry) (interface{}, erro
 }
 
 func (consumer *JsonEventConsumer) Start() error {
-	tick := time.Tick(3 * time.Second)
 
-	go func() {
-		for {
-			select {
-			case <-tick:
-				glog.Info("Fetching events...")
-				feed, err := consumer.getEventFeed()
-				if err != nil {
-					return
-				}
+	go utils.Every(3*time.Second, func() {
+		glog.Info("Fetching events...")
+		feed, err := consumer.getEventFeed()
+		if err != nil {
+			return
+		}
 
-				for _, entry := range feed.Events {
-					event, err := consumer.getEvent(entry)
-					glog.Info("event fetched", event)
-					if err != nil {
-						glog.Error(err)
-					}
-					if handler, ok := consumer.handlers[reflect.TypeOf(event)]; ok {
-						handler(consumer.handlerClass, event)
-					}
-				}
+		for _, entry := range feed.Events {
+			event, err := consumer.getEvent(entry)
+			glog.Info("event fetched", event)
+			if err != nil {
+				glog.Error(err)
+			}
+
+			if handler, ok := consumer.handlers[reflect.TypeOf(event)]; ok {
+				handler(consumer.handlerClass, event)
 			}
 		}
-	}()
+	})
 
 	return nil
 }
@@ -114,9 +109,5 @@ func (consumer *JsonEventConsumer) Stop() error {
 
 //New json event consumer
 func NewEventConsumer(url string, handlerClass interface{}, store OffsetStore) EventConsumer {
-	handlers := NewHandlers(handlerClass)
-	for eventType := range handlers {
-		gob.Register(reflect.New(eventType))
-	}
-	return &JsonEventConsumer{url, handlerClass, handlers}
+	return &JsonEventConsumer{url, handlerClass, NewHandlers(handlerClass)}
 }
