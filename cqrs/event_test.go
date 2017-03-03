@@ -45,15 +45,4 @@ var _ = Describe("Event", func() {
 		})
 	})
 
-	It("Should serialize/deserialize", func() {
-		bytes := event.Serialize()
-
-		e := new(Event)
-		e.Deserialize(bytes)
-
-		Expect(e.AggregateName).To(Equal(aggregateName))
-		Expect(e.AggregateVersion).To(Equal(aggregateVersion))
-		Expect(e.Payload.(SomePayLoad).SomeData.Data).To(Equal("some data"))
-	})
-
 })

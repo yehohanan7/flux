@@ -18,7 +18,7 @@ type Aggregate struct {
 	store    EventStore
 }
 
-//Save the events acculated so far
+//Save the events accumulated so far
 func (aggregate *Aggregate) Save() error {
 	err := aggregate.store.SaveEvents(aggregate.Id, aggregate.Events)
 	if err != nil {

@@ -1,13 +1,10 @@
 package cqrs
 
 import (
-	"bytes"
-
 	"encoding/gob"
 
 	"time"
 
-	"github.com/golang/glog"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -18,28 +15,6 @@ type Event struct {
 	OccuredAt        string      `json:"occured_at"`
 	AggregateVersion int         `json:"aggregate_version"`
 	AggregateName    string      `json:"aggregate_name"`
-}
-
-//Deserialize the event
-func (e *Event) Deserialize(data []byte) {
-	b := bytes.Buffer{}
-	b.Write(data)
-	d := gob.NewDecoder(&b)
-	err := d.Decode(e)
-	if err != nil {
-		glog.Errorf("could not deserialize event %v", e)
-	}
-}
-
-//Serialize the event
-func (e *Event) Serialize() []byte {
-	buffer := bytes.Buffer{}
-	encoder := gob.NewEncoder(&buffer)
-	err := encoder.Encode(e)
-	if err != nil {
-		glog.Errorf("could not serialize event %v", e)
-	}
-	return buffer.Bytes()
 }
 
 //Create new event
