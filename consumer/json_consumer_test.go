@@ -4,8 +4,6 @@ import (
 	"io/ioutil"
 	"time"
 
-	"strconv"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/yehohanan7/flux/cqrs"
@@ -54,23 +52,27 @@ var _ = Describe("Event Consumer", func() {
 
 	It("Should consume events from another service", func() {
 		feed, _ := ioutil.ReadFile("testdata/universe_events.json")
-		event, _ := ioutil.ReadFile("testdata/star_born.json")
+		star_born, _ := ioutil.ReadFile("testdata/star_born.json")
+		galaxy_formed, _ := ioutil.ReadFile("testdata/galaxy_formed.json")
 		gock.New("http://localhost:1212").
 			Get("/events").
 			Reply(200).
 			JSON(string(feed))
 
-		for _, x := range []int{1, 3} {
-			gock.New("http://localhost:1212").
-				Get("/events/" + strconv.Itoa(x)).
-				Reply(200).
-				JSON(string(event))
-		}
+		gock.New("http://localhost:1212").
+			Get("/events/1").
+			Reply(200).
+			JSON(string(star_born))
+
+		gock.New("http://localhost:1212").
+			Get("/events/2").
+			Reply(200).
+			JSON(string(galaxy_formed))
 
 		handler.Start()
 
-		WaitUntil(func() bool { return handler.Stars == 2 }, 20*time.Second)
-		Expect(handler.Stars).To(Equal(2))
+		WaitUntil(func() bool { return handler.Stars == 1 }, 20*time.Second)
+		Expect(handler.Stars).To(Equal(1))
 	})
 
 })

@@ -16,14 +16,6 @@
       "aggregate_version": 2,
       "event_type": "consumer.NewGalaxyFormed",
       "created": "Fri Feb 10 16:14:24 2017"
-    },
-    {
-      "event_id": "3",
-      "url": "http://localhost:1212/events/3",
-      "aggregate_name": "Universe",
-      "aggregate_version": 3,
-      "event_type": "consumer.NewStarBorn",
-      "created": "Fri Feb 10 16:14:26 2017"
     }
   ]
 }

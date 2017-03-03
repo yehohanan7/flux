@@ -13,11 +13,11 @@ import (
 
 //Every action on an aggregate emits an event, which is wrapped and saved
 type Event struct {
-	Id               string      // Event Id
-	Payload          interface{} // Event payload
-	OccuredAt        string      // The time the event occured
-	AggregateVersion int         // The aggregate version on which this event occurred
-	AggregateName    string      // Event aggregate name
+	Id               string      `json:"id"`
+	Payload          interface{} `json:"payload"`
+	OccuredAt        string      `json:"occured_at"`
+	AggregateVersion int         `json:"aggregate_version"`
+	AggregateName    string      `json:"aggregate_name"`
 }
 
 //Deserialize the event

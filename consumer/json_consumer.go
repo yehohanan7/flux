@@ -66,12 +66,13 @@ func (consumer *JsonEventConsumer) getEventFeed() (JsonEventFeed, error) {
 }
 
 func (consumer *JsonEventConsumer) getEvent(entry EventEntry) (interface{}, error) {
+	event := new(Event)
 	for eventType, _ := range consumer.handlers {
 		if eventType.String() == entry.EventType {
-			event := reflect.New(eventType)
-			err := fetchJsonInto(entry.Url, event.Interface())
+			event.Payload = reflect.New(eventType).Interface()
+			err := fetchJsonInto(entry.Url, event)
 			if err == nil {
-				return event.Elem().Interface(), err
+				return reflect.ValueOf(event.Payload).Elem().Interface(), err
 			}
 		}
 	}
@@ -94,6 +95,8 @@ func (consumer *JsonEventConsumer) Start() error {
 				glog.Error(err)
 			}
 
+			fmt.Println("event type: ", reflect.TypeOf(event))
+			fmt.Println(consumer.handlers)
 			if handler, ok := consumer.handlers[reflect.TypeOf(event)]; ok {
 				handler(consumer.handlerClass, event)
 			}
