@@ -1,4 +1,4 @@
-package mux
+package feed
 
 import (
 	"encoding/json"
@@ -13,7 +13,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/yehohanan7/flux/cqrs"
-	"github.com/yehohanan7/flux/feed"
+
 	"github.com/yehohanan7/flux/memory"
 )
 
@@ -35,7 +35,7 @@ var _ = Describe("Json Feed", func() {
 	})
 
 	It("Should publish events as feeds", func() {
-		var feed feed.JsonEventFeed
+		var feed JsonEventFeed
 		event := NewEvent("AggregateName", 0, "event payload")
 		store.SaveEvents("some_aggregate", []Event{event})
 		request, _ := http.NewRequest("GET", eventsUrl, nil)

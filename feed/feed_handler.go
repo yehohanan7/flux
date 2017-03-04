@@ -1,4 +1,4 @@
-package mux
+package feed
 
 import (
 	"encoding/json"
@@ -8,7 +8,6 @@ import (
 	"strconv"
 
 	. "github.com/yehohanan7/flux/cqrs"
-	. "github.com/yehohanan7/flux/feed"
 	. "github.com/yehohanan7/flux/utils"
 )
 

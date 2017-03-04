@@ -5,8 +5,8 @@ import (
 
 	"github.com/yehohanan7/flux/consumer"
 	. "github.com/yehohanan7/flux/cqrs"
+	"github.com/yehohanan7/flux/feed"
 	"github.com/yehohanan7/flux/memory"
-	"github.com/yehohanan7/flux/mux"
 )
 
 //Create a new in memory store
@@ -16,7 +16,7 @@ func NewEventStore() EventStore {
 
 //Start feeding events over the mux router
 func FeedHandler(store EventStore) func(http.ResponseWriter, *http.Request) {
-	return mux.FeedHandler(store)
+	return feed.FeedHandler(store)
 }
 
 //Create new consumer
