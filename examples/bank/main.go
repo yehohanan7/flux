@@ -66,7 +66,8 @@ func main() {
 	router.HandleFunc("/accounts/{id}/summary", GetSummary).Methods("GET")
 	router.HandleFunc("/accounts/{id}/credit", CreditAccount).Methods("POST")
 	router.HandleFunc("/accounts/{id}/debit", DebitAccount).Methods("POST")
-	router.HandleFunc("/events/*", flux.FeedHandler(store))
+	router.HandleFunc("/events", flux.FeedHandler(store))
+	router.HandleFunc("/events/{id}", flux.FeedHandler(store))
 	http.Handle("/", router)
 	log.Fatal(http.ListenAndServe(":3000", router))
 }
