@@ -34,10 +34,11 @@ var _ = Describe("Json Feed", func() {
 		eventsUrl = fmt.Sprintf("%s/events", server.URL)
 	})
 
-	It("Should publish events as feeds", func() {
+	It("Should publish event feed", func() {
 		var feed JsonEventFeed
 		event := NewEvent("AggregateName", 0, "event payload")
 		store.SaveEvents("some_aggregate", []Event{event})
+
 		request, _ := http.NewRequest("GET", eventsUrl, nil)
 		response, err := http.DefaultClient.Do(request)
 
@@ -55,4 +56,21 @@ var _ = Describe("Json Feed", func() {
 		Expect(feed.Events[0].EventType).To(Equal("string"))
 		Expect(feed.Events[0].Url).To(Equal(fmt.Sprintf("%s/events/%s", server.URL, event.Id)))
 	})
+
+	It("Should expose event by event id", func() {
+		var actualEvent, expectedEvent Event
+		expectedEvent = NewEvent("AggregateName", 0, "event payload")
+		store.SaveEvents("some_aggregate", []Event{expectedEvent})
+
+		request, _ := http.NewRequest("GET", eventsUrl+"/"+expectedEvent.Id, nil)
+		response, err := http.DefaultClient.Do(request)
+
+		Expect(err).Should(BeNil())
+		Expect(response).ShouldNot(BeNil())
+		defer response.Body.Close()
+		body, _ := ioutil.ReadAll(response.Body)
+		json.Unmarshal(body, &actualEvent)
+		Expect(actualEvent).To(Equal(expectedEvent))
+	})
+
 })

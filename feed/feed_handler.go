@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"regexp"
 	"strconv"
+
+	"strings"
 
 	. "github.com/yehohanan7/flux/cqrs"
 	. "github.com/yehohanan7/flux/utils"
@@ -23,21 +24,23 @@ func events(w http.ResponseWriter, r *http.Request, store EventStore) {
 }
 
 func event(w http.ResponseWriter, r *http.Request, store EventStore, id string) {
-	json.NewEncoder(w).Encode(store.GetEvent(id))
+	event := store.GetEvent(id)
+	fmt.Println("fetched event: ", event)
+	json.NewEncoder(w).Encode(event)
 }
 
 //Exposes events as atom feed
 func FeedHandler(store EventStore) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		re := regexp.MustCompile("/events/*")
 		defer r.Body.Close()
-		fmt.Println(r.URL.Path)
 		if r.URL.Path == "/events" {
 			events(w, r, store)
+			return
 		}
-		if ids := re.FindStringSubmatch(r.URL.Path); len(ids) > 1 {
-			fmt.Println(ids)
-			event(w, r, store, ids[0])
+
+		ps := strings.Split(r.URL.Path, "/")
+		if len(ps) == 3 && len(ps[2]) > 0 {
+			event(w, r, store, ps[2])
 		}
 	}
 }

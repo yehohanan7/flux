@@ -95,8 +95,6 @@ func (consumer *JsonEventConsumer) Start() error {
 				glog.Error(err)
 			}
 
-			fmt.Println("event type: ", reflect.TypeOf(event))
-			fmt.Println(consumer.handlers)
 			if handler, ok := consumer.handlers[reflect.TypeOf(event)]; ok {
 				handler(consumer.handlerClass, event)
 			}
