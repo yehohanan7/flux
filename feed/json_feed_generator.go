@@ -9,28 +9,10 @@ import (
 	. "github.com/yehohanan7/flux/cqrs"
 )
 
-type JsonEventFeed struct {
-	Description string       `json:"description"`
-	Events      []EventEntry `json:"events"`
-}
-
-type EventEntry struct {
-	EventId          string `json:"event_id"`
-	Url              string `json:"url"`
-	AggregateName    string `json:"aggregate_name"`
-	AggregateVersion int    `json:"aggregate_version"`
-	EventType        string `json:"event_type"`
-	Created          string `json:"created"`
-}
-
 type JsonFeedGenerator struct {
 }
 
-func (_ JsonFeedGenerator) ContentType() string {
-	return "application/json"
-}
-
-func (_ JsonFeedGenerator) Generate(url, description string, events []Event) string {
+func (_ JsonFeedGenerator) Generate(url, description string, events []Event) []byte {
 
 	entries := make([]EventEntry, 0)
 
@@ -50,8 +32,8 @@ func (_ JsonFeedGenerator) Generate(url, description string, events []Event) str
 	b, err := json.Marshal(jsonFeed)
 	if err != nil {
 		glog.Warning("error while creating json for ", events, err)
-		return ""
+		return []byte{}
 	}
 
-	return string(b)
+	return b
 }

@@ -1,8 +1,6 @@
 package cqrs
 
 import (
-	"encoding/gob"
-
 	"time"
 
 	uuid "github.com/satori/go.uuid"
@@ -19,7 +17,6 @@ type Event struct {
 
 //Create new event
 func NewEvent(aggregateName string, aggregateVersion int, payload interface{}) Event {
-	gob.Register(payload)
 	return Event{
 		Id:               uuid.NewV4().String(),
 		Payload:          payload,

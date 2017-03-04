@@ -2,10 +2,11 @@ package mux
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"regexp"
 	"strconv"
 
-	"github.com/gorilla/mux"
 	. "github.com/yehohanan7/flux/cqrs"
 	. "github.com/yehohanan7/flux/feed"
 	. "github.com/yehohanan7/flux/utils"
@@ -13,53 +14,31 @@ import (
 
 const DEFAULT_PAGE_SIZE = 20
 
-var pageSize = DEFAULT_PAGE_SIZE
+var generator = JsonFeedGenerator{}
 
-var generators = map[string]FeedGenerator{
-	"json": JsonFeedGenerator{},
-	"atom": AtomFeedGenerator{},
+func events(w http.ResponseWriter, r *http.Request, store EventStore) {
+	offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
+	events := store.GetAllEventsFrom(offset, DEFAULT_PAGE_SIZE)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(generator.Generate(GetAbsoluteUrl(r), "event feed", events))
 }
 
-func getFeed(store EventStore) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		defer r.Body.Close()
-		generator := generators["json"]
-		offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
-		events := store.GetAllEventsFrom(offset, pageSize)
-		feedType := r.FormValue("format")
-
-		if _, ok := generators[feedType]; ok {
-			generator = generators[feedType]
-		}
-
-		w.Header().Set("Content-Type", generator.ContentType())
-		w.Write([]byte(generator.Generate(GetAbsoluteUrl(r), "event feed", events)))
-	}
-}
-
-func getEventById(store EventStore) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		defer r.Body.Close()
-		vars := mux.Vars(r)
-		id := vars["id"]
-		json.NewEncoder(w).Encode(store.GetEvent(id))
-	}
+func event(w http.ResponseWriter, r *http.Request, store EventStore, id string) {
+	json.NewEncoder(w).Encode(store.GetEvent(id))
 }
 
 //Exposes events as atom feed
-func EventFeed(router *mux.Router, store EventStore, eventsPerPage ...int) {
-	if len(eventsPerPage) > 1 {
-		panic("invalid number of arguments")
+func FeedHandler(store EventStore) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		re := regexp.MustCompile("/events/*")
+		defer r.Body.Close()
+		fmt.Println(r.URL.Path)
+		if r.URL.Path == "/events" {
+			events(w, r, store)
+		}
+		if ids := re.FindStringSubmatch(r.URL.Path); len(ids) > 1 {
+			fmt.Println(ids)
+			event(w, r, store, ids[0])
+		}
 	}
-
-	if len(eventsPerPage) == 1 && eventsPerPage[0] <= 0 {
-		panic("invalid events per page")
-	}
-
-	if len(eventsPerPage) == 1 {
-		pageSize = eventsPerPage[0]
-	}
-
-	router.HandleFunc("/events", getFeed(store)).Methods("GET")
-	router.HandleFunc("/events/{id}", getEventById(store)).Methods("GET")
 }

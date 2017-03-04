@@ -1,7 +1,6 @@
 package cqrs
 
 import (
-	"encoding/gob"
 	"reflect"
 
 	"github.com/golang/glog"
@@ -50,17 +49,13 @@ func (aggregate *Aggregate) Apply(events ...Event) {
 
 //Create new aggregate with a backing event store
 func NewAggregate(id string, entity interface{}, store EventStore) Aggregate {
-	hm := NewHandlers(entity)
-	for eventType := range hm {
-		gob.Register(reflect.New(eventType))
-	}
 
 	aggregate := Aggregate{
 		Id:       id,
 		Version:  0,
 		Events:   []Event{},
 		entity:   entity,
-		handlers: hm,
+		handlers: NewHandlers(entity),
 		store:    store,
 		name:     reflect.TypeOf(entity).String(),
 	}

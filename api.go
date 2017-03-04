@@ -1,7 +1,8 @@
 package flux
 
 import (
-	gorillaMux "github.com/gorilla/mux"
+	"net/http"
+
 	"github.com/yehohanan7/flux/consumer"
 	. "github.com/yehohanan7/flux/cqrs"
 	"github.com/yehohanan7/flux/memory"
@@ -14,8 +15,8 @@ func NewEventStore() EventStore {
 }
 
 //Start feeding events over the mux router
-func StartMuxEventFeed(router *gorillaMux.Router, store EventStore, eventsPerPage ...int) {
-	mux.EventFeed(router, store)
+func FeedHandler(store EventStore) func(http.ResponseWriter, *http.Request) {
+	return mux.FeedHandler(store)
 }
 
 //Create new consumer
