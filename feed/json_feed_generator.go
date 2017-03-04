@@ -2,8 +2,6 @@ package feed
 
 import (
 	"encoding/json"
-	"fmt"
-	"reflect"
 
 	"github.com/golang/glog"
 	. "github.com/yehohanan7/flux/cqrs"
@@ -17,14 +15,7 @@ func (_ JsonFeedGenerator) Generate(url, description string, events []Event) []b
 	entries := make([]EventEntry, 0)
 
 	for _, event := range events {
-		entries = append(entries, EventEntry{
-			event.Id,
-			fmt.Sprintf("%s/%s", url, event.Id),
-			event.AggregateName,
-			event.AggregateVersion,
-			reflect.TypeOf(event.Payload).String(),
-			event.OccuredAt,
-		})
+		entries = append(entries, ToEventEntry(url, event))
 	}
 
 	jsonFeed := JsonEventFeed{description, entries}
