@@ -29,6 +29,14 @@ func event(w http.ResponseWriter, r *http.Request, store EventStore, id string) 
 	json.NewEncoder(w).Encode(event)
 }
 
+func getEventId(path string) string {
+	xs := strings.Split(path, "/")
+	if len(xs) == 3 && len(xs[2]) > 0 {
+		return xs[2]
+	}
+	return ""
+}
+
 //Exposes events as atom feed
 func FeedHandler(store EventStore) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -37,10 +45,8 @@ func FeedHandler(store EventStore) func(http.ResponseWriter, *http.Request) {
 			events(w, r, store)
 			return
 		}
-
-		ps := strings.Split(r.URL.Path, "/")
-		if len(ps) == 3 && len(ps[2]) > 0 {
-			event(w, r, store, ps[2])
+		if id := getEventId(r.URL.Path); len(id) > 0 {
+			event(w, r, store, id)
 		}
 	}
 }
