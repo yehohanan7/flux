@@ -2,7 +2,6 @@ package consumer
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"reflect"
@@ -45,8 +44,6 @@ func fetchJsonInto(url string, data interface{}) error {
 	}
 
 	err = json.Unmarshal(body, data)
-
-	fmt.Println("body: ", string(body))
 
 	if err != nil {
 		glog.Error("Error while decoding data ", err)
