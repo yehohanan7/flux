@@ -2,6 +2,7 @@ package consumer
 
 import (
 	"io/ioutil"
+	"reflect"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -9,8 +10,18 @@ import (
 	gock "gopkg.in/h2non/gock.v1"
 )
 
-type SampleEvent struct {
-}
+var _ = Describe("Event Consumer", func() {
+	It("Should convert events to event map", func() {
+		expected := map[string]reflect.Type{
+			"consumer.NewGalaxyFormed": reflect.TypeOf(NewGalaxyFormed{}),
+			"consumer.NewStarBorn":     reflect.TypeOf(NewStarBorn{}),
+		}
+
+		em := eventMap([]interface{}{NewGalaxyFormed{}, NewStarBorn{}})
+
+		Expect(em).To(Equal(expected))
+	})
+})
 
 var _ = Describe("Event Consumer", func() {
 	baseUrl := "http://localhost:1212"

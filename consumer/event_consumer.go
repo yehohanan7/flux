@@ -15,8 +15,8 @@ type SimpleConsumer struct {
 	store OffsetStore
 }
 
-func (c *SimpleConsumer) consume(entry EventEntry) interface{} {
-	if e, ok := c.em[entry.EventType]; ok {
+func fetch(em map[string]reflect.Type, entry EventEntry) interface{} {
+	if e, ok := em[entry.EventType]; ok {
 		event := reflect.New(e).Interface()
 		err := utils.HttpGetJson(entry.Url, event)
 		if err != nil {
@@ -37,7 +37,7 @@ func (c *SimpleConsumer) Start(eventCh, stopCh chan interface{}) {
 	}
 
 	for _, entry := range feed.Events {
-		if event := c.consume(entry); event != nil {
+		if event := fetch(c.em, entry); event != nil {
 			eventCh <- event
 		}
 	}
