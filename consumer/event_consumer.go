@@ -10,13 +10,13 @@ import (
 )
 
 type SimpleConsumer struct {
-	url    string
-	events map[string]reflect.Type
-	store  OffsetStore
+	url   string
+	em    map[string]reflect.Type
+	store OffsetStore
 }
 
 func (c *SimpleConsumer) consume(entry EventEntry) interface{} {
-	if e, ok := c.events[entry.EventType]; ok {
+	if e, ok := c.em[entry.EventType]; ok {
 		event := reflect.New(e).Interface()
 		err := utils.HttpGetJson(entry.Url, event)
 		if err != nil {
@@ -43,10 +43,14 @@ func (c *SimpleConsumer) Start(eventCh, stopCh chan interface{}) {
 	}
 }
 
-func New(url string, events []interface{}, store OffsetStore) *SimpleConsumer {
+func eventMap(events []interface{}) map[string]reflect.Type {
 	m := make(map[string]reflect.Type)
 	for _, e := range events {
 		m[reflect.TypeOf(e).String()] = reflect.TypeOf(e)
 	}
-	return &SimpleConsumer{url, m, store}
+	return m
+}
+
+func New(url string, events []interface{}, store OffsetStore) *SimpleConsumer {
+	return &SimpleConsumer{url, eventMap(events), store}
 }
