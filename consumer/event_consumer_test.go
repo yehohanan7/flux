@@ -5,7 +5,6 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	. "github.com/yehohanan7/flux/feed"
 	"github.com/yehohanan7/flux/memory"
 	gock "gopkg.in/h2non/gock.v1"
 )
@@ -16,26 +15,47 @@ type SampleEvent struct {
 var _ = Describe("Event Consumer", func() {
 	baseUrl := "http://localhost:1212"
 
-	AfterEach(func() {
-		gock.Off()
-	})
-
-	It("Should consume events", func() {
+	BeforeEach(func() {
 		feed, _ := ioutil.ReadFile("testdata/universe_events.json")
+		star_born, _ := ioutil.ReadFile("testdata/star_born.json")
+		galaxy_formed, _ := ioutil.ReadFile("testdata/galaxy_formed.json")
+
 		gock.New(baseUrl).
 			Get("/events").
 			Reply(200).
 			JSON(feed)
 
-		consumer := New(baseUrl+"/events", []interface{}{}, memory.NewOffsetStore())
+		gock.New(baseUrl).
+			Get("/events/1").
+			Reply(200).
+			JSON(string(star_born))
+
+		gock.New(baseUrl).
+			Get("/events/2").
+			Reply(200).
+			JSON(string(galaxy_formed))
+	})
+
+	AfterEach(func() {
+		gock.Off()
+	})
+
+	It("Should consume events", func() {
+		events := []interface{}{NewStarBorn{}, NewGalaxyFormed{}}
+		consumer := New(baseUrl+"/events", events, memory.NewOffsetStore())
 		eventCh, stopCh := make(chan interface{}), make(chan interface{})
 
 		go consumer.Start(eventCh, stopCh)
 
 		Eventually(func() string {
 			d := <-eventCh
-			feed := d.(JsonEventFeed)
-			return feed.Description
-		}).Should(Equal("event feed"))
+			switch d.(type) {
+			case NewGalaxyFormed:
+				return d.(NewGalaxyFormed).Description
+			default:
+				return ""
+			}
+		}).Should(Equal("a new galaxy is formed"))
 	})
+
 })
