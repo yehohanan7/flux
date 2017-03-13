@@ -1,6 +1,5 @@
 package cqrs
 
 type EventConsumer interface {
-	Start() error
-	Stop() error
+	Start(eventCh, stopCh chan interface{}) error
 }

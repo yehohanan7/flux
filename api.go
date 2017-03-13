@@ -20,11 +20,8 @@ func FeedHandler(store EventStore) func(http.ResponseWriter, *http.Request) {
 }
 
 //Create new consumer
-func NewEventConsumer(url string, handlerClass interface{}, store ...OffsetStore) EventConsumer {
-	if len(store) == 0 {
-		return consumer.NewEventConsumer(url, handlerClass, memory.NewOffsetStore())
-	}
-	return consumer.NewEventConsumer(url, handlerClass, store[0])
+func NewEventConsumer(url string, events []interface{}, store OffsetStore) EventConsumer {
+	return consumer.New(url, events, store)
 }
 
 //Create new in memory offset store

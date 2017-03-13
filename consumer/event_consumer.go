@@ -28,12 +28,12 @@ func fetch(em map[string]reflect.Type, entry EventEntry) interface{} {
 	return nil
 }
 
-func (c *SimpleConsumer) Start(eventCh, stopCh chan interface{}) {
+func (c *SimpleConsumer) Start(eventCh, stopCh chan interface{}) error {
 	var feed = new(JsonEventFeed)
 	err := utils.HttpGetJson(c.url, feed)
 	if err != nil {
 		close(eventCh)
-		return
+		return err
 	}
 
 	for _, entry := range feed.Events {
@@ -41,6 +41,7 @@ func (c *SimpleConsumer) Start(eventCh, stopCh chan interface{}) {
 			eventCh <- event
 		}
 	}
+	return nil
 }
 
 func eventMap(events []interface{}) map[string]reflect.Type {

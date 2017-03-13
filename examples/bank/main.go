@@ -13,23 +13,19 @@ import (
 )
 
 var (
-	store    = flux.NewEventStore()
-	consumer = NewAccontSummaryConsumer("http://localhost:3000/events")
+	store   = flux.NewEventStore()
+	summary = NewAccountSummaryRepository("http://localhost:3000/events")
 )
 
 func init() {
 	InitAccounts(store)
-	err := consumer.Start()
-	if err != nil {
-		panic(err)
-	}
 }
 
 func GetSummary(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	vars := mux.Vars(r)
 	id := vars["id"]
-	json.NewEncoder(w).Encode(consumer.GetSummary(id))
+	json.NewEncoder(w).Encode(summary.Get(id))
 }
 
 func CreateAccount(w http.ResponseWriter, r *http.Request) {
