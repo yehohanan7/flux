@@ -2,7 +2,6 @@ package utils
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -19,7 +18,6 @@ func GetAbsoluteUrl(r *http.Request) string {
 
 func HttpGetJson(url string, container interface{}) error {
 	var body []byte
-	fmt.Println("fetching ", url)
 	res, err := http.Get(url)
 	if err != nil {
 		glog.Error("Error while getting ", err)
@@ -32,9 +30,7 @@ func HttpGetJson(url string, container interface{}) error {
 		return err
 	}
 
-	fmt.Println("unmarshalling ... ", url)
 	err = json.Unmarshal(body, container)
-	fmt.Println("unmarshalled ", url)
 
 	if err != nil {
 		glog.Error("Error while decoding data ", err)

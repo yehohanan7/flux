@@ -2,7 +2,6 @@ package feed
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -25,8 +24,7 @@ func events(w http.ResponseWriter, r *http.Request, store EventStore) {
 
 func event(w http.ResponseWriter, r *http.Request, store EventStore, id string) {
 	event := store.GetEvent(id)
-	fmt.Println("fetched event: ", event)
-	json.NewEncoder(w).Encode(event)
+	json.NewEncoder(w).Encode(event.Payload)
 }
 
 func getEventId(path string) string {

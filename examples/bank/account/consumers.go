@@ -19,15 +19,18 @@ func (r *AccountRepository) Get(id string) Summary {
 }
 
 func NewAccountSummaryRepository(url string) *AccountRepository {
-	repo := new(AccountRepository)
-	events := []interface{}{AccountCreated{}, AccountCreated{}, AccountDebited{}}
+	repo := &AccountRepository{make(map[string]int)}
+	events := []interface{}{AccountCreated{}, AccountCredited{}, AccountDebited{}}
 	store := flux.NewOffsetStore()
 	consumer := flux.NewEventConsumer(url, events, store)
 	go func() {
 		eventCh := make(chan interface{})
+		glog.Info("Starting consumer...")
 		go consumer.Start(eventCh, nil)
+		glog.Info("Consumer started")
 		for {
 			event := <-eventCh
+			glog.Info("recieved event ", event)
 			switch event.(type) {
 			case AccountCreated:
 				glog.Info("Handling new account")
@@ -35,12 +38,12 @@ func NewAccountSummaryRepository(url string) *AccountRepository {
 				repo.accounts[e.AccountId] = e.Balance
 			case AccountCredited:
 				glog.Info("Handling credits ", event)
-				e := event.(AccountCreated)
-				repo.accounts[e.AccountId] += e.Balance
+				e := event.(AccountCredited)
+				repo.accounts[e.AccountId] += e.Amount
 			case AccountDebited:
 				glog.Info("Handling debits", event)
-				e := event.(AccountCreated)
-				repo.accounts[e.AccountId] -= e.Balance
+				e := event.(AccountDebited)
+				repo.accounts[e.AccountId] -= e.Amount
 			}
 		}
 	}()

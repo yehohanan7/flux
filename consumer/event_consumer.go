@@ -2,6 +2,7 @@ package consumer
 
 import (
 	"reflect"
+	"time"
 
 	"github.com/golang/glog"
 	. "github.com/yehohanan7/flux/cqrs"
@@ -29,17 +30,20 @@ func fetch(em map[string]reflect.Type, entry EventEntry) interface{} {
 }
 
 func (c *SimpleConsumer) Start(eventCh, stopCh chan interface{}) error {
-	var feed = new(JsonEventFeed)
-	err := utils.HttpGetJson(c.url, feed)
-	if err != nil {
-		close(eventCh)
-		return err
-	}
-
-	for _, entry := range feed.Events {
-		if event := fetch(c.em, entry); event != nil {
-			eventCh <- event
+	for _ = range time.Tick(5 * time.Second) {
+		var feed = new(JsonEventFeed)
+		err := utils.HttpGetJson(c.url, feed)
+		if err != nil {
+			close(eventCh)
+			return err
 		}
+
+		for _, entry := range feed.Events {
+			if event := fetch(c.em, entry); event != nil {
+				eventCh <- event
+			}
+		}
+
 	}
 	return nil
 }

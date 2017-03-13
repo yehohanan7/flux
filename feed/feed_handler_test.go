@@ -17,6 +17,10 @@ import (
 	"github.com/yehohanan7/flux/memory"
 )
 
+type SamplePayload struct {
+	Data string `json:"data"`
+}
+
 var _ = Describe("Json Feed", func() {
 	var (
 		router    *mux.Router
@@ -58,19 +62,18 @@ var _ = Describe("Json Feed", func() {
 	})
 
 	It("Should expose event by event id", func() {
-		var actualEvent, expectedEvent Event
-		expectedEvent = NewEvent("AggregateName", 0, "event payload")
-		store.SaveEvents("some_aggregate", []Event{expectedEvent})
+		var expected SamplePayload
+		event := NewEvent("AggregateName", 0, SamplePayload{"sample data"})
+		store.SaveEvents("some_aggregate", []Event{event})
 
-		request, _ := http.NewRequest("GET", eventsUrl+"/"+expectedEvent.Id, nil)
+		request, _ := http.NewRequest("GET", eventsUrl+"/"+event.Id, nil)
 		response, err := http.DefaultClient.Do(request)
 
 		Expect(err).Should(BeNil())
 		Expect(response).ShouldNot(BeNil())
 		defer response.Body.Close()
 		body, _ := ioutil.ReadAll(response.Body)
-		json.Unmarshal(body, &actualEvent)
-		Expect(actualEvent).To(Equal(expectedEvent))
+		json.Unmarshal(body, &expected)
+		Expect(expected.Data).To(Equal("sample data"))
 	})
-
 })

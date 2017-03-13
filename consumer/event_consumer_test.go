@@ -84,12 +84,12 @@ var _ = Describe("Event Consumer", func() {
 		Eventually(func() string {
 			d := <-eventCh
 			switch d.(type) {
-			case NewGalaxyFormed:
-				return d.(NewGalaxyFormed).Description
+			case NewStarBorn:
+				return d.(NewStarBorn).Description
 			default:
 				return ""
 			}
-		}).Should(Equal("a new galaxy is formed"))
+		}).Should(Equal("a new star is born"))
 	})
 
 })
