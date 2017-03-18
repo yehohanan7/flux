@@ -17,5 +17,5 @@ func (store *InMemoryOffsetStore) GetLastOffset() (int, error) {
 
 //New in memory offset store
 func NewOffsetStore() cqrs.OffsetStore {
-	return &InMemoryOffsetStore{offset: -1}
+	return &InMemoryOffsetStore{offset: 0}
 }

@@ -97,5 +97,4 @@ var _ = Describe("Event Consumer", func() {
 			}
 		}).Should(BeTrue())
 	})
-
 })

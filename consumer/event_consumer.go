@@ -2,6 +2,7 @@ package consumer
 
 import (
 	"reflect"
+	"strconv"
 	"time"
 
 	"github.com/golang/glog"
@@ -32,7 +33,14 @@ func fetch(em map[string]reflect.Type, entry EventEntry) interface{} {
 func (c *SimpleConsumer) Start(eventCh, stopCh chan interface{}) error {
 	for _ = range time.Tick(5 * time.Second) {
 		var feed = new(JsonEventFeed)
-		err := utils.HttpGetJson(c.url, feed)
+		offset, err := c.store.GetLastOffset()
+		if err != nil {
+			glog.Error("Error while getting last offset ", err)
+			return err
+		}
+
+		glog.Info("Fetching events from offset ", offset)
+		err = utils.HttpGetJson(c.url+"?offset="+strconv.Itoa(offset), feed)
 		if err != nil {
 			close(eventCh)
 			return err
@@ -43,7 +51,7 @@ func (c *SimpleConsumer) Start(eventCh, stopCh chan interface{}) error {
 				eventCh <- event
 			}
 		}
-
+		c.store.SaveOffset(offset + len(feed.Events))
 	}
 	return nil
 }
