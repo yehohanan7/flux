@@ -1,17 +1,14 @@
-* tasks [48%]
+g* tasks [48%]
 ** TODO Cleanup consumer test with better mock server
-** TODO Write test for atom feed
 ** TODO Generate Aggregate using cli
-** TODO Allow feed generator to support pages
-** TODO Publish feed for aggreates
-** TODO Write feed consumer
-** TODO Support projection snapshots
-** TODO Support remote projections through atom feeds
 ** TODO Support Postgres
 ** TODO Support mongodb
 ** TODO Add monitoring support by exposing event stats
 ** TODO Design a logo
 ** TODO Add aggregate Id to the main event feed entry
+** TODO Publish feed for aggreates
+** DONE Write feed consumer
+** DONE Allow feed generator to support pages
 ** DONE Add working bank app as examples inside the project
 ** DONE Rename project repository
 ** DONE Arrage code into packages
