@@ -11,8 +11,14 @@ import (
 	gock "gopkg.in/h2non/gock.v1"
 )
 
+type Distance struct {
+	Value int    `json:"value"`
+	Unit  string `json:"unit"`
+}
+
 type NewStarBorn struct {
-	Description string `json:"description"`
+	Description       string   `json:"description"`
+	DistanceFromEarth Distance `json:"distance_from_earth"`
 }
 
 type NewGalaxyFormed struct {
@@ -81,15 +87,15 @@ var _ = Describe("Event Consumer", func() {
 
 		go consumer.Start(eventCh, stopCh)
 
-		Eventually(func() string {
+		Eventually(func() bool {
 			d := <-eventCh
 			switch d.(type) {
 			case NewStarBorn:
-				return d.(NewStarBorn).Description
+				return d.(NewStarBorn).DistanceFromEarth == Distance{5000, "lightyears"} && d.(NewStarBorn).Description == "a new star is born"
 			default:
-				return ""
+				return false
 			}
-		}).Should(Equal("a new star is born"))
+		}).Should(BeTrue())
 	})
 
 })
