@@ -13,11 +13,11 @@ var _ = Describe("Offset Store", func() {
 		store = NewOffsetStore()
 	})
 
-	It("Should have -1 as default offset", func() {
+	It("Should have 0 as default offset", func() {
 		offset, err := store.GetLastOffset()
 
 		Expect(err).Should(BeNil())
-		Expect(offset).Should(Equal(-1))
+		Expect(offset).Should(Equal(0))
 	})
 
 	It("Should save offsets", func() {

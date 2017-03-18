@@ -1,4 +1,6 @@
-g* tasks [48%]
+* tasks [58%]
+** TODO Snapshot of aggregates
+** TODO Allow user to attach events & event end point
 ** TODO Cleanup consumer test with better mock server
 ** TODO Generate Aggregate using cli
 ** TODO Support Postgres

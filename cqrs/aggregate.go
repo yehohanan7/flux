@@ -22,6 +22,7 @@ func (aggregate *Aggregate) Save() error {
 	err := aggregate.store.SaveEvents(aggregate.Id, aggregate.Events)
 	if err != nil {
 		glog.Warning("error while saving events for aggregate ", aggregate, err)
+		return err
 	}
 	aggregate.Events = []Event{}
 	return err
@@ -32,12 +33,12 @@ func (aggregate *Aggregate) Update(payloads ...interface{}) {
 	for _, payload := range payloads {
 		event := NewEvent(aggregate.name, aggregate.Version, payload)
 		aggregate.Events = append(aggregate.Events, event)
-		aggregate.Apply(event)
+		aggregate.apply(event)
 	}
 }
 
 //Apply events
-func (aggregate *Aggregate) Apply(events ...Event) {
+func (aggregate *Aggregate) apply(events ...Event) {
 	for _, e := range events {
 		payload := e.Payload
 		if handler, ok := aggregate.handlers[reflect.TypeOf(payload)]; ok {
@@ -60,6 +61,6 @@ func NewAggregate(id string, entity interface{}, store EventStore) Aggregate {
 		name:     reflect.TypeOf(entity).String(),
 	}
 
-	aggregate.Apply(store.GetEvents(id)...)
+	aggregate.apply(store.GetEvents(id)...)
 	return aggregate
 }
