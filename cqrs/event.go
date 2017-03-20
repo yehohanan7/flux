@@ -23,17 +23,17 @@ type Event struct {
 
 //Create new event
 func NewEvent(aggregateName string, aggregateVersion int, payload interface{}) Event {
-	metaData := EventMetaData{
+	meta := EventMetaData{
 		Id:               uuid.NewV4().String(),
 		AggregateVersion: aggregateVersion,
 		AggregateName:    aggregateName,
 		OccuredAt:        time.Now().Format(time.ANSIC),
 		Type:             reflect.TypeOf(payload).String(),
 	}
-	return Event{metaData, payload}
+	return Event{meta, payload}
 }
 
 //Makes a event object from metadata and payload
-func MakeEvent(metaData EventMetaData, payload interface{}) Event {
-	return Event{metaData, payload}
+func MakeEvent(meta EventMetaData, payload interface{}) Event {
+	return Event{meta, payload}
 }
