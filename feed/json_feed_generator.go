@@ -10,11 +10,11 @@ import (
 type JsonFeedGenerator struct {
 }
 
-func (_ JsonFeedGenerator) Generate(url, description string, events []Event) []byte {
+func (_ JsonFeedGenerator) Generate(url, description string, metas []EventMetaData) []byte {
 
 	entries := make([]EventEntry, 0)
 
-	for _, event := range events {
+	for _, event := range metas {
 		entries = append(entries, ToEventEntry(url, event))
 	}
 
@@ -22,7 +22,7 @@ func (_ JsonFeedGenerator) Generate(url, description string, events []Event) []b
 
 	b, err := json.Marshal(jsonFeed)
 	if err != nil {
-		glog.Warning("error while creating json for ", events, err)
+		glog.Warning("error while creating json for ", metas, err)
 		return []byte{}
 	}
 

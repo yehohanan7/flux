@@ -17,9 +17,9 @@ var generator = JsonFeedGenerator{}
 
 func events(w http.ResponseWriter, r *http.Request, store EventStore) {
 	offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
-	events := store.GetAllEventsFrom(offset, DEFAULT_PAGE_SIZE)
+	metas := store.GetEventMetaDataFrom(offset, DEFAULT_PAGE_SIZE)
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(generator.Generate(GetAbsoluteUrl(r), "event feed", events))
+	w.Write(generator.Generate(GetAbsoluteUrl(r), "event feed", metas))
 }
 
 func event(w http.ResponseWriter, r *http.Request, store EventStore, id string) {

@@ -1,6 +1,7 @@
 package cqrs
 
 import (
+	"reflect"
 	"time"
 
 	uuid "github.com/satori/go.uuid"
@@ -11,6 +12,7 @@ type EventMetaData struct {
 	OccuredAt        string `json:"occured_at"`
 	AggregateVersion int    `json:"aggregate_version"`
 	AggregateName    string `json:"aggregate_name"`
+	Type             string `json:"type"`
 }
 
 //Every action on an aggregate emits an event, which is wrapped and saved
@@ -26,6 +28,12 @@ func NewEvent(aggregateName string, aggregateVersion int, payload interface{}) E
 		AggregateVersion: aggregateVersion,
 		AggregateName:    aggregateName,
 		OccuredAt:        time.Now().Format(time.ANSIC),
+		Type:             reflect.TypeOf(payload).String(),
 	}
+	return Event{metaData, payload}
+}
+
+//Makes a event object from metadata and payload
+func MakeEvent(metaData EventMetaData, payload interface{}) Event {
 	return Event{metaData, payload}
 }

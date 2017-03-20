@@ -6,26 +6,34 @@ import (
 
 //InMemory implementation of the event store
 type InMemoryEventStore struct {
-	events     []Event            //collection of events
-	aggregates map[string][]Event //map of aggregate and all events occured on it
+	events     []Event
+	eventMap   map[string]Event
+	aggregates map[string][]Event
 }
 
 func (store *InMemoryEventStore) GetEvents(aggregateId string) []Event {
 	return store.aggregates[aggregateId]
 }
 
-func (store *InMemoryEventStore) GetAllEventsFrom(offset, count int) []Event {
+func asMetaData(events []Event) []EventMetaData {
+	m := make([]EventMetaData, len(events))
+	for i := 0; i < len(events); i++ {
+		m[i] = events[i].EventMetaData
+	}
+	return m
+}
+
+func (store *InMemoryEventStore) GetEventMetaDataFrom(offset, count int) []EventMetaData {
 	for i, _ := range store.events {
 		if i == offset {
 			if i+count > len(store.events) {
-				return store.events[i:]
+				return asMetaData(store.events[i:])
 			} else {
-				return store.events[i : i+count]
+				return asMetaData(store.events[i : i+count])
 			}
-
 		}
 	}
-	return []Event{}
+	return []EventMetaData{}
 }
 
 func (store *InMemoryEventStore) SaveEvents(aggregateId string, events []Event) error {
@@ -33,20 +41,19 @@ func (store *InMemoryEventStore) SaveEvents(aggregateId string, events []Event) 
 		store.aggregates[aggregateId] = make([]Event, 0)
 	}
 	store.aggregates[aggregateId] = append(store.aggregates[aggregateId], events...)
-	store.events = append(store.events, events...)
+
+	for _, e := range events {
+		store.events = append(store.events, e)
+		store.eventMap[e.Id] = e
+	}
+
 	return nil
 }
 
 func (store *InMemoryEventStore) GetEvent(id string) Event {
-	var event Event
-	for _, e := range store.events {
-		if e.Id == id {
-			return e
-		}
-	}
-	return event
+	return store.eventMap[id]
 }
 
 func NewEventStore() EventStore {
-	return &InMemoryEventStore{make([]Event, 0), make(map[string][]Event)}
+	return &InMemoryEventStore{make([]Event, 0), make(map[string]Event), make(map[string][]Event)}
 }

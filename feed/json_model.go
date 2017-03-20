@@ -2,7 +2,6 @@ package feed
 
 import (
 	"fmt"
-	"reflect"
 
 	. "github.com/yehohanan7/flux/cqrs"
 )
@@ -21,13 +20,13 @@ type EventEntry struct {
 	Created          string `json:"created"`
 }
 
-func ToEventEntry(url string, event Event) EventEntry {
+func ToEventEntry(url string, meta EventMetaData) EventEntry {
 	return EventEntry{
-		event.Id,
-		fmt.Sprintf("%s/%s", url, event.Id),
-		event.AggregateName,
-		event.AggregateVersion,
-		reflect.TypeOf(event.Payload).String(),
-		event.OccuredAt,
+		meta.Id,
+		fmt.Sprintf("%s/%s", url, meta.Id),
+		meta.AggregateName,
+		meta.AggregateVersion,
+		meta.Type,
+		meta.OccuredAt,
 	}
 }

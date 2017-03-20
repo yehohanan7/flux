@@ -15,7 +15,7 @@ var _ = Describe("Json Feed Generator", func() {
 		event1 := NewEvent("AggregateName", 0, "event payload 1")
 		event2 := NewEvent("AggregateName", 1, "event payload 2")
 
-		b := generator.Generate("someurl", "some description", []Event{event1, event2})
+		b := generator.Generate("someurl", "some description", []EventMetaData{event1.EventMetaData, event2.EventMetaData})
 
 		json.Unmarshal(b, &actualFeed)
 		Expect(actualFeed.Description).To(Equal("some description"))
