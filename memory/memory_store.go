@@ -47,12 +47,6 @@ func (store *InMemoryEventStore) SaveEvents(aggregateId string, events []Event) 
 	return nil
 }
 
-func (store *InMemoryEventStore) GetAllEvents() []Event {
-	events := make([]Event, len(store.events))
-	copy(events, store.events)
-	return events
-}
-
 func (store *InMemoryEventStore) GetEvent(id string) Event {
 	var event Event
 	for _, e := range store.events {

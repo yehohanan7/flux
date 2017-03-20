@@ -32,7 +32,6 @@ var _ = Describe("InMemoryStore", func() {
 		Expect(err1, err2).To(BeNil())
 		Expect(store.GetEvents("aggregate-1")).To(HaveLen(2))
 		Expect(store.GetEvents("aggregate-2")).To(HaveLen(2))
-		Expect(store.GetAllEvents()).To(HaveLen(4))
 	})
 
 	var _ = Describe("Fetching all events from a secific offset", func() {

@@ -1,5 +1,7 @@
-* tasks [58%]
+* tasks [53%]
 ** TODO Snapshot of aggregates
+** TODO Stop and start consumer
+** TODO Make the example with complex data structure
 ** TODO Allow user to attach events & event end point
 ** TODO Cleanup consumer test with better mock server
 ** TODO Generate Aggregate using cli
