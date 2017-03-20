@@ -43,6 +43,10 @@ var _ = Describe("Event", func() {
 		It("Should update occurred at", func() {
 			Expect(event.OccuredAt).To(Equal(time.Now().Format(time.ANSIC)))
 		})
+
+		It("Should determine the event type", func() {
+			Expect(event.Type).To(Equal("cqrs.SomePayLoad"))
+		})
 	})
 
 })
