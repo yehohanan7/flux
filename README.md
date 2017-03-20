@@ -3,7 +3,7 @@
 
 
 # Introduction
-There is nothing called state. There are events and the story we tell ourselves about what it means.
+There is nothing called state. There are events and the story we tell about what it means.
 
 # Examples
 
