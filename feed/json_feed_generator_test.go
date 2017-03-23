@@ -20,5 +20,6 @@ var _ = Describe("Json Feed Generator", func() {
 		json.Unmarshal(b, &actualFeed)
 		Expect(actualFeed.Description).To(Equal("some description"))
 		Expect(actualFeed.Events).To(HaveLen(2))
+		Expect(actualFeed.Events[1].AggregateName).To(Equal("AggregateName"))
 	})
 })
