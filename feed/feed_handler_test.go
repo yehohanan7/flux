@@ -32,8 +32,8 @@ var _ = Describe("Json Feed", func() {
 	BeforeEach(func() {
 		router = mux.NewRouter()
 		store = memory.NewEventStore()
-		router.HandleFunc("/events", FeedHandler(store))
-		router.HandleFunc("/events/{id}", FeedHandler(store))
+		router.HandleFunc("/events", GetFeedHandler(store))
+		router.HandleFunc("/events/{id}", GetEventHandler(store))
 		server = httptest.NewServer(router)
 		eventsUrl = fmt.Sprintf("%s/events", server.URL)
 	})

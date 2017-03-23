@@ -36,13 +36,18 @@ func getEventId(path string) string {
 }
 
 //Exposes events as atom feed
-func FeedHandler(store EventStore) func(http.ResponseWriter, *http.Request) {
+func GetFeedHandler(store EventStore) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
-		if r.URL.Path == "/events" {
-			events(w, r, store)
-			return
-		}
+		events(w, r, store)
+	}
+}
+
+//Get event by event id
+func GetEventHandler(store EventStore) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		defer r.Body.Close()
+
 		if id := getEventId(r.URL.Path); len(id) > 0 {
 			event(w, r, store, id)
 		}
