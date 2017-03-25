@@ -83,9 +83,9 @@ var _ = Describe("Event Consumer", func() {
 	It("Should consume events", func() {
 		events := []interface{}{NewStarBorn{}, NewGalaxyFormed{}}
 		consumer := New(baseUrl+"/events", events, memory.NewOffsetStore())
-		eventCh, stopCh := make(chan interface{}), make(chan interface{})
+		eventCh := make(chan interface{})
 
-		go consumer.Start(eventCh, stopCh)
+		go consumer.Start(eventCh)
 
 		Eventually(func() bool {
 			d := <-eventCh
@@ -97,4 +97,8 @@ var _ = Describe("Event Consumer", func() {
 			}
 		}).Should(BeTrue())
 	})
+
+	It("Should stop consuming", func() {
+	})
+
 })

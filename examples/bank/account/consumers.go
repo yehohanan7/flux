@@ -26,7 +26,7 @@ func NewAccountSummaryRepository(url string) *AccountRepository {
 	go func() {
 		eventCh := make(chan interface{})
 		glog.Info("Starting consumer...")
-		go consumer.Start(eventCh, nil)
+		go consumer.Start(eventCh)
 		glog.Info("Consumer started")
 		for {
 			event := <-eventCh

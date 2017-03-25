@@ -30,22 +30,21 @@ func fetch(em map[string]reflect.Type, entry EventEntry) interface{} {
 	return nil
 }
 
-func (c *SimpleConsumer) Start(eventCh, stopCh chan interface{}) error {
+func getFeed(url string, offset int) (JsonEventFeed, error) {
+	glog.Info("Fetching events from offset ", offset)
+	var feed = new(JsonEventFeed)
+	err := utils.HttpGetJson(url+"?offset="+strconv.Itoa(offset), feed)
+	return *feed, err
+}
+
+func (c *SimpleConsumer) Start(eventCh chan interface{}) error {
 	for _ = range time.Tick(5 * time.Second) {
-		var feed = new(JsonEventFeed)
-		offset, err := c.store.GetLastOffset()
+		offset, _ := c.store.GetLastOffset()
+		feed, err := getFeed(c.url, offset)
 		if err != nil {
-			glog.Error("Error while getting last offset ", err)
+			glog.Error("Error while getting feed ", err)
 			return err
 		}
-
-		glog.Info("Fetching events from offset ", offset)
-		err = utils.HttpGetJson(c.url+"?offset="+strconv.Itoa(offset), feed)
-		if err != nil {
-			close(eventCh)
-			return err
-		}
-
 		for _, entry := range feed.Events {
 			if event := fetch(c.em, entry); event != nil {
 				eventCh <- event
