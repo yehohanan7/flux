@@ -3,6 +3,7 @@ package consumer
 import (
 	"io/ioutil"
 	"reflect"
+	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -82,7 +83,7 @@ var _ = Describe("Event Consumer", func() {
 
 	It("Should consume events", func() {
 		events := []interface{}{NewStarBorn{}, NewGalaxyFormed{}}
-		consumer := New(baseUrl+"/events", events, memory.NewOffsetStore())
+		consumer := New(baseUrl+"/events", events, memory.NewOffsetStore(), 1*time.Second)
 		eventCh := make(chan interface{})
 
 		go consumer.Start(eventCh)
@@ -99,6 +100,36 @@ var _ = Describe("Event Consumer", func() {
 	})
 
 	It("Should stop consuming", func() {
+		events := []interface{}{NewStarBorn{}, NewGalaxyFormed{}}
+		consumer := New(baseUrl+"/events", events, memory.NewOffsetStore(), 1*time.Second)
+		eventCh := make(chan interface{})
+		go consumer.Start(eventCh)
+
+		consumer.Stop()
+
+		_, open := <-eventCh
+		Expect(open).Should(BeFalse())
+	})
+
+	It("Should pause/resume consuming", func() {
+		events := []interface{}{NewStarBorn{}, NewGalaxyFormed{}}
+		consumer := New(baseUrl+"/events", events, memory.NewOffsetStore(), 1*time.Second)
+		eventCh := make(chan interface{})
+		consumer.Pause()
+
+		go consumer.Start(eventCh)
+
+		getEvent := func() string {
+			select {
+			case <-eventCh:
+				return "event"
+			case <-time.After(2 * time.Second):
+				return "noevent"
+			}
+		}
+		Eventually(getEvent).Should(Equal("noevent"))
+		consumer.Resume()
+		Eventually(getEvent).Should(Equal("event"))
 	})
 
 })

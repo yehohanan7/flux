@@ -11,10 +11,20 @@ import (
 	"github.com/yehohanan7/flux/utils"
 )
 
+func eventMap(events []interface{}) map[string]reflect.Type {
+	m := make(map[string]reflect.Type)
+	for _, e := range events {
+		m[reflect.TypeOf(e).String()] = reflect.TypeOf(e)
+	}
+	return m
+}
+
 type SimpleConsumer struct {
-	url   string
-	em    map[string]reflect.Type
-	store OffsetStore
+	url             string
+	em              map[string]reflect.Type
+	store           OffsetStore
+	pollInterval    time.Duration
+	paused, stopped bool
 }
 
 func fetch(em map[string]reflect.Type, entry EventEntry) interface{} {
@@ -38,31 +48,44 @@ func getFeed(url string, offset int) (JsonEventFeed, error) {
 }
 
 func (c *SimpleConsumer) Start(eventCh chan interface{}) error {
-	for _ = range time.Tick(5 * time.Second) {
-		offset, _ := c.store.GetLastOffset()
-		feed, err := getFeed(c.url, offset)
-		if err != nil {
-			glog.Error("Error while getting feed ", err)
-			return err
+	for _ = range time.Tick(c.pollInterval) {
+		if c.stopped {
+			close(eventCh)
+			return nil
 		}
-		for _, entry := range feed.Events {
-			if event := fetch(c.em, entry); event != nil {
-				eventCh <- event
+		if !c.paused {
+			offset, _ := c.store.GetLastOffset()
+			feed, err := getFeed(c.url, offset)
+			if err != nil {
+				glog.Error("Error while getting feed ", err)
+				return err
 			}
+			for _, entry := range feed.Events {
+				if event := fetch(c.em, entry); event != nil {
+					eventCh <- event
+				}
+			}
+			c.store.SaveOffset(offset + len(feed.Events))
 		}
-		c.store.SaveOffset(offset + len(feed.Events))
 	}
 	return nil
 }
 
-func eventMap(events []interface{}) map[string]reflect.Type {
-	m := make(map[string]reflect.Type)
-	for _, e := range events {
-		m[reflect.TypeOf(e).String()] = reflect.TypeOf(e)
-	}
-	return m
+func (c *SimpleConsumer) Pause() {
+	glog.Info("Pausing consumer...")
+	c.paused = true
 }
 
-func New(url string, events []interface{}, store OffsetStore) *SimpleConsumer {
-	return &SimpleConsumer{url, eventMap(events), store}
+func (c *SimpleConsumer) Resume() {
+	glog.Info("Resuming consumer...")
+	c.paused = false
+}
+
+func (c *SimpleConsumer) Stop() {
+	glog.Info("Stopping consumer...")
+	c.stopped = true
+}
+
+func New(url string, events []interface{}, store OffsetStore, pollInterval time.Duration) *SimpleConsumer {
+	return &SimpleConsumer{url, eventMap(events), store, pollInterval, false, false}
 }

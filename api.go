@@ -2,6 +2,7 @@ package flux
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/yehohanan7/flux/consumer"
 	. "github.com/yehohanan7/flux/cqrs"
@@ -31,5 +32,5 @@ func GetEventHandler(store EventStore) func(http.ResponseWriter, *http.Request) 
 
 //Create new consumer
 func NewEventConsumer(url string, events []interface{}, store OffsetStore) EventConsumer {
-	return consumer.New(url, events, store)
+	return consumer.New(url, events, store, 5*time.Second)
 }
