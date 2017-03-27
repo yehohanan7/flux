@@ -1,16 +1,16 @@
-* tasks [53%]
-** TODO Snapshot of aggregates
-** TODO Stop and start consumer
-** TODO Make the example with complex data structure
-** TODO Allow user to attach events & event end point
+* tasks [69%]
 ** TODO Cleanup consumer test with better mock server
-** TODO Generate Aggregate using cli
-** TODO Support Postgres
-** TODO Support mongodb
+** TODO Snapshot of aggregates
+** TODO Support Boltdb
 ** TODO Add monitoring support by exposing event stats
+** TODO Support postgres
 ** TODO Design a logo
 ** TODO Add aggregate Id to the main event feed entry
-** TODO Publish feed for aggreates
+** TODO Generate Aggregate using cli
+** DONE Stop and start consumer
+** DONE Make the example with complex data structure
+** DONE Publish feed for aggreates
+** DONE Allow user to attach events & event end point
 ** DONE Write feed consumer
 ** DONE Allow feed generator to support pages
 ** DONE Add working bank app as examples inside the project
