@@ -20,14 +20,9 @@ func NewOffsetStore() OffsetStore {
 	return memory.NewOffsetStore()
 }
 
-//Get event feed
-func GetFeedHandler(store EventStore) func(http.ResponseWriter, *http.Request) {
-	return feed.GetFeedHandler(store)
-}
-
-//Get event by event id
-func GetEventHandler(store EventStore) func(http.ResponseWriter, *http.Request) {
-	return feed.GetEventHandler(store)
+//Start feeding events over the mux router
+func FeedHandler(store EventStore) func(http.ResponseWriter, *http.Request) {
+	return feed.FeedHandler(store)
 }
 
 //Create new consumer
