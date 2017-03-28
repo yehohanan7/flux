@@ -1,3 +1,5 @@
 .cover/
 vendor/**
 !vendor/manifest
+.DS_Store
+.idea/
