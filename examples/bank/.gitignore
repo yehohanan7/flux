@@ -1,2 +1,8 @@
 vendor/**
 !vendor/manifest
+
+gui/.DS_Store
+gui/node_modules/
+gui/dist/
+gui/npm-debug.log
+gui/yarn-error.log
