@@ -43,7 +43,7 @@ func (account *Account) Debit(amount int) string {
 
 func GetAccount(id string, store cqrs.EventStore) Account {
 	account := new(Account)
-	account.Aggregate = cqrs.NewAggregate(id, account, store)
+	account.Aggregate = cqrs.GetAggregate(id, account, store)
 	return *account
 }
 

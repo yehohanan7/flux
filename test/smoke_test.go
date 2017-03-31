@@ -51,6 +51,6 @@ func TestAggregate(t *testing.T) {
 	existingAccount.Save()
 
 	account := new(Account)
-	account.Aggregate = cqrs.NewAggregate(accountId, account, store)
+	account.Aggregate = cqrs.GetAggregate(accountId, account, store)
 	assert.Equal(t, 14, account.Balance)
 }

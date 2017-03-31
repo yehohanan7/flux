@@ -50,7 +50,6 @@ func (aggregate *Aggregate) apply(events ...Event) {
 
 //Create new aggregate with a backing event store
 func NewAggregate(id string, entity interface{}, store EventStore) Aggregate {
-
 	aggregate := Aggregate{
 		Id:       id,
 		Version:  0,
@@ -60,7 +59,20 @@ func NewAggregate(id string, entity interface{}, store EventStore) Aggregate {
 		store:    store,
 		name:     reflect.TypeOf(entity).String(),
 	}
+	return aggregate
+}
 
+//Get the aggregate
+func GetAggregate(id string, entity interface{}, store EventStore) Aggregate {
+	aggregate := Aggregate{
+		Id:       id,
+		Version:  0,
+		Events:   []Event{},
+		entity:   entity,
+		handlers: NewHandlers(entity),
+		store:    store,
+		name:     reflect.TypeOf(entity).String(),
+	}
 	aggregate.apply(store.GetEvents(id)...)
 	return aggregate
 }

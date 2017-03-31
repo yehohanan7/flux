@@ -71,6 +71,12 @@ var _ = Describe("Aggregare", func() {
 		})
 	})
 
+	var _ = Describe("Existing Aggregate", func() {
+		It("should be retrieved", func() {
+
+		})
+	})
+
 	_ = Describe("Saving an aggregate", func() {
 		It("Should store the events and clear state", func() {
 			entity.Update(TestEvent{}, TestEvent{})
