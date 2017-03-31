@@ -64,15 +64,7 @@ func NewAggregate(id string, entity interface{}, store EventStore) Aggregate {
 
 //Get the aggregate
 func GetAggregate(id string, entity interface{}, store EventStore) Aggregate {
-	aggregate := Aggregate{
-		Id:       id,
-		Version:  0,
-		Events:   []Event{},
-		entity:   entity,
-		handlers: NewHandlers(entity),
-		store:    store,
-		name:     reflect.TypeOf(entity).String(),
-	}
+	aggregate := NewAggregate(id, entity, store)
 	aggregate.apply(store.GetEvents(id)...)
 	return aggregate
 }

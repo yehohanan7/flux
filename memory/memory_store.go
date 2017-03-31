@@ -54,10 +54,6 @@ func (store *InMemoryEventStore) GetEvent(id string) Event {
 	return store.eventMap[id]
 }
 
-func (store *InMemoryEventStore) SaveAggregate(id string, aggregate interface{}) error {
-	return nil
-}
-
 func NewEventStore() EventStore {
 	return &InMemoryEventStore{make([]Event, 0), make(map[string]Event), make(map[string][]Event)}
 }
