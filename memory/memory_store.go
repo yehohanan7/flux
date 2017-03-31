@@ -1,14 +1,17 @@
 package memory
 
 import (
+	"errors"
+
 	. "github.com/yehohanan7/flux/cqrs"
 )
 
 //InMemory implementation of the event store
 type InMemoryEventStore struct {
-	events     []Event
-	eventMap   map[string]Event
-	aggregates map[string][]Event
+	events       []Event
+	eventMap     map[string]Event
+	aggregates   map[string][]Event
+	aggregateMap map[string]Aggregate
 }
 
 func (store *InMemoryEventStore) GetEvents(aggregateId string) []Event {
@@ -54,6 +57,18 @@ func (store *InMemoryEventStore) GetEvent(id string) Event {
 	return store.eventMap[id]
 }
 
+func (store *InMemoryEventStore) SaveAggregate(aggregate Aggregate) error {
+	if _, ok := store.aggregateMap[aggregate.Id]; ok {
+		return errors.New("aggreate already exists")
+	}
+	store.aggregateMap[aggregate.Id] = aggregate
+	return nil
+}
+
+func (store *InMemoryEventStore) GetAggregate(id string) Aggregate {
+	return store.aggregateMap[id]
+}
+
 func NewEventStore() EventStore {
-	return &InMemoryEventStore{make([]Event, 0), make(map[string]Event), make(map[string][]Event)}
+	return &InMemoryEventStore{make([]Event, 0), make(map[string]Event), make(map[string][]Event), make(map[string]Aggregate)}
 }
