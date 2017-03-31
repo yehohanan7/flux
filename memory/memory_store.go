@@ -1,6 +1,10 @@
 package memory
 
-import . "github.com/yehohanan7/flux/cqrs"
+import (
+	"errors"
+
+	. "github.com/yehohanan7/flux/cqrs"
+)
 
 //InMemory implementation of the event store
 type InMemoryEventStore struct {
@@ -39,8 +43,16 @@ func (store *InMemoryEventStore) SaveEvents(aggregateId string, events []Event) 
 	if _, ok := store.aggregates[aggregateId]; !ok {
 		store.aggregates[aggregateId] = make([]Event, 0)
 	}
-	store.aggregates[aggregateId] = append(store.aggregates[aggregateId], events...)
 
+	existingEvents := store.aggregates[aggregateId]
+
+	if l := len(existingEvents); l > 0 {
+		if existingEvents[l-1].AggregateVersion+1 != events[0].AggregateVersion {
+			return errors.New("Invalid event")
+		}
+	}
+
+	store.aggregates[aggregateId] = append(store.aggregates[aggregateId], events...)
 	for _, e := range events {
 		store.events = append(store.events, e)
 		store.eventMap[e.Id] = e

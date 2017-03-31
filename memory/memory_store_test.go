@@ -34,6 +34,16 @@ var _ = Describe("InMemoryStore", func() {
 		Expect(store.GetEvents("aggregate-2")).To(HaveLen(2))
 	})
 
+	It("Should reject events", func() {
+		err1 := store.SaveEvents("aggregate-1", events())
+		err2 := store.SaveEvents("aggregate-1", events())
+		err3 := store.SaveEvents("aggregate-1", []Event{NewEvent("sample_aggregate", 3, EventPayload{"payload"})})
+
+		Expect(err1).To(BeNil())
+		Expect(err2).ShouldNot(BeNil())
+		Expect(err3).To(BeNil())
+	})
+
 	var _ = Describe("Fetching all event metadata from a secific offset", func() {
 		It("Should get the events", func() {
 			e1 := NewEvent("sample_aggregate", 1, EventPayload{"payload"})
