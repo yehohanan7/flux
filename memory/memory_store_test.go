@@ -89,13 +89,4 @@ var _ = Describe("InMemoryStore", func() {
 		Expect(expected).To(Equal(actual))
 	})
 
-	It("Should save aggregate", func() {
-		expected := NewAggregate("aggregate-id", "entity", store)
-
-		store.SaveAggregate(expected)
-
-		actual := store.GetAggregate(expected.Id)
-		Expect(actual).To(Equal(expected))
-	})
-
 })

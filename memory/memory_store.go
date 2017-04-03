@@ -8,10 +8,9 @@ import (
 
 //InMemory implementation of the event store
 type InMemoryEventStore struct {
-	events       []Event
-	eventMap     map[string]Event
-	aggregates   map[string][]Event
-	aggregateMap map[string]Aggregate
+	events     []Event
+	eventMap   map[string]Event
+	aggregates map[string][]Event
 }
 
 func (store *InMemoryEventStore) GetEvents(aggregateId string) []Event {
@@ -65,15 +64,6 @@ func (store *InMemoryEventStore) GetEvent(id string) Event {
 	return store.eventMap[id]
 }
 
-func (store *InMemoryEventStore) SaveAggregate(aggregate Aggregate) error {
-	store.aggregateMap[aggregate.Id] = aggregate
-	return nil
-}
-
-func (store *InMemoryEventStore) GetAggregate(id string) Aggregate {
-	return store.aggregateMap[id]
-}
-
 func NewEventStore() EventStore {
-	return &InMemoryEventStore{make([]Event, 0), make(map[string]Event), make(map[string][]Event), make(map[string]Aggregate)}
+	return &InMemoryEventStore{make([]Event, 0), make(map[string]Event), make(map[string][]Event)}
 }

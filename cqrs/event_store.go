@@ -6,6 +6,4 @@ type EventStore interface {
 	GetEvents(aggregateId string) []Event
 	SaveEvents(aggregateId string, events []Event) error
 	GetEventMetaDataFrom(offset, count int) []EventMetaData
-	SaveAggregate(aggregate Aggregate) error
-	GetAggregate(id string) Aggregate
 }
