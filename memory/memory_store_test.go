@@ -34,7 +34,7 @@ var _ = Describe("InMemoryStore", func() {
 		Expect(store.GetEvents("aggregate-2")).To(HaveLen(2))
 	})
 
-	It("Should reject events", func() {
+	It("Should reject events which has wrong aggregate version", func() {
 		err1 := store.SaveEvents("aggregate-1", events())
 		err2 := store.SaveEvents("aggregate-1", events())
 		err3 := store.SaveEvents("aggregate-1", []Event{NewEvent("sample_aggregate", 3, EventPayload{"payload"})})
