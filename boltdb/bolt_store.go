@@ -17,15 +17,12 @@ type BoltEventStore struct {
 }
 
 func (store *BoltEventStore) GetEvent(id string) Event {
-	var event Event
+	var event = new(Event)
 	store.db.View(func(tx *bolt.Tx) error {
 		eventsBucket := tx.Bucket([]byte(EVENTS_BUCKET))
-		if e := eventsBucket.Get([]byte(id)); e != nil {
-			event = decode(e)
-		}
-		return nil
+		return fetch(eventsBucket, []byte(id), event)
 	})
-	return event
+	return *event
 }
 
 func (store *BoltEventStore) GetEvents(aggregateId string) []Event {
@@ -33,18 +30,15 @@ func (store *BoltEventStore) GetEvents(aggregateId string) []Event {
 }
 
 func (store *BoltEventStore) SaveEvents(aggregateId string, events []Event) error {
-	store.db.Update(func(tx *bolt.Tx) error {
+	return store.db.Update(func(tx *bolt.Tx) error {
 		eventsBucket := tx.Bucket([]byte(EVENTS_BUCKET))
 		for _, event := range events {
-			err := eventsBucket.Put([]byte(event.Id), encode(event))
-			if err != nil {
-				glog.Error("error while saving event")
+			if err := save(eventsBucket, []byte(event.Id), event); err != nil {
 				return err
 			}
 		}
 		return nil
 	})
-	return nil
 }
 
 func (store *BoltEventStore) GetEventMetaDataFrom(offset, count int) []EventMetaData {
@@ -57,14 +51,8 @@ func NewBoltStore(path string) *BoltEventStore {
 		glog.Fatal("Error while opening bolt db", err)
 	}
 	db.Update(func(tx *bolt.Tx) error {
-		create := func(name string) {
-			_, err := tx.CreateBucketIfNotExists([]byte(name))
-			if err != nil {
-				glog.Fatal("Error while initializing db", err)
-			}
-		}
-		create(EVENTS_BUCKET)
-		create(EVENT_METADATA_BUCKET)
+		createBucket(tx, EVENTS_BUCKET)
+		createBucket(tx, EVENT_METADATA_BUCKET)
 		return nil
 	})
 	return &BoltEventStore{db}
