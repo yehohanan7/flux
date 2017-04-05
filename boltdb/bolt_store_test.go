@@ -1,6 +1,7 @@
 package boltdb
 
 import (
+	"encoding/gob"
 	"os"
 
 	. "github.com/onsi/ginkgo"
@@ -19,6 +20,7 @@ var _ = Describe("Bolt Event Store", func() {
 	var store EventStore
 
 	BeforeEach(func() {
+		gob.Register(EventPayload{})
 		store = NewBoltStore(DB_PATH)
 	})
 

@@ -5,14 +5,15 @@ import (
 	"encoding/gob"
 
 	"github.com/golang/glog"
+	. "github.com/yehohanan7/flux/cqrs"
 )
 
 func encodeEvent(event Event) []byte {
 	buffer := bytes.Buffer{}
 	encoder := gob.NewEncoder(&buffer)
-	err := encoder.Encode(e)
+	err := encoder.Encode(event)
 	if err != nil {
-		glog.Errorf("could not serialize event %v", e)
+		glog.Fatal("could not serialize event %v", event)
 	}
 	return buffer.Bytes()
 }
@@ -24,7 +25,7 @@ func decodeEvent(data []byte) Event {
 	d := gob.NewDecoder(&b)
 	err := d.Decode(e)
 	if err != nil {
-		glog.Errorf("could not deserialize event %v", e)
+		glog.Fatal("could not deserialize event %v", e)
 	}
-	return e
+	return *e
 }

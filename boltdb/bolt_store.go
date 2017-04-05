@@ -35,7 +35,7 @@ func (store *BoltEventStore) SaveEvents(aggregateId string, events []Event) erro
 	store.db.Update(func(tx *bolt.Tx) error {
 		eventsBucket := tx.Bucket([]byte(EVENTS_BUCKET))
 		for _, event := range events {
-			err := eventsBucket.Put([]byte(event.Id), []byte("value"))
+			err := eventsBucket.Put([]byte(event.Id), encodeEvent(event))
 			if err != nil {
 				glog.Error("error while saving event")
 				return err
