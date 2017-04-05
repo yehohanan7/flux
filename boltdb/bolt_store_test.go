@@ -29,13 +29,13 @@ var _ = Describe("Bolt Event Store", func() {
 	})
 
 	It("Should save events", func() {
-		e1 := NewEvent("sample_aggregate", 1, EventPayload{"payload"})
-		e2 := NewEvent("sample_aggregate", 2, EventPayload{"payload"})
+		expected := NewEvent("sample_aggregate", 1, EventPayload{"payload"})
 
-		err := store.SaveEvents("aggregate-1", []Event{e1, e2})
+		err := store.SaveEvents("aggregate-1", []Event{expected})
 
+		actual := store.GetEvent(expected.Id)
 		Expect(err).To(BeNil())
-		Expect(store.GetEvent(e1.Id).Id).To(Equal(e1.Id))
-		Expect(store.GetEvent(e2.Id).Id).To(Equal(e2.Id))
+		Expect(actual.Id).To(Equal(expected.Id))
+		Expect(actual.Payload).To(Equal(expected.Payload))
 	})
 })

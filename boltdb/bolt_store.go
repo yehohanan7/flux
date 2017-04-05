@@ -20,7 +20,7 @@ func (store *BoltEventStore) GetEvent(id string) Event {
 	store.db.View(func(tx *bolt.Tx) error {
 		eventsBucket := tx.Bucket([]byte(EVENTS_BUCKET))
 		if e := eventsBucket.Get([]byte(id)); e != nil {
-			event = MakeEvent(EventMetaData{id, "", 0, "", ""}, "")
+			event = decodeEvent(e)
 		}
 		return nil
 	})
