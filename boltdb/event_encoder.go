@@ -8,7 +8,7 @@ import (
 	. "github.com/yehohanan7/flux/cqrs"
 )
 
-func encodeEvent(event Event) []byte {
+func encode(event Event) []byte {
 	buffer := bytes.Buffer{}
 	encoder := gob.NewEncoder(&buffer)
 	err := encoder.Encode(event)
@@ -18,7 +18,7 @@ func encodeEvent(event Event) []byte {
 	return buffer.Bytes()
 }
 
-func decodeEvent(data []byte) Event {
+func decode(data []byte) Event {
 	e := new(Event)
 	b := bytes.Buffer{}
 	b.Write(data)
