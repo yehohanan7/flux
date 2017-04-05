@@ -1,12 +1,13 @@
-* tasks [69%]
-** TODO Cleanup consumer test with better mock server
-** TODO Snapshot of aggregates
+* tasks [66%]
 ** TODO Support Boltdb
+** TODO Encode/decode should not have fatal
+** TODO Snapshot of aggregates
 ** TODO Add monitoring support by exposing event stats
 ** TODO Support postgres
 ** TODO Design a logo
 ** TODO Add aggregate Id to the main event feed entry
 ** TODO Generate Aggregate using cli
+** TODO Cleanup consumer test with better mock server
 ** DONE Stop and start consumer
 ** DONE Make the example with complex data structure
 ** DONE Publish feed for aggreates
