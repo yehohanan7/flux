@@ -26,13 +26,16 @@ func save(bucket *bolt.Bucket, key []byte, data interface{}) error {
 	return bucket.Put(key, buffer.Bytes())
 }
 
+func deseralize(data []byte, target interface{}) error {
+	b := bytes.Buffer{}
+	b.Write(data)
+	d := gob.NewDecoder(&b)
+	return d.Decode(target)
+}
+
 func fetch(bucket *bolt.Bucket, key []byte, target interface{}) error {
 	if data := bucket.Get(key); data != nil {
-		b := bytes.Buffer{}
-		b.Write(data)
-		d := gob.NewDecoder(&b)
-		err := d.Decode(target)
-		if err != nil {
+		if err := deseralize(data, target); err != nil {
 			glog.Error("could not deserialize event %v", target)
 			return err
 		}

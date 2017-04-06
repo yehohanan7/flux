@@ -1,6 +1,7 @@
 package boltdb
 
 import (
+	"bytes"
 	"strconv"
 
 	"github.com/boltdb/bolt"
@@ -49,7 +50,23 @@ func (store *BoltEventStore) SaveEvents(aggregateId string, events []Event) erro
 }
 
 func (store *BoltEventStore) GetEventMetaDataFrom(offset, count int) []EventMetaData {
-	return nil
+	min := []byte(strconv.Itoa(offset))
+	max := []byte(strconv.Itoa(offset + count))
+
+	metas := make([]EventMetaData, 0)
+	store.db.View(func(tx *bolt.Tx) error {
+		c := tx.Bucket([]byte(EVENT_METADATA_BUCKET)).Cursor()
+		for k, v := c.Seek(min); k != nil && bytes.Compare(k, max) <= 0; k, v = c.Next() {
+			m := new(EventMetaData)
+			if err := deseralize(v, m); err != nil {
+				glog.Error("Error deserializing event", err)
+				return err
+			}
+			metas = append(metas, *m)
+		}
+		return nil
+	})
+	return metas
 }
 
 func NewBoltStore(path string) *BoltEventStore {
