@@ -1,5 +1,6 @@
-* Release 1 [86%]
+* Release 1 [83%]
 ** TODO Test with sample app
+** TODO Documentation
 ** TODO Design a logo
 ** TODO Cleanup consumer test with better mock server
 ** DONE Encode/decode should not have fatal
