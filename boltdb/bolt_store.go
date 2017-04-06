@@ -1,6 +1,8 @@
 package boltdb
 
 import (
+	"strconv"
+
 	"github.com/boltdb/bolt"
 	"github.com/golang/glog"
 	. "github.com/yehohanan7/flux/cqrs"
@@ -32,7 +34,12 @@ func (store *BoltEventStore) GetEvents(aggregateId string) []Event {
 func (store *BoltEventStore) SaveEvents(aggregateId string, events []Event) error {
 	return store.db.Update(func(tx *bolt.Tx) error {
 		eventsBucket := tx.Bucket([]byte(EVENTS_BUCKET))
+		metadataBucket := tx.Bucket([]byte(EVENT_METADATA_BUCKET))
 		for _, event := range events {
+			offset, _ := metadataBucket.NextSequence()
+			if err := save(metadataBucket, []byte(strconv.FormatUint(offset, 10)), event.EventMetaData); err != nil {
+				return err
+			}
 			if err := save(eventsBucket, []byte(event.Id), event); err != nil {
 				return err
 			}
