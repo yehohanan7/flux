@@ -23,8 +23,15 @@ type BoltEventStore struct {
 func (store *BoltEventStore) GetEvent(id string) Event {
 	var event = new(Event)
 	store.db.View(func(tx *bolt.Tx) error {
-		eventsBucket := tx.Bucket([]byte(EVENTS_BUCKET))
-		return fetch(eventsBucket, []byte(id), event)
+		b := tx.Bucket([]byte(EVENTS_BUCKET))
+
+		if v := b.Get([]byte(id)); v != nil {
+			if err := event.Deserialize(v); err != nil {
+				glog.Errorf("could not deserialize event with id %s", id)
+				return err
+			}
+		}
+		return nil
 	})
 	return *event
 }
@@ -79,7 +86,7 @@ func (store *BoltEventStore) GetEventMetaDataFrom(offset, count int) []EventMeta
 		c := tx.Bucket([]byte(EVENT_METADATA_BUCKET)).Cursor()
 		for k, v := c.Seek(min); k != nil && bytes.Compare(k, max) <= 0; k, v = c.Next() {
 			m := new(EventMetaData)
-			if err := deseralize(v, m); err != nil {
+			if err := m.Deserialize(v); err != nil {
 				glog.Error("Error deserializing event", err)
 				return err
 			}
