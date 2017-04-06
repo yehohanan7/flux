@@ -33,10 +33,8 @@ var _ = Describe("Bolt Event Store", func() {
 
 		err := store.SaveEvents("aggregate-1", []Event{expected})
 
-		actual := store.GetEvent(expected.Id)
 		Expect(err).To(BeNil())
-		Expect(actual.Id).To(Equal(expected.Id))
-		Expect(actual.Payload).To(Equal(expected.Payload))
+		Expect(store.GetEvent(expected.Id)).To(Equal(expected))
 	})
 
 	It("Should save event metadata", func() {
@@ -60,6 +58,19 @@ var _ = Describe("Bolt Event Store", func() {
 
 		meta := store.GetEventMetaDataFrom(0, 1)[0]
 		Expect(meta).To(Equal(event.EventMetaData))
+	})
+
+	It("Should retreive events by aggregate Id", func() {
+		e1 := NewEvent("sample_aggregate", 0, EventPayload{"payload"})
+		e2 := NewEvent("sample_aggregate", 1, EventPayload{"payload"})
+		e3 := NewEvent("sample_aggregate", 0, EventPayload{"payload"})
+
+		store.SaveEvents("aggregate-1", []Event{e1, e2})
+		store.SaveEvents("aggregate-2", []Event{e3})
+
+		events := store.GetEvents("aggregate-1")
+		Expect(events).To(HaveLen(2))
+		Expect(events).To(Equal([]Event{e1, e2}))
 	})
 
 })
