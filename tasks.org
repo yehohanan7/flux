@@ -1,13 +1,9 @@
-* tasks [66%]
-** TODO Support Boltdb
-** TODO Encode/decode should not have fatal
-** TODO Snapshot of aggregates
-** TODO Add monitoring support by exposing event stats
-** TODO Support postgres
+* Release 1 [86%]
+** TODO Test with sample app
 ** TODO Design a logo
-** TODO Add aggregate Id to the main event feed entry
-** TODO Generate Aggregate using cli
 ** TODO Cleanup consumer test with better mock server
+** DONE Encode/decode should not have fatal
+** DONE Support Boltdb
 ** DONE Stop and start consumer
 ** DONE Make the example with complex data structure
 ** DONE Publish feed for aggreates
@@ -26,3 +22,9 @@
 ** DONE Revisit bolt implementation & handle errors
 ** DONE Integrate coveralls
 ** DONE Integrate Travis
+
+* Release 2 [0%]
+** TODO Add monitoring support by exposing event stats
+** TODO Snapshot of aggregates
+** TODO Support postgres
+** TODO Generate Aggregate using cli
