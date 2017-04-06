@@ -56,21 +56,21 @@ func (store *BoltEventStore) GetEvents(aggregateId string) []Event {
 
 func (store *BoltEventStore) SaveEvents(aggregateId string, events []Event) error {
 	return store.db.Update(func(tx *bolt.Tx) error {
-		eventsBucket := tx.Bucket([]byte(EVENTS_BUCKET))
-		metadataBucket := tx.Bucket([]byte(EVENT_METADATA_BUCKET))
-		aggregateBucket := tx.Bucket([]byte(AGGREGATES_BUCKET))
+		eb := tx.Bucket([]byte(EVENTS_BUCKET))
+		mb := tx.Bucket([]byte(EVENT_METADATA_BUCKET))
+		ab := tx.Bucket([]byte(AGGREGATES_BUCKET))
 		for _, event := range events {
 
-			if err := aggregateBucket.Put([]byte(aggregateId+"::"+string(event.AggregateVersion)), []byte(event.Id)); err != nil {
+			if err := ab.Put([]byte(aggregateId+"::"+string(event.AggregateVersion)), []byte(event.Id)); err != nil {
 				return err
 			}
 
-			if bytes, err := event.Serialize(); err != nil || eventsBucket.Put([]byte(event.Id), bytes) != nil {
+			if bytes, err := event.Serialize(); err != nil || eb.Put([]byte(event.Id), bytes) != nil {
 				return err
 			}
 
-			offset, _ := metadataBucket.NextSequence()
-			if bytes, err := event.EventMetaData.Serialize(); err != nil || metadataBucket.Put([]byte(strconv.FormatUint(offset, 10)), bytes) != nil {
+			offset, _ := mb.NextSequence()
+			if bytes, err := event.EventMetaData.Serialize(); err != nil || mb.Put([]byte(strconv.FormatUint(offset, 10)), bytes) != nil {
 				return err
 			}
 		}
