@@ -65,12 +65,12 @@ func (store *BoltEventStore) SaveEvents(aggregateId string, events []Event) erro
 				return err
 			}
 
-			if e, err := event.Serialize(); err != nil || eventsBucket.Put([]byte(event.Id), e) != nil {
+			if bytes, err := event.Serialize(); err != nil || eventsBucket.Put([]byte(event.Id), bytes) != nil {
 				return err
 			}
 
 			offset, _ := metadataBucket.NextSequence()
-			if em, err := event.EventMetaData.Serialize(); err != nil || metadataBucket.Put([]byte(strconv.FormatUint(offset, 10)), em) != nil {
+			if bytes, err := event.EventMetaData.Serialize(); err != nil || metadataBucket.Put([]byte(strconv.FormatUint(offset, 10)), bytes) != nil {
 				return err
 			}
 		}
