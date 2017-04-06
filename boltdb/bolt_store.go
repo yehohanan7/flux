@@ -80,7 +80,8 @@ func (store *BoltEventStore) GetEventMetaDataFrom(offset, count int) []EventMeta
 		for k, v := c.Seek(min); k != nil && bytes.Compare(k, max) <= 0; k, v = c.Next() {
 			m := new(EventMetaData)
 			if err := deseralize(v, m); err != nil {
-				glog.Fatal("Error deserializing event", err)
+				glog.Error("Error deserializing event", err)
+				return err
 			}
 			metas = append(metas, *m)
 		}
