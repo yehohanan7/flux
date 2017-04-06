@@ -1,8 +1,6 @@
 package cqrs
 
 import (
-	"bytes"
-	"encoding/gob"
 	"reflect"
 	"time"
 
@@ -23,19 +21,20 @@ type Event struct {
 	Payload interface{} `json:"payload"`
 }
 
-func deserialize(data []byte, target interface{}) error {
-	b := bytes.Buffer{}
-	b.Write(data)
-	d := gob.NewDecoder(&b)
-	return d.Decode(target)
-}
-
 func (e *EventMetaData) Deserialize(data []byte) error {
 	return deserialize(data, e)
 }
 
 func (e *Event) Deserialize(data []byte) error {
 	return deserialize(data, e)
+}
+
+func (e *Event) Serialize() ([]byte, error) {
+	return serialize(e)
+}
+
+func (e *EventMetaData) Serialize() ([]byte, error) {
+	return serialize(e)
 }
 
 //Create new event

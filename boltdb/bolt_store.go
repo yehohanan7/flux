@@ -60,16 +60,25 @@ func (store *BoltEventStore) SaveEvents(aggregateId string, events []Event) erro
 		metadataBucket := tx.Bucket([]byte(EVENT_METADATA_BUCKET))
 		aggregateBucket := tx.Bucket([]byte(AGGREGATES_BUCKET))
 		for _, event := range events {
+
 			if err := aggregateBucket.Put([]byte(aggregateId+"::"+string(event.AggregateVersion)), []byte(event.Id)); err != nil {
 				return err
 			}
 
-			if err := save(eventsBucket, []byte(event.Id), event); err != nil {
+			e, err := event.Serialize()
+			if err != nil {
+				return err
+			}
+			if err := eventsBucket.Put([]byte(event.Id), e); err != nil {
 				return err
 			}
 
 			offset, _ := metadataBucket.NextSequence()
-			if err := save(metadataBucket, []byte(strconv.FormatUint(offset, 10)), event.EventMetaData); err != nil {
+			em, err := event.EventMetaData.Serialize()
+			if err != nil {
+				return err
+			}
+			if err := metadataBucket.Put([]byte(strconv.FormatUint(offset, 10)), em); err != nil {
 				return err
 			}
 		}
