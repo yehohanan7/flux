@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import bankApi from '../api/BankApi.js';
 export default {
   name: 'account',
   data () {
@@ -37,9 +38,13 @@ export default {
   methods:{
     debit: function(){
       this.balance -= amount.valueAsNumber;
+      bankApi.debit({amount: amount.valueAsNumber});
+      this.balance = bankApi.currentBalance();
+
     },
     credit: function(){
       this.balance += amount.valueAsNumber;
+      bankApi.credit({amount: amount.valueAsNumber});
     },
   }
 }
