@@ -5,9 +5,9 @@
 # Introduction
 "There is nothing called state. There are events and the story we tell about what it means."
 
-If you want to try CQRS & DDD, you would have a service which accepts commands on an aggregate and publish messages to a messaging system like kafka, and you will have various services consuming these messages and building views/read model from the messages.
+If you want to try CQRS & DDD, you would have a service which accepts commands on an aggregate and publish messages to a messaging system like kafka, and you will have various services consuming these messages and building views/read model from these messages.
 
-But if you feel you don't want to perform premature optimization, you just want to prototype an application with simple services without the hassle of kafka, then Flux is the answer for you!
+But if you feel you just need a simple applicaiton without the hassle of horizontal scalability of kafka, then Flux is the answer for you!
 
 
 ## Aggregate
