@@ -1,10 +1,10 @@
-* Release 1 [76%]
-** TODO Test with sample app
-** TODO Reject negative offset value
+* Release 1 [80%]
 ** TODO Implement offset store in bolt
+** TODO Test with sample app
 ** TODO Documentation
 ** TODO Design a logo
 ** TODO Cleanup consumer test with better mock server
+** DONE Reject negative offset value
 ** DONE Encode/decode should not have fatal
 ** DONE Support Boltdb
 ** DONE Stop and start consumer
