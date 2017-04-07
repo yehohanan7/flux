@@ -91,3 +91,7 @@ for {
 
 ## Read model storage
 As you notice, flux doesn't support storage of your read models. once you get the events, you could store the events/state in any storage system. however, flux will provide a default storage for storing read models in future releases
+
+
+## Sample application
+There is a simple example application [here](https://github.com/yehohanan7/flux/tree/master/examples/bank) if you would like to refer
