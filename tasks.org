@@ -1,5 +1,6 @@
-* Release 1 [83%]
+* Release 1 [80%]
 ** TODO Test with sample app
+** TODO Implement offset store in bolt
 ** TODO Documentation
 ** TODO Design a logo
 ** TODO Cleanup consumer test with better mock server

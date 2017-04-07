@@ -1,6 +1,7 @@
 package consumer
 
 import (
+	"encoding/gob"
 	"reflect"
 	"strconv"
 	"time"
@@ -87,5 +88,10 @@ func (c *SimpleConsumer) Stop() {
 }
 
 func New(url string, events []interface{}, store OffsetStore, pollInterval time.Duration) *SimpleConsumer {
-	return &SimpleConsumer{url, eventMap(events), store, pollInterval, false, false}
+	em := eventMap(events)
+	for _, eventType := range em {
+		gob.Register(reflect.New(eventType).Elem().Interface())
+	}
+
+	return &SimpleConsumer{url, em, store, pollInterval, false, false}
 }
