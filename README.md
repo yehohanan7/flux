@@ -55,6 +55,11 @@ func (acc *Account) HandleAccountCredited(event AccountCredited) {
 	acc.Balance = acc.Balance + event.Amount
 }
 
+
+//Execute command
+acc.Credit(100)
+acc.Credit(150)
+acc.Save()
 ```
 **Note that you should have the handler method prefixed with the name "Handle"**
 
