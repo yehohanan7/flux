@@ -103,7 +103,7 @@ you don't have to process the json feed to build your read model, you can just s
 ```go
 //stores the offset to know where to consumer from after a restart
 offsetStore := flux.NewOffsetStore()
-consumer := flux.NewEventConsumer("http://entityservicehost:port/events", []cqrs.Event{AccountCredited{}}, offsetStore)
+consumer := flux.NewEventConsumer("http://entityservicehost:port/events", []interface{}{AccountCredited{}}, offsetStore)
 eventCh := make(chan interface{})
 
 //Start consuming
