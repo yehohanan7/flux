@@ -1,11 +1,12 @@
 package test
 
 import (
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/yehohanan7/flux"
 	"github.com/yehohanan7/flux/cqrs"
-	"github.com/yehohanan7/flux/memory"
 )
 
 type Account struct {
@@ -39,18 +40,20 @@ func (acc *Account) Debit(amount int) {
 }
 
 func TestAggregate(t *testing.T) {
-	store := memory.NewEventStore()
+	for _, store := range []cqrs.EventStore{flux.NewBoltStore("flux_smoke.db"), flux.NewMemoryStore()} {
+		accountId := "account-id"
+		existingAccount := new(Account)
+		existingAccount.Aggregate = cqrs.NewAggregate(accountId, existingAccount, store)
 
-	accountId := "account-id"
-	existingAccount := new(Account)
-	existingAccount.Aggregate = cqrs.NewAggregate(accountId, existingAccount, store)
+		existingAccount.Credit(5)
+		existingAccount.Credit(10)
+		existingAccount.Debit(1)
+		existingAccount.Save()
 
-	existingAccount.Credit(5)
-	existingAccount.Credit(10)
-	existingAccount.Debit(1)
-	existingAccount.Save()
+		account := new(Account)
+		account.Aggregate = cqrs.GetAggregate(accountId, account, store)
+		assert.Equal(t, 14, account.Balance)
+	}
+	os.Remove("flux_smoke.db")
 
-	account := new(Account)
-	account.Aggregate = cqrs.GetAggregate(accountId, account, store)
-	assert.Equal(t, 14, account.Balance)
 }
