@@ -3,7 +3,7 @@
 
 
 # Introduction
-"There is nothing called state. There are events and the story we tell about what it means."
+*"There is nothing called state. There are events and the story we tell about what it means."*
 
 If you want to try CQRS & DDD, you would have a service which accepts commands on an aggregate and publish messages to a messaging system like kafka, and you will have various services consuming these messages and building views/read model from these messages.
 
@@ -33,7 +33,7 @@ acc := new(Account)
 acc.Aggregate = cqrs.NewAggregate("account-id", acc, flux.NewMemoryStore())
 ```
 
-The last argument is an implementation of EventStore interface, there are 2 implementations at the moment an inmemory one and a boltdb implementation
+The last argument is an EventStore, which provides an implementation to store and retrieve events - there are 2 implementations at the moment an inmemory one and a boltdb implementation
 ```go
 store := flux.NewBoltStore("path/to/database")
 ```
@@ -50,25 +50,25 @@ func (acc *Account) Credit(amount int) {
 	acc.Update(AccountCredited{amount})
 }
 
-//Event handler to allow you to update the state of the aggregate
+//Event handler to allow you to update the state of the aggregate as a result of a command
 func (acc *Account) HandleAccountCredited(event AccountCredited) {
 	acc.Balance = acc.Balance + event.Amount
 }
 
 ```
-*Note that you should have the handler method prefixed with the name "Handle"*
+**Note that you should have the handler method prefixed with the name "Handle"**
 
 
 ok, now you need to ensure remote services gets the events from this aggregate, which is pretty simple if you have a mux router in your application.
 
 ```go
-	router.HandleFunc("/events", flux.FeedHandler(store))
-	router.HandleFunc("/events/{id}", flux.FeedHandler(store))
+router.HandleFunc("/events", flux.FeedHandler(store))
+router.HandleFunc("/events/{id}", flux.FeedHandler(store))
 ```
 
 ## Read models
 
-okay, now you need to build a read model from the events published by the aggregate.
+okay, now you need to build a read model from the events published by the aggregate, which means you need an event consumer.
 
 ```go
 //stores the offset to know where to consumer from after a restart
@@ -88,3 +88,6 @@ for {
   }
 }
 ```
+
+## Read model storage
+As you notice, flux doesn't support storage of your read models. once you get the events, you could store the events/state in any storage system. however, flux will provide a default storage for storing read models in future releases
