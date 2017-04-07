@@ -119,6 +119,13 @@ for {
 }
 ```
 
+Pause,Resume & Stop the consumer
+```go
+consumer.Pause()
+consumer.Resume()
+consumer.Stop()
+```
+
 ## Read model storage
 As you notice, flux doesn't support storage of your read models. once you get the events, you could store the events/state in any storage system. however, flux will provide a default storage for storing read models in future releases
 
