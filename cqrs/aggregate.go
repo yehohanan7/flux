@@ -53,7 +53,7 @@ func (aggregate *Aggregate) apply(events ...Event) {
 func NewAggregate(id string, entity interface{}, store EventStore) Aggregate {
 	handlers := NewHandlers(entity)
 	for eventType, _ := range handlers {
-		gob.Register(reflect.New(eventType))
+		gob.Register(reflect.New(eventType).Elem().Interface())
 	}
 
 	aggregate := Aggregate{
