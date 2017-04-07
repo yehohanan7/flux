@@ -17,8 +17,12 @@ var generator = JsonFeedGenerator{}
 
 func events(w http.ResponseWriter, r *http.Request, store EventStore) {
 	offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
-	metas := store.GetEventMetaDataFrom(offset, DEFAULT_PAGE_SIZE)
 	w.Header().Set("Content-Type", "application/json")
+	if offset < 0 {
+		w.WriteHeader(422)
+		w.Write([]byte(`{"message": "Invalid offset"}`))
+	}
+	metas := store.GetEventMetaDataFrom(offset, DEFAULT_PAGE_SIZE)
 	w.Write(generator.Generate(GetAbsoluteUrl(r), "event feed", metas))
 }
 

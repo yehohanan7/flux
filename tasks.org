@@ -1,5 +1,6 @@
-* Release 1 [80%]
+* Release 1 [76%]
 ** TODO Test with sample app
+** TODO Reject negative offset value
 ** TODO Implement offset store in bolt
 ** TODO Documentation
 ** TODO Design a logo

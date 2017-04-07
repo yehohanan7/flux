@@ -1,6 +1,6 @@
 # -*- restclient -*-
 
-:account_id = 6878eb50-930d-4c95-8b6f-c70ac0aca8a1
+:account_id = 640560b0-94e6-4524-815a-db016b500d96
 
 #Add new account
 POST http://localhost:3000/accounts
@@ -23,10 +23,14 @@ GET http://localhost:3000/accounts/:account_id/summary
 #Event feed
 GET http://localhost:3000/events
 
+#Invalid offset
+GET http://localhost:3000/events?offset=-1
+
 #Event
 GET http://localhost:3000/events/974556e1-579d-4c37-8746-60462c9b7d18
 
-
-
 #Get event
 GET http://localhost:3000/events/a87b5df1-f767-48a3-8fed-71558c142ea9
+
+
+
