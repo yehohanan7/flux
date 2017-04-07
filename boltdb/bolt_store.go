@@ -27,10 +27,7 @@ func (store *BoltEventStore) GetEvent(id string) Event {
 		b := tx.Bucket([]byte(EVENTS_BUCKET))
 
 		if v := b.Get([]byte(id)); v != nil {
-			if err := event.Deserialize(v); err != nil {
-				glog.Errorf("could not deserialize event with id %s", id)
-				return err
-			}
+			event.Deserialize(v)
 		}
 		return nil
 	})
@@ -70,12 +67,14 @@ func (store *BoltEventStore) SaveEvents(aggregateId string, events []Event) erro
 				return err
 			}
 
-			if bytes, err := event.Serialize(); err != nil || eb.Put([]byte(event.Id), bytes) != nil {
+			bytes := event.Serialize()
+			if err := eb.Put([]byte(event.Id), bytes); err != nil {
 				return err
 			}
 
 			offset, _ := mb.NextSequence()
-			if bytes, err := event.EventMetaData.Serialize(); err != nil || mb.Put([]byte(strconv.FormatUint(offset, 10)), bytes) != nil {
+			bytes = event.EventMetaData.Serialize()
+			if err := mb.Put([]byte(strconv.FormatUint(offset, 10)), bytes); err != nil {
 				return err
 			}
 		}
@@ -92,10 +91,7 @@ func (store *BoltEventStore) GetEventMetaDataFrom(offset, count int) []EventMeta
 		c := tx.Bucket([]byte(EVENT_METADATA_BUCKET)).Cursor()
 		for k, v := c.Seek(min); k != nil && bytes.Compare(k, max) <= 0; k, v = c.Next() {
 			m := new(EventMetaData)
-			if err := m.Deserialize(v); err != nil {
-				glog.Error("Error deserializing event", err)
-				return err
-			}
+			m.Deserialize(v)
 			metas = append(metas, *m)
 		}
 		return nil

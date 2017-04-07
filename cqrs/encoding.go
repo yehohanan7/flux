@@ -7,20 +7,21 @@ import (
 	"github.com/golang/glog"
 )
 
-func deserialize(data []byte, target interface{}) error {
+func deserialize(data []byte, target interface{}) {
 	b := bytes.Buffer{}
 	b.Write(data)
 	d := gob.NewDecoder(&b)
-	return d.Decode(target)
+	if err := d.Decode(target); err != nil {
+		glog.Fatal("error while decoding ", target)
+	}
 }
 
-func serialize(target interface{}) ([]byte, error) {
+func serialize(target interface{}) []byte {
 	buffer := bytes.Buffer{}
 	encoder := gob.NewEncoder(&buffer)
 	err := encoder.Encode(target)
 	if err != nil {
-		glog.Error("could not serialize data %v", target)
-		return nil, err
+		glog.Fatal("could not serialize data %v", target)
 	}
-	return buffer.Bytes(), nil
+	return buffer.Bytes()
 }

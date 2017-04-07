@@ -21,19 +21,19 @@ type Event struct {
 	Payload interface{} `json:"payload"`
 }
 
-func (e *EventMetaData) Deserialize(data []byte) error {
-	return deserialize(data, e)
+func (e *EventMetaData) Deserialize(data []byte) {
+	deserialize(data, e)
 }
 
-func (e *Event) Deserialize(data []byte) error {
-	return deserialize(data, e)
+func (e *Event) Deserialize(data []byte) {
+	deserialize(data, e)
 }
 
-func (e *Event) Serialize() ([]byte, error) {
+func (e *Event) Serialize() []byte {
 	return serialize(e)
 }
 
-func (e *EventMetaData) Serialize() ([]byte, error) {
+func (e *EventMetaData) Serialize() []byte {
 	return serialize(e)
 }
 
