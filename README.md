@@ -18,7 +18,7 @@ This is how you would define an aggregate in Flux:
 ```go
 import(
   "github.com/yehohanan7/flux"
-	"github.com/yehohanan7/flux/cqrs"
+  "github.com/yehohanan7/flux/cqrs"
 )
 
 //Account is an aggregate
