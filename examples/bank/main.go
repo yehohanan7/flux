@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	store   = flux.NewEventStore()
+	store   = flux.NewBoltStore("bank.db")
 	summary = NewAccountSummaryRepository("http://localhost:3000/events")
 )
 

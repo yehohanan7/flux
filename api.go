@@ -4,15 +4,21 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/yehohanan7/flux/boltdb"
 	"github.com/yehohanan7/flux/consumer"
 	. "github.com/yehohanan7/flux/cqrs"
 	"github.com/yehohanan7/flux/feed"
 	"github.com/yehohanan7/flux/memory"
 )
 
-//Create a new in memory store
-func NewEventStore() EventStore {
+//Create a new memory store
+func NewMemoryStore() EventStore {
 	return memory.NewEventStore()
+}
+
+//Create a new bolt store
+func NewBoltStore(path string) EventStore {
+	return boltdb.NewBoltStore(path)
 }
 
 //Create new in memory offset store
