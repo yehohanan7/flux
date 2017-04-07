@@ -81,8 +81,8 @@ go consumer.Start(eventCh)
 
 //Fetch the events and build your read models
 for {
-	event := <-eventCh
-	switch event.(type) {
+  event := <-eventCh
+  switch event.(type) {
   case AccountCredited:
     fmt.Println(event.(AccountCredited))
   }
