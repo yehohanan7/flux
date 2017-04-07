@@ -71,14 +71,39 @@ router.HandleFunc("/events", flux.FeedHandler(store))
 router.HandleFunc("/events/{id}", flux.FeedHandler(store))
 ```
 
-## Read models
+Attaching the feed handler to your router publishes the events of the aggregate as a feed, which would like like below
 
-okay, now you need to build a read model from the events published by the aggregate, which means you need an event consumer.
+```json
+{
+  "description": "event feed",
+  "events": [
+    {
+      "event_id": "47d074c3-ba83-40e2-8720-804b73a202b9",
+      "url": "http://localhost:3000/events/47d074c3-ba83-40e2-8720-804b73a202b9",
+      "aggregate_name": "*account.Account",
+      "aggregate_version": 0,
+      "event_type": "account.AccountCreated",
+      "created": "Fri Apr  7 15:19:18 2017"
+    },
+    {
+      "event_id": "174a40b6-104a-4be5-a352-4e61b524d3dc",
+      "url": "http://localhost:3000/events/174a40b6-104a-4be5-a352-4e61b524d3dc",
+      "aggregate_name": "*account.Account",
+      "aggregate_version": 1,
+      "event_type": "account.AccountCredited",
+      "created": "Fri Apr  7 15:19:27 2017"
+    }
+  ]
+}
+```
+
+## Read models
+you don't have to process the json feed to build your read model, you can just start a Flux event consumer and provide it with a list of events you are interested it and you will get back all the events over a channel
 
 ```go
 //stores the offset to know where to consumer from after a restart
 offsetStore := flux.NewOffsetStore()
-consumer := flux.NewEventConsumer(url, events, offsetStore)
+consumer := flux.NewEventConsumer("http://entityservicehost:port/events", []cqrs.Event{AccountCredited{}}, offsetStore)
 eventCh := make(chan interface{})
 
 //Start consuming

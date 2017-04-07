@@ -1,6 +1,6 @@
 # -*- restclient -*-
 
-:account_id = 640560b0-94e6-4524-815a-db016b500d96
+:account_id = 694e902c-efab-4a7d-85bc-7850611fb6a9
 
 #Add new account
 POST http://localhost:3000/accounts
