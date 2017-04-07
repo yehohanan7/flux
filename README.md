@@ -71,7 +71,7 @@ router.HandleFunc("/events", flux.FeedHandler(store))
 router.HandleFunc("/events/{id}", flux.FeedHandler(store))
 ```
 
-Attaching the feed handler to your router publishes the events of the aggregate as a feed, which would like like below
+Attaching the feed handler to your router publishes the events of the aggregate as a feed, which would look like below
 
 ```json
 {
