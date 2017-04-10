@@ -21,7 +21,7 @@ func (r *AccountRepository) Get(id string) Summary {
 func NewAccountSummaryRepository(url string) *AccountRepository {
 	repo := &AccountRepository{make(map[string]int)}
 	events := []interface{}{AccountCreated{}, AccountCredited{}, AccountDebited{}}
-	store := flux.NewOffsetStore()
+	store := flux.NewMemoryOffsetStore()
 	consumer := flux.NewEventConsumer(url, events, store)
 	go func() {
 		eventCh := make(chan interface{})

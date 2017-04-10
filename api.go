@@ -22,8 +22,13 @@ func NewBoltStore(path string) EventStore {
 }
 
 //Create new in memory offset store
-func NewOffsetStore() OffsetStore {
+func NewMemoryOffsetStore() OffsetStore {
 	return memory.NewOffsetStore()
+}
+
+//Offset store backed by boltdb
+func NewBoltOffsetStore(path string) OffsetStore {
+	return boltdb.NewOffsetStore(path)
 }
 
 //Start feeding events over the mux router
