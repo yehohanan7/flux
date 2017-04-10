@@ -11,7 +11,7 @@ It's a good practice to have one command service per Aggregate (as per DDD termi
 
 
 ## Aggregate
-Flux suggests that you use one service per [Aggregate](http://serviceorientation.com/soaglossary/entity_service), which accepts commands and publishes events.
+Flux suggests that you use one service per [Aggregate](https://martinfowler.com/bliki/DDD_Aggregate.html), which accepts commands and publishes events.
 
 This is how you would define an aggregate in Flux:
 
