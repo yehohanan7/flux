@@ -5,9 +5,9 @@
 # Introduction
 *"There is nothing called state. There are events and the story we tell about what it means."*
 
-If you want to try CQRS & DDD, you would have a service which accepts commands on an aggregate and publish messages to a messaging system like kafka, and you will have various services consuming these messages and building views/read model from these messages.
+Flux allows you to quickly build an application in CQRS way without the hassle of a messaging system like RabbitMQ or Kafka inbetween your command and read model services.
 
-But if you feel you just need a simple applicaiton without the hassle of horizontal scalability of kafka, then Flux is the answer for you!
+It's a good practice to have one command service per Aggregate (as per DDD terminology) and various read model/view serives. the command services store the events that are emited by each command and expose the same as a json feed for the consumers (read model services) to consume in regular intervals.
 
 
 ## Aggregate
