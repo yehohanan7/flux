@@ -102,7 +102,7 @@ you don't have to process the json feed to build your read model, you can just s
 
 ```go
 //stores the offset to know where to consumer from after a restart
-offsetStore := flux.NewOffsetStore()
+offsetStore := flux.NewMemoryOffsetStore()
 consumer := flux.NewEventConsumer("http://entityservicehost:port/events", []interface{}{AccountCredited{}}, offsetStore)
 eventCh := make(chan interface{})
 
@@ -127,7 +127,7 @@ consumer.Stop()
 ```
 
 ## Read model storage
-As you notice, flux doesn't support storage of your read models. once you get the events, you could store the events/state in any storage system. however, flux will provide a default storage for storing read models in future releases
+As you notice, flux doesn't support storage of your read models. once you get the events, you could store the events/state in any storage system. however, flux will provide a default storage for storing read models in the future releases
 
 
 ## Sample application
