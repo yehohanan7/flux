@@ -7,7 +7,7 @@
 
 Flux allows you to quickly build an application in CQRS way without the hassle of a messaging system like RabbitMQ or Kafka inbetween your command and read model services.
 
-It's a good practice to have one command service per Aggregate (as per DDD terminology) and various read model/view services. the command services store the events that are emited by each command and expose the same as a json feed for the consumers (read model services) to consume in regular intervals allowing you to easily decouple commands and read model services.
+It's a good practice to have one command service per Aggregate (as per DDD terminology) and various read model/view services. the command service stores the events that are emited by each command and expose the same as a json feed for the consumers (read model services) to consume in regular intervals allowing you to easily decouple commands and read model services.
 
 
 ## Aggregate
