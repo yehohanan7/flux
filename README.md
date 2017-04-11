@@ -119,7 +119,7 @@ for {
 }
 ```
 
-Pause,Resume & Stop the consumer
+You could pause,resume & stop the consumer
 ```go
 consumer.Pause()
 consumer.Resume()
