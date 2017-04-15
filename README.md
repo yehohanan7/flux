@@ -12,7 +12,7 @@ It's a good practice to have one command service per Aggregate (as per DDD termi
 ## Components
 ![architecture](https://raw.githubusercontent.com/yehohanan7/flux/master/static/architecture.png)
 
-## Aggregate
+### Aggregate
 Flux suggests that you use one service per [Aggregate](https://martinfowler.com/bliki/DDD_Aggregate.html), which accepts commands and publishes events.
 
 This is how you would define an aggregate in Flux:
@@ -99,7 +99,7 @@ Attaching the feed handler to your router publishes the events of the aggregate 
 }
 ```
 
-## Read models
+### Read models
 you don't have to process the json feed to build your read model, you can just start a Flux event consumer and provide it with a list of events you are interested it and you will get back all the events over a channel
 
 ```go
