@@ -9,6 +9,8 @@ Flux allows you to quickly build an application in CQRS way without the hassle o
 
 It's a good practice to have one command service per Aggregate (as per DDD terminology) and various read model/view services. the command service stores the events that are emited by each command and expose the same as a json feed for the consumers (read model services) to consume in regular intervals allowing you to easily decouple commands and read model services.
 
+## Components
+![architecture](https://raw.githubusercontent.com/yehohanan7/flux/master/static/architecture.png)
 
 ## Aggregate
 Flux suggests that you use one service per [Aggregate](https://martinfowler.com/bliki/DDD_Aggregate.html), which accepts commands and publishes events.
