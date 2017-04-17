@@ -7,7 +7,7 @@
 
 Flux allows you to quickly build an application in CQRS way without the hassle of a messaging system like RabbitMQ or Kafka inbetween your command and read model services.
 
-It's a good practice to have one command service per Aggregate (as per DDD terminology) and various read model/view services. the command service stores the events that are emited by each command and expose the same as a json feed for the consumers (read model services) to consume in regular intervals allowing you to easily decouple commands and read model services.
+It's a good practice to have one command service per Aggregate (as per DDD terminology) and various read model/view services. the command service stores the events that are emited by each command and expose the same as a json feed for the consumers (read model services) to consume in regular intervals allowing you to easily decouple commands and "read model" services.
 
 ## Components
 ![architecture](https://raw.githubusercontent.com/yehohanan7/flux/master/static/architecture.png)
@@ -15,7 +15,7 @@ It's a good practice to have one command service per Aggregate (as per DDD termi
 ### Aggregate
 Flux suggests that you use one service per [Aggregate](https://martinfowler.com/bliki/DDD_Aggregate.html), which accepts commands and publishes events.
 
-This is how you would define an aggregate in Flux:
+This is how you can define an aggregate in Flux:
 
 ```go
 import(
@@ -40,7 +40,7 @@ The last argument is an EventStore, which provides an implementation to store an
 store := flux.NewBoltStore("path/to/database")
 ```
 
-Once you have the aggregate initialized, you can execute commands on it which will emit events
+Once you have the aggregate initialized, you can execute commands on it which will in turn emit events, make sure to update the state of the handler through a handler method (prefixed with the name *Handle*) on the aggregate
 ```go
 //My event
 type AccountCredited struct {
@@ -63,17 +63,16 @@ acc.Credit(100)
 acc.Credit(150)
 acc.Save()
 ```
-**Note that you should have the handler method prefixed with the name "Handle"**
 
-
-ok, now you need to ensure remote services gets the events from this aggregate, which is pretty simple if you have a mux router in your application.
+### FeedHandler
+Feed handler allows you to publish the events as a json feed for the outside world.
 
 ```go
 router.HandleFunc("/events", flux.FeedHandler(store))
 router.HandleFunc("/events/{id}", flux.FeedHandler(store))
 ```
 
-Attaching the feed handler to your router publishes the events of the aggregate as a feed, which would look like below
+Same feed exposed by the endpoint /events is as below
 
 ```json
 {
@@ -99,8 +98,8 @@ Attaching the feed handler to your router publishes the events of the aggregate 
 }
 ```
 
-### Read models
-you don't have to process the json feed to build your read model, you can just start a Flux event consumer and provide it with a list of events you are interested it and you will get back all the events over a channel
+### EventConsumer
+Event consumer allows you to consumer the events emitted by the aggreate in another service. you can start the event consumer like shown below.
 
 ```go
 //stores the offset to know where to consumer from after a restart
@@ -128,9 +127,8 @@ consumer.Resume()
 consumer.Stop()
 ```
 
-## Read model storage
-As you notice, flux doesn't support storage of your read models. once you get the events, you could store the events/state in any storage system. however, flux will provide a default storage for storing read models in the future releases
-
+### ReadModel
+Read model is nothing but the result of how you interpret the events provided by the consumer. you need to store the read model if you need, but in the next releases the consumer will also allow you to take snapshots of the read model and store it in an internal boltdb
 
 ## Sample application
 There is a simple example application [here](https://github.com/yehohanan7/flux/tree/master/examples/bank) if you would like to refer
