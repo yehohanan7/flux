@@ -1,6 +1,8 @@
 package account
 
 import (
+	"time"
+
 	"github.com/golang/glog"
 	"github.com/yehohanan7/flux"
 )
@@ -22,7 +24,7 @@ func NewAccountSummaryRepository(url string) *AccountRepository {
 	repo := &AccountRepository{make(map[string]int)}
 	events := []interface{}{AccountCreated{}, AccountCredited{}, AccountDebited{}}
 	store := flux.NewMemoryOffsetStore()
-	consumer := flux.NewEventConsumer(url, events, store)
+	consumer := flux.NewEventConsumer(url, 5*time.Second, events, store)
 	go func() {
 		eventCh := make(chan interface{})
 		glog.Info("Starting consumer...")

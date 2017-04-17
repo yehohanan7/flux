@@ -99,12 +99,12 @@ Same feed exposed by the endpoint /events is as below
 ```
 
 ### EventConsumer
-Event consumer allows you to consumer the events emitted by the aggreate in another service. you can start the event consumer like shown below.
+Event consumer allows you to consumer the events emitted by the aggreate in another service. you can start the event consumer like shown below, in the below example the consumer polls the aggregate service every 5 seconds to check for new events.
 
 ```go
 //stores the offset to know where to consumer from after a restart
 offsetStore := flux.NewMemoryOffsetStore()
-consumer := flux.NewEventConsumer("http://entityservicehost:port/events", []interface{}{AccountCredited{}}, offsetStore)
+consumer := flux.NewEventConsumer("http://entityservicehost:port/events", 5 * time.Second, []interface{}{AccountCredited{}}, offsetStore)
 eventCh := make(chan interface{})
 
 //Start consuming

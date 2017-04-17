@@ -37,6 +37,6 @@ func FeedHandler(store EventStore) func(http.ResponseWriter, *http.Request) {
 }
 
 //Create new consumer
-func NewEventConsumer(url string, events []interface{}, store OffsetStore) EventConsumer {
-	return consumer.New(url, events, store, 5*time.Second)
+func NewEventConsumer(url string, interval time.Duration, events []interface{}, store OffsetStore) EventConsumer {
+	return consumer.New(url, events, store, interval)
 }
