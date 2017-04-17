@@ -57,6 +57,17 @@ func (store *BoltEventStore) SaveEvents(aggregateId string, events []Event) erro
 		eb := tx.Bucket([]byte(EVENTS_BUCKET))
 		mb := tx.Bucket([]byte(EVENT_METADATA_BUCKET))
 		ab := tx.Bucket([]byte(AGGREGATES_BUCKET))
+
+		_, lastMeta := mb.Cursor().Last()
+
+		if lastMeta != nil && len(lastMeta) > 0 {
+			m := new(EventMetaData)
+			m.Deserialize(lastMeta)
+			if m.AggregateVersion+1 != events[0].AggregateVersion {
+				return errors.New("Conflict")
+			}
+		}
+
 		for _, event := range events {
 
 			ak := []byte(aggregateId + "::" + string(event.AggregateVersion))

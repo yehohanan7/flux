@@ -85,4 +85,16 @@ var _ = Describe("Bolt Event Store", func() {
 		Expect(store.GetEvents("aggregate-1")).To(Equal([]Event{e1, e2}))
 	})
 
+	It("Should reject invalid events", func() {
+		e1 := NewEvent("sample_aggregate", 0, EventPayload{"payload"})
+		e2 := NewEvent("sample_aggregate", 1, EventPayload{"payload"})
+		store.SaveEvents("aggregate-1", []Event{e1, e2})
+
+		for _, e := range []Event{NewEvent("sample_aggregate", 3, EventPayload{"payload"}), NewEvent("sample_aggregate", 1, EventPayload{"payload"})} {
+			Expect(store.SaveEvents("aggregate-1", []Event{e})).ShouldNot(BeNil())
+		}
+
+		Expect(store.SaveEvents("aggregate-1", []Event{NewEvent("sample_aggregate", 2, EventPayload{"payload"})})).Should(BeNil())
+	})
+
 })

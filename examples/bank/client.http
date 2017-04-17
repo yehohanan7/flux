@@ -1,6 +1,6 @@
 # -*- restclient -*-
 
-:account_id = 2e0f6a20-dcd0-453f-a766-51f0e5595c1a
+:account_id = 82a5609f-6ef1-4ed5-ba3e-13155f4b744c
 
 #Add new account
 POST http://localhost:3000/accounts
@@ -10,12 +10,12 @@ Content-type: application/json
 #Credit account
 POST http://localhost:3000/accounts/:account_id/credit
 Content-type: application/json
-{"amount": 10}
+{"amount": 1}
 
 #Debit account
 POST http://localhost:3000/accounts/:account_id/debit
 Content-type: application/json
-{"amount": 5}
+{"amount": 1}
 
 #Summary
 GET http://localhost:3000/accounts/:account_id/summary
@@ -24,7 +24,7 @@ GET http://localhost:3000/accounts/:account_id/summary
 GET http://localhost:3000/events
 
 #Invalid offset
-GET http://localhost:3000/events?offset=-1
+GET http://localhost:3000/events?offset=1
 
 #Event
 GET http://localhost:3000/events/974556e1-579d-4c37-8746-60462c9b7d18

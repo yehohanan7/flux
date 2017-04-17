@@ -33,7 +33,10 @@ func (command *CreditAccountCommand) Execute() (interface{}, error) {
 	glog.Info("Executing credit account command:", command)
 	account := GetAccount(command.AccountId, store)
 	transId := account.Credit(command.Amount)
-	account.Save()
+	if err := account.Save(); err != nil {
+		glog.Error("Error while saving account", err)
+		return nil, err
+	}
 	glog.Infof("Account %s credited with %v dollars\n", command.AccountId, command.Amount)
 	return transId, nil
 }
