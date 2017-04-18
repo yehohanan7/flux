@@ -40,7 +40,7 @@ The last argument is an EventStore, which provides an implementation to store an
 store := flux.NewBoltStore("path/to/database")
 ```
 
-Once you have the aggregate initialized, you can execute commands on it which will in turn emit events, make sure to update the state of the handler through a handler method (prefixed with the name *Handle*) on the aggregate
+Once you have the aggregate initialized, you can execute commands on it which will in turn emit events, make sure to update the state of the aggregate through a handler method (prefixed with the name *Handle*) on the aggregate
 ```go
 //My event
 type AccountCredited struct {
