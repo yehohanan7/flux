@@ -2,6 +2,7 @@ package account
 
 import (
 	"github.com/golang/glog"
+	"github.com/yehohanan7/flux/cqrs"
 )
 
 type Command interface {
@@ -33,8 +34,8 @@ func (command *CreditAccountCommand) Execute() (interface{}, error) {
 	glog.Info("Executing credit account command:", command)
 	account := GetAccount(command.AccountId, store)
 	transId := account.Credit(command.Amount)
-	if err := account.Save(); err != nil {
-		glog.Error("Error while saving account", err)
+	if err := account.Save(); err == cqrs.Conflict {
+		glog.Error("Conflict while saving account")
 		return nil, err
 	}
 	glog.Infof("Account %s credited with %v dollars\n", command.AccountId, command.Amount)

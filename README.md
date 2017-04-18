@@ -61,8 +61,13 @@ func (acc *Account) HandleAccountCredited(event AccountCredited) {
 //Execute command
 acc.Credit(100)
 acc.Credit(150)
-acc.Save()
+if err := acc.Save(); err == cqrs.Conflict {
+  //this error is due to concurrent modification of the aggregate, you should retry the request
+}
+
 ```
+
+
 
 ### FeedHandler
 Feed handler allows you to publish the events as a json feed for the outside world.

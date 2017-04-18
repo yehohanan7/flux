@@ -2,7 +2,6 @@ package boltdb
 
 import (
 	"bytes"
-	"errors"
 	"strconv"
 
 	"github.com/boltdb/bolt"
@@ -64,7 +63,7 @@ func (store *BoltEventStore) SaveEvents(aggregateId string, events []Event) erro
 			m := new(EventMetaData)
 			m.Deserialize(lastMeta)
 			if m.AggregateVersion+1 != events[0].AggregateVersion {
-				return errors.New("Conflict")
+				return Conflict
 			}
 		}
 
