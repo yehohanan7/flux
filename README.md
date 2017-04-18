@@ -139,7 +139,7 @@ Read model is nothing but the result of how you interpret the events provided by
 There is a simple example application [here](https://github.com/yehohanan7/flux/tree/master/examples/bank) if you would like to refer
 
 
-### Roadmap
+## Roadmap
 1. Optimize consumers by using websockets/server push
 2. Support option to publish events to kafka/rabbitmq
 3. publish metrics to graphite
