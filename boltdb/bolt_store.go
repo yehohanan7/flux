@@ -69,11 +69,8 @@ func (store *BoltEventStore) SaveEvents(aggregateId string, events []Event) erro
 		}
 
 		for _, event := range events {
-
 			ak := []byte(aggregateId + "::" + string(event.AggregateVersion))
-			if b := ab.Get(ak); b != nil {
-				return errors.New("aggregate already has the version saved")
-			}
+
 			if err := ab.Put(ak, []byte(event.Id)); err != nil {
 				return err
 			}
