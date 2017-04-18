@@ -96,15 +96,14 @@ func (store *BoltEventStore) SaveEvents(aggregateId string, events []Event) erro
 func (store *BoltEventStore) GetEventMetaDataFrom(offset, count int) []EventMetaData {
 	metas := make([]EventMetaData, 0)
 	store.db.View(func(tx *bolt.Tx) error {
-		c := tx.Bucket([]byte(EVENT_METADATA_BUCKET)).Cursor()
-		//bolt sequence starts from 1
-		for k, v := c.Seek([]byte(strconv.Itoa(offset + 1))); k != nil; k, v = c.Next() {
-			if sequence, _ := strconv.Atoi(string(k)); sequence > (offset + count) {
-				return nil
+		b := tx.Bucket([]byte(EVENT_METADATA_BUCKET))
+		for i := offset; i <= offset+count; i++ {
+			v := b.Get([]byte(strconv.Itoa(i)))
+			if v != nil && len(v) > 0 {
+				m := new(EventMetaData)
+				m.Deserialize(v)
+				metas = append(metas, *m)
 			}
-			m := new(EventMetaData)
-			m.Deserialize(v)
-			metas = append(metas, *m)
 		}
 		return nil
 	})

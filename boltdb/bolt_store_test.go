@@ -97,4 +97,17 @@ var _ = Describe("Bolt Event Store", func() {
 		Expect(store.SaveEvents("aggregate-1", []Event{NewEvent("sample_aggregate", 2, EventPayload{"payload"})})).Should(BeNil())
 	})
 
+	It("Should retrieve event meta data from specific offset", func() {
+		events := []Event{}
+		for i := 0; i < 15; i++ {
+			events = append(events, NewEvent("sample_aggregate", i, EventPayload{"payload"}))
+		}
+
+		err := store.SaveEvents("aggregate-1", events)
+		Expect(err).To(BeNil())
+		Expect(len(store.GetEventMetaDataFrom(0, 1))).To(Equal(1))
+		Expect(len(store.GetEventMetaDataFrom(0, 15))).To(Equal(15))
+		Expect(len(store.GetEventMetaDataFrom(5, 15))).To(Equal(11))
+	})
+
 })
