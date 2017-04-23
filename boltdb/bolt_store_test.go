@@ -29,7 +29,7 @@ var _ = Describe("Bolt Event Store", func() {
 	})
 
 	It("Should save events", func() {
-		expected := NewEvent("sample_aggregate", 1, EventPayload{"payload"})
+		expected := NewEvent("sample_aggregate", 0, EventPayload{"payload"})
 
 		err := store.SaveEvents("aggregate-1", []Event{expected})
 
@@ -62,16 +62,24 @@ var _ = Describe("Bolt Event Store", func() {
 	})
 
 	It("Should retreive events by aggregate Id", func() {
-		e1 := NewEvent("sample_aggregate", 0, EventPayload{"payload"})
-		e2 := NewEvent("sample_aggregate", 1, EventPayload{"payload"})
-		e3 := NewEvent("sample_aggregate", 0, EventPayload{"payload"})
-
-		store.SaveEvents("aggregate-1", []Event{e1, e2})
-		store.SaveEvents("aggregate-2", []Event{e3})
+		expected := make([]Event, 20)
+		for i := 0; i < 20; i++ {
+			expected[i] = NewEvent("sample_aggregate", i, EventPayload{"payload"})
+		}
+		store.SaveEvents("aggregate-1", expected)
 
 		events := store.GetEvents("aggregate-1")
-		Expect(events).To(HaveLen(2))
-		Expect(events).To(Equal([]Event{e1, e2}))
+
+		Expect(events).To(HaveLen(20))
+		for i, e := range events {
+			Expect(e).To(Equal(expected[i]))
+		}
+	})
+
+	It("Should handle empty events", func() {
+		events := store.GetEvents("unknown")
+
+		Expect(events).To(HaveLen(0))
 	})
 
 	It("Should reject aggregate with existing version", func() {

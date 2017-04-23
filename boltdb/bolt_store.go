@@ -1,7 +1,6 @@
 package boltdb
 
 import (
-	"bytes"
 	"strconv"
 
 	"github.com/boltdb/bolt"
@@ -34,17 +33,16 @@ func (store *BoltEventStore) GetEvent(id string) Event {
 }
 
 func (store *BoltEventStore) GetEvents(aggregateId string) []Event {
-	events := make([]Event, 0)
+	var events []Event
 	store.db.View(func(tx *bolt.Tx) error {
-
-		c := tx.Bucket([]byte(AGGREGATES_BUCKET)).Cursor()
-
-		prefix := []byte(aggregateId)
-
-		for k, eventId := c.Seek(prefix); k != nil && bytes.HasPrefix(k, prefix); k, eventId = c.Next() {
-			events = append(events, store.GetEvent(string(eventId)))
+		if b := tx.Bucket([]byte(aggregateId)); b != nil {
+			events = make([]Event, b.Stats().KeyN)
+			b.ForEach(func(k, v []byte) error {
+				version, _ := strconv.Atoi(string(k))
+				events[version] = store.GetEvent(string(v))
+				return nil
+			})
 		}
-
 		return nil
 	})
 
@@ -55,22 +53,18 @@ func (store *BoltEventStore) SaveEvents(aggregateId string, events []Event) erro
 	return store.db.Update(func(tx *bolt.Tx) error {
 		eb := tx.Bucket([]byte(EVENTS_BUCKET))
 		mb := tx.Bucket([]byte(EVENT_METADATA_BUCKET))
-		ab := tx.Bucket([]byte(AGGREGATES_BUCKET))
+		ab := createBucket(tx, aggregateId)
 
-		_, lastMeta := mb.Cursor().Last()
+		lastKey := strconv.Itoa(events[0].AggregateVersion - 1)
+		newKey := strconv.Itoa(events[0].AggregateVersion)
 
-		if lastMeta != nil && len(lastMeta) > 0 {
-			m := new(EventMetaData)
-			m.Deserialize(lastMeta)
-			if m.AggregateVersion+1 != events[0].AggregateVersion {
-				return Conflict
-			}
+		if ab.Get([]byte(newKey)) != nil || (events[0].AggregateVersion != 0 && ab.Get([]byte(lastKey)) == nil) {
+			return Conflict
 		}
 
 		for _, event := range events {
-			ak := []byte(aggregateId + "::" + string(event.AggregateVersion))
 
-			if err := ab.Put(ak, []byte(event.Id)); err != nil {
+			if err := ab.Put([]byte(strconv.Itoa(event.AggregateVersion)), []byte(event.Id)); err != nil {
 				return err
 			}
 
