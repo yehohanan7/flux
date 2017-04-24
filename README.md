@@ -141,6 +141,8 @@ There is a simple example application [here](https://github.com/yehohanan7/flux/
 
 ## Roadmap
 1. Optimize consumers by using websockets/server push
-2. Support option to emit events to external systems if required.
-3. publish metrics to graphite
+2. Support mongodb
+3. Support postgres
+4. Support option to emit events to external systems if required.
+5. publish metrics to graphite
 
