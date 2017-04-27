@@ -75,7 +75,7 @@ func (store *BoltEventStore) SaveEvents(aggregateId string, events []Event) erro
 
 			offset, _ := mb.NextSequence()
 			bytes = event.EventMetaData.Serialize()
-			if err := mb.Put([]byte(strconv.FormatUint(offset, 10)), bytes); err != nil {
+			if err := mb.Put([]byte(strconv.FormatUint(offset-uint64(1), 10)), bytes); err != nil {
 				return err
 			}
 		}
@@ -84,10 +84,11 @@ func (store *BoltEventStore) SaveEvents(aggregateId string, events []Event) erro
 }
 
 func (store *BoltEventStore) GetEventMetaDataFrom(offset, count int) []EventMetaData {
+
 	metas := make([]EventMetaData, 0)
 	store.db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(EVENT_METADATA_BUCKET))
-		for i := offset; i <= offset+count; i++ {
+		for i := offset; i < offset+count; i++ {
 			v := b.Get([]byte(strconv.Itoa(i)))
 			if v != nil && len(v) > 0 {
 				m := new(EventMetaData)

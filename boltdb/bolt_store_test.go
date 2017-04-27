@@ -106,16 +106,35 @@ var _ = Describe("Bolt Event Store", func() {
 	})
 
 	It("Should retrieve event meta data from specific offset", func() {
-		events := []Event{}
+		events1, events2 := []Event{}, []Event{}
 		for i := 0; i < 15; i++ {
-			events = append(events, NewEvent("sample_aggregate", i, EventPayload{"payload"}))
+			events1 = append(events1, NewEvent("aggregate-1", i, EventPayload{"payload"}))
 		}
+		Expect(store.SaveEvents("aggregate-1", events1)).To(BeNil())
 
-		err := store.SaveEvents("aggregate-1", events)
-		Expect(err).To(BeNil())
-		Expect(len(store.GetEventMetaDataFrom(0, 1))).To(Equal(1))
-		Expect(len(store.GetEventMetaDataFrom(0, 15))).To(Equal(15))
-		Expect(len(store.GetEventMetaDataFrom(5, 15))).To(Equal(11))
+		for i := 0; i < 15; i++ {
+			events2 = append(events2, NewEvent("aggregate-2", i, EventPayload{"payload"}))
+		}
+		Expect(store.SaveEvents("aggregate-2", events2)).To(BeNil())
+
+		actual := store.GetEventMetaDataFrom(0, 1)
+		Expect(len(actual)).To(Equal(1))
+		Expect(actual[0]).To(Equal(events1[0].EventMetaData))
+
+		actual = store.GetEventMetaDataFrom(0, 15)
+		Expect(len(actual)).To(Equal(15))
+		Expect(actual[0]).To(Equal(events1[0].EventMetaData))
+		Expect(actual[len(actual)-1]).To(Equal(events1[14].EventMetaData))
+
+		actual = store.GetEventMetaDataFrom(5, 15)
+		Expect(len(actual)).To(Equal(15))
+		Expect(actual[0]).To(Equal(events1[5].EventMetaData))
+		Expect(actual[len(actual)-1]).To(Equal(events2[4].EventMetaData))
+
+		actual = store.GetEventMetaDataFrom(16, 100)
+		Expect(len(actual)).To(Equal(14))
+		Expect(actual[0]).To(Equal(events2[1].EventMetaData))
+		Expect(actual[len(actual)-1]).To(Equal(events2[14].EventMetaData))
 	})
 
 })
