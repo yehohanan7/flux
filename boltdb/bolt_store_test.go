@@ -66,12 +66,21 @@ var _ = Describe("Bolt Event Store", func() {
 		for i := 0; i < 20; i++ {
 			expected[i] = NewEvent("sample_aggregate", i, EventPayload{"payload"})
 		}
+
 		store.SaveEvents("aggregate-1", expected)
+		store.SaveEvents("aggregate-2", expected[0:10])
 
-		events := store.GetEvents("aggregate-1")
+		events1 := store.GetEvents("aggregate-1")
+		events2 := store.GetEvents("aggregate-2")
 
-		Expect(events).To(HaveLen(20))
-		for i, e := range events {
+		Expect(events1).To(HaveLen(20))
+		Expect(events2).To(HaveLen(10))
+
+		for i, e := range events1 {
+			Expect(e).To(Equal(expected[i]))
+		}
+
+		for i, e := range events2 {
 			Expect(e).To(Equal(expected[i]))
 		}
 	})

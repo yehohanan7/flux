@@ -1,6 +1,9 @@
 package boltdb
 
 import (
+	"bytes"
+	"encoding/binary"
+	"fmt"
 	"strconv"
 
 	"github.com/boltdb/bolt"
@@ -23,7 +26,6 @@ func (store *BoltEventStore) GetEvent(id string) Event {
 	var event = new(Event)
 	store.db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(EVENTS_BUCKET))
-
 		if v := b.Get([]byte(id)); v != nil {
 			event.Deserialize(v)
 		}
@@ -33,38 +35,45 @@ func (store *BoltEventStore) GetEvent(id string) Event {
 }
 
 func (store *BoltEventStore) GetEvents(aggregateId string) []Event {
-	var events []Event
+	events := make([]Event, 0)
 	store.db.View(func(tx *bolt.Tx) error {
-		if b := tx.Bucket([]byte(aggregateId)); b != nil {
-			events = make([]Event, b.Stats().KeyN)
-			b.ForEach(func(k, v []byte) error {
-				version, _ := strconv.Atoi(string(k))
-				events[version] = store.GetEvent(string(v))
-				return nil
-			})
+		c := tx.Bucket([]byte(AGGREGATES_BUCKET)).Cursor()
+		prefix := []byte(aggregateId)
+		for k, v := c.Seek(prefix); k != nil && bytes.HasPrefix(k, prefix); k, v = c.Next() {
+			events = append(events, store.GetEvent(string(v)))
 		}
 		return nil
 	})
-
 	return events
+}
+
+func aggregateKey(id string, version int) []byte {
+	buf := new(bytes.Buffer)
+	buf.Write([]byte(id))
+	v := uint16(version)
+	err := binary.Write(buf, binary.LittleEndian, v)
+	if err != nil {
+		glog.Fatal(fmt.Sprintf("error while forming key for aggregae %s & version %d\n", id, version))
+	}
+	return buf.Bytes()
 }
 
 func (store *BoltEventStore) SaveEvents(aggregateId string, events []Event) error {
 	return store.db.Update(func(tx *bolt.Tx) error {
 		eb := tx.Bucket([]byte(EVENTS_BUCKET))
 		mb := tx.Bucket([]byte(EVENT_METADATA_BUCKET))
-		ab := createBucket(tx, aggregateId)
+		ab := tx.Bucket([]byte(AGGREGATES_BUCKET))
 
-		lastKey := strconv.Itoa(events[0].AggregateVersion - 1)
-		newKey := strconv.Itoa(events[0].AggregateVersion)
+		lastKey := aggregateKey(aggregateId, events[0].AggregateVersion-1)
+		newKey := aggregateKey(aggregateId, events[0].AggregateVersion)
 
-		if ab.Get([]byte(newKey)) != nil || (events[0].AggregateVersion != 0 && ab.Get([]byte(lastKey)) == nil) {
+		if ab.Get(newKey) != nil || (events[0].AggregateVersion != 0 && ab.Get(lastKey) == nil) {
 			return Conflict
 		}
 
 		for _, event := range events {
 
-			if err := ab.Put([]byte(strconv.Itoa(event.AggregateVersion)), []byte(event.Id)); err != nil {
+			if err := ab.Put(aggregateKey(aggregateId, event.AggregateVersion), []byte(event.Id)); err != nil {
 				return err
 			}
 
