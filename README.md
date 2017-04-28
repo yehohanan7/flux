@@ -132,7 +132,7 @@ consumer.Stop()
 ```
 
 ### ReadModel
-Read model is nothing but the result of how you interpret the events provided by the consumer. you need to store the read model if you need, but in the next releases the consumer will also allow you to take snapshots of the read model and store it in an internal boltdb
+Read model is nothing but the result of how you interpret the events provided by the consumer shown above.
 
 ## Sample application
 There is a simple example application [here](https://github.com/yehohanan7/flux/tree/master/examples/bank) if you would like to refer
