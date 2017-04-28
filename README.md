@@ -32,12 +32,12 @@ type Account struct {
 
 //Initialize the aggregate
 acc := new(Account)
-acc.Aggregate = cqrs.NewAggregate("account-id", acc, flux.NewMemoryStore())
+acc.Aggregate = cqrs.NewAggregate("account-id", acc, flux.NewBoltStore("path/to/database"))
 ```
 
 The last argument is an EventStore, which provides an implementation to store and retrieve events - there are 2 implementations at the moment an inmemory one and a boltdb implementation
 ```go
-store := flux.NewBoltStore("path/to/database")
+store := flux.NewMemoryStore()
 ```
 
 Once you have the aggregate initialized, you can execute commands on it which will in turn emit events, make sure to update the state of the aggregate through a handler method (prefixed with the name *Handle*) on the aggregate
@@ -66,7 +66,6 @@ if err := acc.Save(); err == cqrs.Conflict {
 }
 
 ```
-
 
 
 ### FeedHandler
@@ -140,9 +139,10 @@ There is a simple example application [here](https://github.com/yehohanan7/flux/
 
 
 ## Roadmap
-1. Optimize consumers by using websockets/server push
-2. Support mongodb
-3. Support postgres
-4. Support option to emit events to external systems if required.
-5. publish metrics to graphite
+- [ ] Optimize consumers by using websockets/server push
+- [ ] Support mongodb
+- [ ] Support postgres
+- [ ] publish metrics to graphite
+- [ ] Support option to emit events to external systems if required.
+
 
