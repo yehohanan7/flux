@@ -4,6 +4,7 @@ language: go
 
 services:
   - docker
+  - mongodb
 
 env:
   - DOCKER_BIND_LOCALHOST=true
