@@ -6,36 +6,37 @@ import (
 )
 
 type mongoOffsetRecord struct {
-	ID     string
-	Offset int
+	Id     string `bson:"_id"`
+	Offset int    `bson:"offset"`
 }
 
 type MongoOffsetStoreOptions struct {
-	Session        *mgo.Session
-	DatabaseName   string
-	CollectionName string
-	StoreID        string
+	Session    *mgo.Session
+	Database   string
+	Collection string
+	StoreId    string
 }
 
 func DefaultMongoOffsetStoreOptions() *MongoOffsetStoreOptions {
 	return &MongoOffsetStoreOptions{
-		DatabaseName:   "",
-		CollectionName: "offset",
+		Database:   "",
+		Collection: "offset",
 	}
 }
 
+// MongoOffsetStore implementation of the offset store
 type MongoOffsetStore struct {
 	options *MongoOffsetStoreOptions
 }
 
 func (store *MongoOffsetStore) getCollection() *mgo.Collection {
-	return store.options.Session.DB(store.options.DatabaseName).C(store.options.CollectionName)
+	return store.options.Session.DB(store.options.Database).C(store.options.Collection)
 }
 
 func (store *MongoOffsetStore) SaveOffset(value int) error {
 	collection := store.getCollection()
-	_, err := collection.UpsertId(store.options.StoreID, mongoOffsetRecord{
-		ID:     store.options.StoreID,
+	_, err := collection.UpsertId(store.options.StoreId, mongoOffsetRecord{
+		Id:     store.options.StoreId,
 		Offset: value,
 	})
 	return err
@@ -43,7 +44,7 @@ func (store *MongoOffsetStore) SaveOffset(value int) error {
 
 func (store *MongoOffsetStore) GetLastOffset() (int, error) {
 	collection := store.getCollection()
-	query := collection.FindId(store.options.StoreID)
+	query := collection.FindId(store.options.StoreId)
 	offset := 0
 	count, err := query.Count()
 	if err == nil && count == 1 {

@@ -4,34 +4,20 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/yehohanan7/flux/cqrs"
-	mgo "gopkg.in/mgo.v2"
 )
 
 var _ = Describe("Mongo offset Store", func() {
 	var store OffsetStore
-	var session *mgo.Session
-	storeID := "test-consumer"
+	storeId := "test-consumer"
 	databaseName := "test"
 	collectionName := "offset"
 
-	BeforeSuite(func() {
-		sess, err := mgo.Dial("localhost")
-		Expect(err).Should(BeNil())
-		session = sess
-	})
-
-	AfterSuite(func() {
-		if session != nil {
-			session.Close()
-		}
-	})
-
 	BeforeEach(func() {
 		options := DefaultMongoOffsetStoreOptions()
-		options.DatabaseName = databaseName
-		options.CollectionName = collectionName
+		options.Database = databaseName
+		options.Collection = collectionName
 		options.Session = session
-		options.StoreID = storeID
+		options.StoreId = storeId
 		store = NewOffsetStore(options)
 	})
 
