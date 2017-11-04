@@ -68,7 +68,9 @@ func (store *MongoEventStore) GetEvents(aggregateId string) []Event {
 	record := &mongoAggregateRecord{}
 	err := collection.FindId(aggregateId).One(record)
 	if err != nil {
-		glog.Error("error while getting events ", err)
+		if err != mgo.ErrNotFound {
+			glog.Fatal("error while getting events ", err)
+		}
 		return []Event{}
 	}
 	events := make([]Event, len(record.Events))
@@ -192,7 +194,9 @@ func (store *MongoEventStore) GetEvent(id string) Event {
 	eventRecord := &mongoEventRecord{}
 	err := eventCollection.FindId(id).One(eventRecord)
 	if err != nil {
-		glog.Fatal("Error while finding event ", err)
+		if err != mgo.ErrNotFound {
+			glog.Fatal("Error while finding event ", err)
+		}
 		return Event{}
 	}
 	aggregateCollection := store.getAggregateCollection()
@@ -204,11 +208,13 @@ func (store *MongoEventStore) GetEvent(id string) Event {
 	aggregateRecord := mongoAggregateRecord{}
 	err = pipe.One(&aggregateRecord)
 	if err != nil {
-		glog.Error("Error while getting event ", err)
+		if err != mgo.ErrNotFound {
+			glog.Fatal("Error while getting event ", err)
+		}
 		return Event{}
 	}
-	aggregateEventRecord := aggregateRecord.Events[0]
 	event := Event{}
+	aggregateEventRecord := aggregateRecord.Events[0]
 	event.Deserialize(aggregateEventRecord.Data)
 	return event
 }

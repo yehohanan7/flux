@@ -99,4 +99,15 @@ var _ = Describe("MongoStore", func() {
 		Expect(expected).To(Equal(actual))
 	})
 
+	var _ = Describe("When aggregate does not exists", func() {
+		It("Should not panic", func() {
+			_ = store.GetEvents("ghost")
+		})
+	})
+
+	var _ = Describe("When event does not exists", func() {
+		It("Should not panic", func() {
+			_ = store.GetEvent("ghost")
+		})
+	})
 })
