@@ -137,10 +137,41 @@ Read model is nothing but the result of how you interpret the events provided by
 ## Sample application
 There is a simple example application [here](https://github.com/yehohanan7/flux/tree/master/examples/bank) if you would like to refer
 
+## MongoDB
+MongoDB implementation is depending on [mgo](https://github.com/go-mgo/mgo), which is a MongoDB driver for Go, So you must install `mgo` before starting to use it.
+
+```go
+import (
+  "gopkg.in/mgo.v2"
+  "github.com/yehohanan7/flux"
+  "github.com/yehohanan7/flux/mongodb"
+)
+
+// Create mongodb session
+session, err := mgo.Dial("localhost")
+
+// ...
+
+// Create event store
+eventStore := flux.NewMongoStore(&mongodb.MongoEventStoreOptions{
+  Session:               session,
+  Database:              "example", // optional
+  EventCollection:       "event",
+  AggregateCollection:   "aggregate",
+  TransactionCollection: "transaction",
+})
+
+// Create offset store
+offsetStore := flux.NewMongoOffsetStore(&mongodb.MongoOffsetStoreOptions{
+  Session:               session,
+  Database:              "example", // optional
+  Collection:            "offset",
+  StoreId:               "a_unique_id_for_consumer",
+})
+```
 
 ## Roadmap
 - [ ] Optimize consumers by using websockets/server push
-- [ ] Support mongodb
 - [ ] Support postgres
 - [ ] publish metrics to graphite
 - [ ] Support option to emit events to external systems if required.
