@@ -138,7 +138,7 @@ Read model is nothing but the result of how you interpret the events provided by
 There is a simple example application [here](https://github.com/yehohanan7/flux/tree/master/examples/bank) if you would like to refer
 
 ## MongoDB
-mongodb as your event & offset store using [mgo] (https://github.com/go-mgo/mgo)
+mongodb as your event & offset store using [mgo](https://github.com/go-mgo/mgo)
 
 ```go
 import (
