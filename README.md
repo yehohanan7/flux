@@ -13,7 +13,7 @@ It's a good practice to have one command service per Aggregate (as per DDD termi
 ![architecture](https://raw.githubusercontent.com/yehohanan7/flux/master/static/architecture.png)
 
 ### Aggregate
-[Aggregates](https://martinfowler.com/bliki/DDD_Aggregate.html) accepts commands and publishes events.
+[Aggregates](https://martinfowler.com/bliki/DDD_Aggregate.html) accepts commands and generates events.
 
 This is how you can define an aggregate in Flux:
 
